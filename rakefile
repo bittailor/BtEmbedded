@@ -1,0 +1,3 @@
+# Rake.application.options.trace = true
+require 'BtBuildFramework/source/build_framework.rb'
+

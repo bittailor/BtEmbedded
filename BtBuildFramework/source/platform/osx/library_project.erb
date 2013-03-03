@@ -1,0 +1,32 @@
+builddir = target
+cxx = g++
+ar = ar
+cflags = -std=c++11 -g -gstabs -D_GLIBCXX_USE_NANOSLEEP=1 -I/usr/local/include -Isource/main/inc -Isource/main/src
+ldflags = -L$builddir
+  
+rule cxx
+  command = $cxx -MMD -MT $out -MF $out.d $cflags -c $in -o $out
+  description = CXX $out
+  depfile = $out.d
+  
+rule ar
+  command = rm -f $out && $ar crs $out $in
+  description = AR $out
+  
+rule link
+  command = $cxx $ldflags -o $out $in $libs
+  description = LINK $out
+ 
+<% for source in sources %>
+build <%= source.pathmap('%{^source,target}X.obj') %>: cxx <%= source %>
+<% end %>
+
+build <%= "target/main/#{project_name}.a" %>  : ar <%= sources.pathmap('%{^source,target}X.obj').join(' ') %> 
+
+<% for test_source in test_sources %>
+build <%= test_source.pathmap('%{^source,target}X.obj') %>: cxx <%= test_source %>
+<% end %>
+
+
+build <%= "target/test/#{project_name}_test" %> : link <%= test_sources.pathmap('%{^source,target}X.obj').join(' ')  %> <%= "target/main/#{project_name}.a" %>
+   libs = -lgtest -lgmock 
