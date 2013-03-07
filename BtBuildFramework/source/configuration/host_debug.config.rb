@@ -1,5 +1,12 @@
-Configuration.instance["HostDebug"] = 
-{
-  :is_host => true,
-  :platform => "OSX" 
-}
+
+
+class Configuration
+  
+  protected
+  
+  def setup()
+    self[:is_host] = true;
+    self[:platform] = "osx";
+  end
+  
+end

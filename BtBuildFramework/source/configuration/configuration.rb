@@ -1,23 +1,29 @@
 require 'singleton'
 
 class Configuration < Hash
-  include Singleton
   
-  def initialize()
+  attr_reader :name
+  
+  def initialize(name)
+    
     @directory = File.dirname(__FILE__)
-    @pattern = "*.config.rb"
+    @name = name
+    @file = File.join(@directory,"#{@name}.config.rb")
+  
+    load()
+    setup()    
   end
   
+  protected
+  
   def load()
-    Dir[File.join(@directory,@pattern)].each do |configuration|
-      puts "load configuration #{configuration}" if Rake.application.options.trace
-      Kernel.load configuration
-    end
+    raise "configuration #{@name} not found at #{@file}" unless File.exist?(@file)
+    puts "load configuration #{@name} from #{@file}" if Rake.application.options.trace
+    Kernel.load @file
   end
   
 end
 
-Configuration.instance.load()
 
 
 

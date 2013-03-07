@@ -13,17 +13,23 @@ class BuildFramework
     @variables = ENV.to_hash 
     @projects = Dir["*/build.rb"]; 
     set_defaults()
-     
-    @configuration = Configuration.instance[@variables['configuration']]    
-    puts "platform #{@configuration[:platform]}" if Rake.application.options.trace
-    @builder = Platform.instance[@configuration[:platform]][:builder] 
+    puts "configuration is #{@variables['configuration']}" if Rake.application.options.trace
+    @configuration = Configuration.new(@variables['configuration'])
+    
+    puts "platform is #{@configuration[:platform]}" if Rake.application.options.trace    
+    @platfrom = Platform.new(@configuration[:platform])      
+      
+    @builder = @platfrom[:builder]
   end
   
   def load()
     @projects.each do |project|
       @current_project = project_name(project)
       puts "@current_project #{@current_project}" if Rake.application.options.trace
-      Kernel.load project
+      original_location = Dir.pwd
+      Dir.chdir(File.dirname(project))
+      Kernel.load File.basename(project)
+      Dir.chdir(original_location) 
     end
     task :default => @variables['project']
   end
@@ -37,17 +43,29 @@ class BuildFramework
   end
   
   def set_defaults
-    default_for_variable("configuration","HostDebug")
+    default_for_variable("configuration","host_debug")
     default_for_variable("project", @projects.collect{|project| project_name(project)})
   end
   
   def project_name(project)
     File.basename(File.dirname(project))
   end
-  
-  
-  
-end 
+
+end
+
+def bttask(*args)
+   local_project = BuildFramework.instance.current_project
+   task(*args) do |block|
+      original_location = Dir.pwd
+      Dir.chdir(local_project)
+      yield block
+      Dir.chdir(original_location)
+   end
+end
+
+def library()
+  BuildFramework.instance.builder.library_project();
+end
 
 BuildFramework.instance.load()
 

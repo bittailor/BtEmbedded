@@ -1,25 +1,29 @@
 require 'singleton'
 
 class Platform < Hash
-  include Singleton
   
   attr_reader :directory
   
-  def initialize()
+  def initialize(name)
     @directory = File.dirname(__FILE__)
-    @pattern = "*.platform.rb"
+    @name = name
+    @file = File.join(@directory,"#{@name}.platform.rb")
+    
+    load()
+    setup()
+    
   end
   
+  protected
+  
   def load()
-    Dir[File.join(@directory,@pattern)].each do |platform|
-      puts "load platform #{platform}" if Rake.application.options.trace
-      Kernel.load platform
-    end
+    raise "platform #{@name} not found at #{@file}" unless File.exist?(@file)
+    puts "load platform #{@name} from #{@file}" if Rake.application.options.trace
+    Kernel.load @file
   end
    
 end
 
-Platform.instance.load()
 
 
 

@@ -30,7 +30,6 @@ class SpiTest : public ::testing::Test {
 
 };
 
-
 TEST_F(SpiTest, CheckTransfer) {
    EXPECT_EQ(0,0);
 }

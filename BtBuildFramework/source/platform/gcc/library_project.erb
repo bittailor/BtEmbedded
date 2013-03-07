@@ -1,0 +1,35 @@
+builddir = <%= target_folder %>
+cxx = <%= @cxx_compiler %>
+ar = <%= @archiver %>
+cxxflags = <%= @cxxflags %>
+includes = <%= @includes %>
+ldflags = <%= @ldflags %>
+  
+rule cxx
+  command = $cxx -MMD -MT $out -MF $out.d $cxxflags $includes -c $in -o $out
+  description = CXX $out
+  depfile = $out.d
+  
+rule ar
+  command = rm -f $out && $ar crs $out $in
+  description = AR $out
+  
+rule link
+  command = $cxx $ldflags -o $out $in $libs
+  description = LINK $out
+ 
+<% for source in sources %>
+build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= source %>
+   includes = -Isource/main/inc -Isource/main/src $includes	
+<% end %>
+
+build <%= "#{target_folder}/main/#{project_name}.a" %>  : ar <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> 
+
+<% for test_source in test_sources %>
+build <%= test_source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= test_source %>
+   includes = -Isource/main/inc $includes	
+<% end %>
+
+
+build <%= "#{target_folder}/test/#{project_name}_test" %> : link <%= test_sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ')  %> <%= "#{target_folder}/main/#{project_name}.a" %>
+   libs = -lgmock -lgtest
