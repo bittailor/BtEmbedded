@@ -7,10 +7,41 @@ class Builder
   
   OutputRootFolder = "target"
   
-  def initialize(erb_folder)
+  def initialize(configuration, erb_folder)
     @erb_folder = erb_folder
+    @configuration = configuration
     setUp()
   end
+  
+  def static_library(name,sources, includes)
+        
+    compile = :"#{name}@compile"
+    
+    CLEAN.include File.expand_path(OutputRootFolder) 
+        
+    target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
+       
+    puts "target_folder is #{target_folder}" 
+    output_folder =  File.expand_path(target_folder)
+    
+    directory output_folder
+    
+    ninja = "build_#{name}.ninja"
+    
+    bttask compile => [ output_folder ] do
+      File.open("#{target_folder}/#{ninja}", "w+") do |file|
+        file.write(ERB.new(IO.read(File.join(@erb_folder,'configuartion.erb'))).result(binding))
+        file.write(ERB.new(IO.read(File.join(@erb_folder,'rules.erb'))).result(binding))
+          
+        file.write(ERB.new(IO.read(File.join(@erb_folder,'static_library.erb'))).result(binding))
+      end
+      run_sh "ninja -v -j8 -f #{target_folder}/#{ninja}" 
+    end
+    
+    task name => compile
+    
+  end
+  
   
   def library_project()
     
@@ -25,8 +56,23 @@ class Builder
     CLEAN.include File.expand_path(OutputRootFolder) 
     
     
-    sources = FileList['source/main/src/**/*.cpp'] + FileList['source/main/src/**/*.c']
+    sources = FileList['source/main/src/**/*.cpp'] + 
+              FileList['source/main/src/**/*.c'] +
+              FileList["source/platform/#{@platform}/src/**/*.cpp"] +
+              FileList["source/platform/#{@platform}/src/**/*.c"]
+                 
     test_sources = FileList['source/test/src/**/*.cpp']
+      
+    includes = [ 
+      "source/main/inc", 
+      "source/main/src",  
+      "source/platform/#{@platform}/inc",  
+      "source/platform/#{@platform}/src" ] 
+    
+    test_includes = [ 
+      "source/main/inc", 
+      "source/platform/#{@platform}/inc" ]  
+      
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
     
     puts "target_folder is #{target_folder}" 
@@ -48,16 +94,17 @@ class Builder
         run_sh "#{target_folder}/test/#{project_name}_test"  
       end
     else
-      bttask test do
-        hostname = BuildFramework.instance.configuration[:hostname] 
-        username = BuildFramework.instance.configuration[:username] 
-        password = BuildFramework.instance.configuration[:password] 
-        run_folder = BuildFramework.instance.configuration[:run_folder] 
-                
-        cp "#{target_folder}/test/#{project_name}_test" , BuildFramework.instance.configuration[:remote_run_folder]
-        ssh = Net::SSH.start(hostname, username, :password => password)  
-        run_ssh(ssh,"#{run_folder}/#{project_name}_test") 
-     
+      if BuildFramework.instance.configuration[:run_ssh]
+        bttask test do
+          hostname = BuildFramework.instance.configuration[:hostname] 
+          username = BuildFramework.instance.configuration[:username] 
+          password = BuildFramework.instance.configuration[:password] 
+          run_folder = BuildFramework.instance.configuration[:run_folder] 
+                  
+          cp "#{target_folder}/test/#{project_name}_test" , BuildFramework.instance.configuration[:remote_run_folder]
+          ssh = Net::SSH.start(hostname, username, :password => password)  
+          run_ssh(ssh,"sudo #{run_folder}/#{project_name}_test")    
+        end
       end   
     end
   task project_name => test 

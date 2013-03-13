@@ -20,16 +20,16 @@ rule link
  
 <% for source in sources %>
 build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= source %>
-   includes = -Isource/main/inc -Isource/main/src $includes	
+   includes = <%= includes.collect{|i| "-I"+i}.join(" ")  %> $includes	
 <% end %>
 
 build <%= "#{target_folder}/main/#{project_name}.a" %>  : ar <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> 
 
 <% for test_source in test_sources %>
 build <%= test_source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= test_source %>
-   includes = -Isource/main/inc $includes	
+   includes = <%= test_includes.collect{|i| "-I"+i}.join(" ")  %> $includes	
 <% end %>
 
 
 build <%= "#{target_folder}/test/#{project_name}_test" %> : link <%= test_sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ')  %> <%= "#{target_folder}/main/#{project_name}.a" %>
-   libs = -lgmock -lgtest
+   libs = <%= @libraries.collect{|l| "-l"+l}.join(" ") %>

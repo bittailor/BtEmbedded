@@ -7,7 +7,7 @@ require 'platform/platform.rb'
 class BuildFramework
   include Singleton
   
-  attr_reader :configuration, :current_project, :builder
+  attr_reader :configuration, :platform, :current_project, :builder
    
   def initialize()
     @variables = ENV.to_hash 
@@ -17,9 +17,13 @@ class BuildFramework
     @configuration = Configuration.new(@variables['configuration'])
     
     puts "platform is #{@configuration[:platform]}" if Rake.application.options.trace    
-    @platfrom = Platform.new(@configuration[:platform])      
+    @platform = Platform.new(@configuration)      
       
-    @builder = @platfrom[:builder]
+    @builder = @platform[:builder]
+  end
+  
+  def setUp()
+    
   end
   
   def load()
@@ -65,6 +69,10 @@ end
 
 def library()
   BuildFramework.instance.builder.library_project();
+end
+
+def static_library(name,sources, includes)
+  BuildFramework.instance.builder.static_library(name,sources,includes);
 end
 
 BuildFramework.instance.load()

@@ -2,11 +2,12 @@ require 'singleton'
 
 class Platform < Hash
   
-  attr_reader :directory
+  attr_reader :directory, :name
   
-  def initialize(name)
+  def initialize(configuration)
+    @configuration = configuration
     @directory = File.dirname(__FILE__)
-    @name = name
+    @name = @configuration[:platform]
     @file = File.join(@directory,"#{@name}.platform.rb")
     
     load()

@@ -117,10 +117,10 @@
 		<configuration configurationName="MacOSX GCC">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
-		<configuration configurationName="PiCrossDebug">
+		<configuration configurationName="Cross GCC">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
-		<configuration configurationName="Cross GCC">
+		<configuration configurationName="PiCrossDebug">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
 	</storageModule>

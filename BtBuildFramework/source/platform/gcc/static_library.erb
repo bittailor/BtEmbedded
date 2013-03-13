@@ -1,0 +1,6 @@
+ <% for source in sources %>
+build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= source %>
+   includes = <%= includes.collect{|i| "-I"+i}.join(" ")  %> $includes	
+<% end %>
+
+build <%= "#{target_folder}/lib#{name}.a" %>  : ar <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> 

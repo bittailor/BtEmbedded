@@ -3,6 +3,7 @@
 	<name>BtCore</name>
 	<comment></comment>
 	<projects>
+		<project>3rdParty</project>
 		<project>BtBuildFramework</project>
 	</projects>
 	<buildSpec>
