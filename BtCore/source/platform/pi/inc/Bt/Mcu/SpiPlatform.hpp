@@ -13,13 +13,15 @@
 
 #include <cstdint>
 
+#include "Bt/Mcu/ISpi.hpp"
+
 namespace Bt {
 namespace Mcu {
 
 class SpiPlatform 
 {
    public:
-      SpiPlatform(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed);
+      SpiPlatform(ISpi::BitOrder pBitOrder, ISpi::Mode pSpiMode, ISpi::Speed pSpeed);
       ~SpiPlatform();
 
       uint8_t transfer(uint8_t data);

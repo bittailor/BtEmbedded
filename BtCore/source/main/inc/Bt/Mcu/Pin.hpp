@@ -4,39 +4,40 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::Spi
+//  Bt::Mcu::Pin
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Mcu_Spi__hpp
-#define INC__Bt_Mcu_Spi__hpp
+#ifndef INC__Bt_Mcu_Pin__hpp
+#define INC__Bt_Mcu_Pin__hpp
 
-#include "Bt/Mcu/ISpi.hpp"
-#include "Bt/Mcu/SpiPlatform.hpp"
-
+#include "Bt/Mcu/IPin.hpp"
+#include "Bt/Mcu/PinPlatform.hpp"
 
 namespace Bt {
 namespace Mcu {
 
-class Spi : public ISpi , private SpiPlatform
+class Pin : public IPin, private PinPlatform
 {
    public:
+      Pin(uint8_t pPinId, Mode pInitialMode);
+      ~Pin();
 
-      Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed);
-      virtual ~Spi();
+      virtual void mode(Mode pMode);
 
-      virtual void chipSelect(bool pSelect);
-      virtual uint8_t transfer(uint8_t pData);
-   
+      virtual void write(bool pHigh);
+
+      virtual bool read();
+
    private:
    	  // Constructor to prohibit copy construction.
-      Spi(const Spi&);
+      Pin(const Pin&);
 
       // Operator= to prohibit copy assignment
-      Spi& operator=(const Spi&);
+      Pin& operator=(const Pin&);
 };
 
 } // namespace Mcu
 } // namespace Bt
 
-#endif // INC__Bt_Mcu_Spi__hpp
+#endif // INC__Bt_Mcu_Pin__hpp

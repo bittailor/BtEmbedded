@@ -38,6 +38,5 @@ TEST_F(SpiTest, CheckTransfer) {
    EXPECT_EQ(0,0);
 }
 
-
 } // namespace Mcu
 } // namespace Bt

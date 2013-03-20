@@ -4,11 +4,11 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::Spi
+//  Bt::Mcu::Pin
 //  
 //*************************************************************************************************
 
-#include "Bt/Mcu/Spi.hpp"
+#include "Bt/Mcu/Pin.hpp"
 
 namespace Bt {
 namespace Mcu {
@@ -16,33 +16,35 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-Spi::Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed)
-: SpiPlatform(pBitOrder,pSpiMode,pSpeed) {
+Pin::Pin(uint8_t pPinId, Mode pInitialMode) : PinPlatform(pPinId, pInitialMode) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Spi::~Spi() {
+Pin::~Pin() {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-
-void Spi::chipSelect(bool pSelect) {
-
+void Pin::mode(Mode pMode) {
+   PinPlatform::mode(pMode);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t Spi::transfer(uint8_t pData) {
-   return SpiPlatform::transfer(pData);
+void Pin::write(bool gHigh) {
+   PinPlatform::write(gHigh);
 }
 
 //-------------------------------------------------------------------------------------------------
 
+bool Pin::read() {
+   return PinPlatform::read();
+}
 
+//-------------------------------------------------------------------------------------------------
 
 } // namespace Mcu
 } // namespace Bt

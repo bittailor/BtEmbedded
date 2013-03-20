@@ -100,10 +100,14 @@ class Builder
           username = BuildFramework.instance.configuration[:username] 
           password = BuildFramework.instance.configuration[:password] 
           run_folder = BuildFramework.instance.configuration[:run_folder] 
-                  
+          puts "Copy test"  
           cp "#{target_folder}/test/#{project_name}_test" , BuildFramework.instance.configuration[:remote_run_folder]
-          ssh = Net::SSH.start(hostname, username, :password => password)  
-          run_ssh(ssh,"sudo #{run_folder}/#{project_name}_test")    
+          puts "ssh: #{username} #{password}"  
+          Net::SSH.start(hostname, username, :password => password) do |ssh|  
+            puts "Run test"          
+            STDOUT.flush
+            run_ssh(ssh,"sudo #{run_folder}/#{project_name}_test")  
+          end  
         end
       end   
     end
@@ -117,6 +121,8 @@ class Builder
   end
   
   def run_ssh(ssh, cmd)
+    puts "Run test: #{cmd}"          
+    STDOUT.flush
     stdout_data = ""
     stderr_data = ""
     exit_code = nil

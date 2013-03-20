@@ -4,32 +4,35 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::ISpi
+//  Bt::Mcu::IPin
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Mcu_ISpi__hpp
-#define INC__Bt_Mcu_ISpi__hpp
-
-#include <cstdint>
+#ifndef INC__Bt_Mcu_IPin__hpp
+#define INC__Bt_Mcu_IPin__hpp
 
 namespace Bt {
 namespace Mcu {
 
-class ISpi {
+class IPin {
    public:
+      enum Mode {
+         MODE_INPUT,
+         MODE_OUTPUT
+      };
 
-      enum BitOrder {BIT_ORDER_LSBFIRST , BIT_ORDER_MSBFIRST};
-      enum Mode {MODE_0,MODE_1,MODE_2,MODE_3};
-      enum Speed {SPEED_4_MHZ};
-
-      virtual ~ISpi() {}
+      virtual ~IPin() {}
       
-      virtual void chipSelect(bool pSelect) = 0;
-      virtual uint8_t transfer(uint8_t pData) = 0;
+      virtual void mode(Mode pMode) = 0;
+
+      virtual void write(bool pHigh) = 0;
+
+      virtual bool read() = 0;
+
+
 };
 
 } // namespace Mcu
 } // namespace Bt
 
-#endif // INC__Bt_Mcu_ISpi__hpp
+#endif // INC__Bt_Mcu_IPin__hpp

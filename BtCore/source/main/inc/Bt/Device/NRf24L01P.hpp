@@ -4,39 +4,31 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::Spi
+//  Bt::Device::NRf24L01P
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Mcu_Spi__hpp
-#define INC__Bt_Mcu_Spi__hpp
-
-#include "Bt/Mcu/ISpi.hpp"
-#include "Bt/Mcu/SpiPlatform.hpp"
-
+#ifndef INC__Bt_Device_NRf24L01P__hpp
+#define INC__Bt_Device_NRf24L01P__hpp
 
 namespace Bt {
-namespace Mcu {
+namespace Device {
 
-class Spi : public ISpi , private SpiPlatform
+class NRf24L01P 
 {
    public:
-
-      Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed);
-      virtual ~Spi();
-
-      virtual void chipSelect(bool pSelect);
-      virtual uint8_t transfer(uint8_t pData);
+      NRf24L01P();
+      ~NRf24L01P();
    
    private:
    	  // Constructor to prohibit copy construction.
-      Spi(const Spi&);
+      NRf24L01P(const NRf24L01P&);
 
       // Operator= to prohibit copy assignment
-      Spi& operator=(const Spi&);
+      NRf24L01P& operator=(const NRf24L01P&);
 };
 
-} // namespace Mcu
+} // namespace Device
 } // namespace Bt
 
-#endif // INC__Bt_Mcu_Spi__hpp
+#endif // INC__Bt_Device_NRf24L01P__hpp
