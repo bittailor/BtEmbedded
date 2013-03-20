@@ -26,8 +26,8 @@ class PinTest : public ::testing::Test {
    protected:
       
       PinTest()
-         : mOutputPin(22,IPin::MODE_OUTPUT)
-         , mInputPin(23,IPin::MODE_INPUT) {
+         : mOutputPin(22,I_Pin::MODE_OUTPUT)
+         , mInputPin(23,I_Pin::MODE_INPUT) {
 
       }
 
@@ -64,8 +64,8 @@ TEST_F(PinTest, toggle) {
 }
 
 TEST_F(PinTest, mode) {
-   mOutputPin.mode(IPin::MODE_INPUT);
-   mInputPin.mode(IPin::MODE_OUTPUT);
+   mOutputPin.mode(I_Pin::MODE_INPUT);
+   mInputPin.mode(I_Pin::MODE_OUTPUT);
    mInputPin.write(true);
    ASSERT_TRUE(mOutputPin.read());
    mInputPin.write(false);

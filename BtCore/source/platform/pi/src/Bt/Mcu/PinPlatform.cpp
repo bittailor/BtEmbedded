@@ -12,17 +12,17 @@
 
 #include <bcm2835.h>
 
-#include "Bt/Mcu/IPin.hpp"
+#include "Bt/Mcu/I_Pin.hpp"
 #include "Bt/Mcu/GpioLibrary.hpp"
 
-using Bt::Mcu::IPin;
+using Bt::Mcu::I_Pin;
 
 
 namespace {
-   bcm2835FunctionSelect translateMode(IPin::Mode pMode) {
+   bcm2835FunctionSelect translateMode(I_Pin::Mode pMode) {
       switch (pMode) {
-         case IPin::MODE_INPUT : return BCM2835_GPIO_FSEL_INPT;
-         case IPin::MODE_OUTPUT : return BCM2835_GPIO_FSEL_OUTP;
+         case I_Pin::MODE_INPUT : return BCM2835_GPIO_FSEL_INPT;
+         case I_Pin::MODE_OUTPUT : return BCM2835_GPIO_FSEL_OUTP;
       }
    }
 }
@@ -33,14 +33,14 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-PinPlatform::PinPlatform(uint8_t pPinId, IPin::Mode pInitialMode) : mPinId(pPinId) {
+PinPlatform::PinPlatform(uint8_t pPinId, I_Pin::Mode pInitialMode) : mPinId(pPinId) {
    GpioLibrary::ensureIsInitialized();
    mode(pInitialMode);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void PinPlatform::mode(IPin::Mode pMode) {
+void PinPlatform::mode(I_Pin::Mode pMode) {
    bcm2835_gpio_fsel(mPinId, translateMode(pMode));
 }
 

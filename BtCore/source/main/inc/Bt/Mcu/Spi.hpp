@@ -11,18 +11,19 @@
 #ifndef INC__Bt_Mcu_Spi__hpp
 #define INC__Bt_Mcu_Spi__hpp
 
-#include "Bt/Mcu/ISpi.hpp"
+#include "Bt/Mcu/I_Spi.hpp"
 #include "Bt/Mcu/SpiPlatform.hpp"
+#include "Bt/Mcu/I_Pin.hpp"
 
 
 namespace Bt {
 namespace Mcu {
 
-class Spi : public ISpi , private SpiPlatform
+class Spi : public I_Spi , private SpiPlatform
 {
    public:
 
-      Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed);
+      Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed, I_Pin& pChipSelectPin);
       virtual ~Spi();
 
       virtual void chipSelect(bool pSelect);

@@ -4,26 +4,21 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::SpiTest
+//  Bt::Device::NRf24L01PTest
 //  
 //*************************************************************************************************
 
 #include <gtest/gtest.h>
 
-#include "Bt/Mcu/Spi.hpp"
-#include "Bt/Mcu/PinGMock.hpp"
+#include "Bt/Device/NRf24L01P.hpp"
 
 namespace Bt {
-namespace Mcu {
+namespace Device {
 
-class SpiTest : public ::testing::Test {
+class NRf24L01PTest : public ::testing::Test {
    
    protected:
       
-      SpiTest(): mSpi(Spi::BIT_ORDER_MSBFIRST, Spi::MODE_0, Spi::SPEED_4_MHZ, mChipSelect) {
-
-      }
-
       virtual void SetUp() {
       }
 
@@ -31,14 +26,15 @@ class SpiTest : public ::testing::Test {
          
       }
 
-      PinGMock mChipSelect;
-      Spi mSpi;
+      NRf24L01P mNRf24L01P;
 
 };
 
-TEST_F(SpiTest, CheckTransfer) {
-   EXPECT_EQ(0,0);
+
+TEST_F(NRf24L01PTest, testcase) {
+   EXPECT_EQ(1,1);
 }
 
-} // namespace Mcu
+
+} // namespace Device
 } // namespace Bt

@@ -16,8 +16,8 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-Spi::Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed)
-: SpiPlatform(pBitOrder,pSpiMode,pSpeed) {
+Spi::Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed, I_Pin& pChipSelectPin)
+: SpiPlatform(pBitOrder,pSpiMode,pSpeed,pChipSelectPin) {
 
 }
 

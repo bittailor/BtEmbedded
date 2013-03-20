@@ -11,13 +11,13 @@
 #ifndef INC__Bt_Mcu_Pin__hpp
 #define INC__Bt_Mcu_Pin__hpp
 
-#include "Bt/Mcu/IPin.hpp"
+#include "Bt/Mcu/I_Pin.hpp"
 #include "Bt/Mcu/PinPlatform.hpp"
 
 namespace Bt {
 namespace Mcu {
 
-class Pin : public IPin, private PinPlatform
+class Pin : public I_Pin, private PinPlatform
 {
    public:
       Pin(uint8_t pPinId, Mode pInitialMode);

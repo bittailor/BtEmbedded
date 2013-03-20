@@ -13,7 +13,8 @@
 
 #include <cstdint>
 
-#include "Bt/Mcu/ISpi.hpp"
+#include "Bt/Mcu/I_Spi.hpp"
+#include "Bt/Mcu/I_Pin.hpp"
 
 namespace Bt {
 namespace Mcu {
@@ -21,7 +22,7 @@ namespace Mcu {
 class SpiPlatform 
 {
    public:
-      SpiPlatform(ISpi::BitOrder pBitOrder, ISpi::Mode pSpiMode, ISpi::Speed pSpeed);
+      SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed, I_Pin& pChipSelectPin);
       ~SpiPlatform();
 
       uint8_t transfer(uint8_t data);
@@ -32,6 +33,9 @@ class SpiPlatform
 
       // Operator= to prohibit copy assignment
       SpiPlatform& operator=(const SpiPlatform&);
+
+      I_Pin* mChipSelectPin;
+
 };
 
 } // namespace Mcu

@@ -70,7 +70,8 @@ class Builder
       "source/platform/#{@platform}/src" ] 
     
     test_includes = [ 
-      "source/main/inc", 
+      "source/main/inc",
+      "source/mock/inc",  
       "source/platform/#{@platform}/inc" ]  
       
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 

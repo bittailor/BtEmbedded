@@ -11,7 +11,7 @@
 #include "Bt/Device/NRf24L01P.hpp"
 
 #include <stdint.h>
-#include "Bt/Mcu/ISpi.hpp"
+#include "Bt/Mcu/I_Spi.hpp"
 
 namespace Bt {
 namespace Device {
@@ -62,7 +62,7 @@ enum FiveByteRegister
 };
 
 
-uint8_t readRegister(Bt::Mcu::ISpi& pSpi, OneByteRegister pRegister)
+uint8_t readRegister(Bt::Mcu::I_Spi& pSpi, OneByteRegister pRegister)
 {
    uint8_t cmd = CMD_R_REGISTER | (pRegister & MASK_REGISTER_CMD);
    pSpi.chipSelect(true);
@@ -77,7 +77,8 @@ uint8_t readRegister(Bt::Mcu::ISpi& pSpi, OneByteRegister pRegister)
 
 //-------------------------------------------------------------------------------------------------
 
-NRf24L01P::NRf24L01P() {
+NRf24L01P::NRf24L01P(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable)
+   : mSpi(&pSpi), mChipEnable(&pChipEnable)  {
 
 }
 

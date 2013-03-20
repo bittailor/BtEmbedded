@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 
-#include "Bt/Mcu/IPin.hpp"
+#include "Bt/Mcu/I_Pin.hpp"
 
 namespace Bt {
 namespace Mcu {
@@ -22,10 +22,10 @@ class PinPlatform
 {
    public:
 
-      PinPlatform(uint8_t pPinId, IPin::Mode pInitialMode);
+      PinPlatform(uint8_t pPinId, I_Pin::Mode pInitialMode);
 
 
-      virtual void mode(IPin::Mode pMode);
+      virtual void mode(I_Pin::Mode pMode);
 
       virtual void write(bool gHigh);
 
