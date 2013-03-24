@@ -21,7 +21,6 @@ class SpiTest : public ::testing::Test {
    protected:
       
       SpiTest(): mSpi(Spi::BIT_ORDER_MSBFIRST, Spi::MODE_0, Spi::SPEED_4_MHZ, mChipSelect) {
-
       }
 
       virtual void SetUp() {

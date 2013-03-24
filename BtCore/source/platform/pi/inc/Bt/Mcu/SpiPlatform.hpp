@@ -22,7 +22,7 @@ namespace Mcu {
 class SpiPlatform 
 {
    public:
-      SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed, I_Pin& pChipSelectPin);
+      SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed);
       ~SpiPlatform();
 
       uint8_t transfer(uint8_t data);
@@ -33,8 +33,6 @@ class SpiPlatform
 
       // Operator= to prohibit copy assignment
       SpiPlatform& operator=(const SpiPlatform&);
-
-      I_Pin* mChipSelectPin;
 
 };
 

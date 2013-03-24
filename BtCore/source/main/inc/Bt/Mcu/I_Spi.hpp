@@ -21,7 +21,7 @@ class I_Spi {
 
       enum BitOrder {BIT_ORDER_LSBFIRST , BIT_ORDER_MSBFIRST};
       enum Mode {MODE_0,MODE_1,MODE_2,MODE_3};
-      enum Speed {SPEED_4_MHZ};
+      enum Speed {SPEED_4_MHZ, SPEED_8_MHZ};
 
       virtual ~I_Spi() {}
       

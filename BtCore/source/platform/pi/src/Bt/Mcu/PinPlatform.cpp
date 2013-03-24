@@ -23,6 +23,7 @@ namespace {
       switch (pMode) {
          case I_Pin::MODE_INPUT : return BCM2835_GPIO_FSEL_INPT;
          case I_Pin::MODE_OUTPUT : return BCM2835_GPIO_FSEL_OUTP;
+         default : return BCM2835_GPIO_FSEL_OUTP;
       }
    }
 }
@@ -53,7 +54,7 @@ void PinPlatform::write(bool gHigh) {
 //-------------------------------------------------------------------------------------------------
 
 bool PinPlatform::read() {
-   bcm2835_gpio_lev(mPinId) == HIGH;
+   return bcm2835_gpio_lev(mPinId) == HIGH;
 }
 
 //-------------------------------------------------------------------------------------------------

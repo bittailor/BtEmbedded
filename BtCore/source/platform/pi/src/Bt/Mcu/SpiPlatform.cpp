@@ -21,8 +21,7 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed, I_Pin& pChipSelectPin)
-   : mChipSelectPin(&pChipSelectPin){
+SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed) {
    GpioLibrary::ensureIsInitialized();
    bcm2835_spi_begin();
    bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
@@ -41,6 +40,7 @@ SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi:
 
    switch (pSpeed) {
       case I_Spi::SPEED_4_MHZ : bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64); break;
+      case I_Spi::SPEED_8_MHZ : bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32); break;
    }
 
 }

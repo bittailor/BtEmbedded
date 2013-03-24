@@ -35,6 +35,8 @@ class Spi : public I_Spi , private SpiPlatform
 
       // Operator= to prohibit copy assignment
       Spi& operator=(const Spi&);
+
+      I_Pin* mChipSelectPin;
 };
 
 } // namespace Mcu
