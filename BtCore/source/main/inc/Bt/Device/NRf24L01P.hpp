@@ -74,6 +74,9 @@ class NRf24L01P
       Address receiveAddress(Pipe pPipe);
       void receiveAddress(Pipe pPipe, Address pAddress);
 
+      Address transmitAddress();
+      void transmitAddress(Address pAddress);
+
 
    
    private:

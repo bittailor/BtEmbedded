@@ -97,6 +97,7 @@
 		<configuration configurationName="Default_with_MacOSX GCC">
 			<resource resourceType="PROJECT" workspacePath="/3rdParty"/>
 		</configuration>
+		<configuration configurationName="host_debug"/>
 		<configuration configurationName="pi_cross_debug">
 			<resource resourceType="PROJECT" workspacePath="/3rdParty"/>
 		</configuration>

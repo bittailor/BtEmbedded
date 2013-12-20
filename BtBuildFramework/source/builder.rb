@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'net/ssh'
+require 'net/scp' 
 require 'erb' 
 require 'rake/clean'
 
@@ -102,8 +103,12 @@ class Builder
           password = BuildFramework.instance.configuration[:password] 
           run_folder = BuildFramework.instance.configuration[:run_folder] 
           puts "Copy test"  
-          cp "#{target_folder}/test/#{project_name}_test" , BuildFramework.instance.configuration[:remote_run_folder]
-          puts "ssh: #{username} #{password}"  
+          # cp "#{target_folder}/test/#{project_name}_test" , BuildFramework.instance.configuration[:remote_run_folder]
+          Net::SCP.start(hostname, username, :password => password) do |scp|
+            scp.upload! "#{target_folder}/test/#{project_name}_test", BuildFramework.instance.configuration[:run_folder]
+          end
+            
+          puts "ssh: #{username}@#{hostname} #{password}"  
           Net::SSH.start(hostname, username, :password => password) do |ssh|  
             puts "Run test"          
             STDOUT.flush

@@ -277,5 +277,18 @@ void NRf24L01P::receiveAddress(Pipe pPipe, Address pAddress) {
 
 //-------------------------------------------------------------------------------------------------
 
+NRf24L01P::Address NRf24L01P::transmitAddress() {
+   return readRegister(*mSpi, REGISTER_TX_ADDR);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+
+void NRf24L01P::transmitAddress(Address pAddress) {
+   writeRegister(*mSpi, REGISTER_TX_ADDR, pAddress.raw());
+}
+
+//-------------------------------------------------------------------------------------------------
+
 } // namespace Device
 } // namespace Bt

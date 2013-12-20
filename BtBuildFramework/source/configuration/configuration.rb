@@ -8,8 +8,7 @@ class Configuration < Hash
     
     @directory = File.dirname(__FILE__)
     @name = name
-    @file = File.join(@directory,"#{@name}.config.rb")
-  
+    @file = File.join(@directory,"#{@name}.config.rb")   
     load()
     setup()    
   end

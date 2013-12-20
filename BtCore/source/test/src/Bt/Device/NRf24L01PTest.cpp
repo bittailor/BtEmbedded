@@ -22,15 +22,22 @@ namespace Device {
 
 //-------------------------------------------------------------------------------------------------
 
-class NRf24L01PTest : public ::testing::Test {
+struct NRf24L01PTestParameters {
+      uint8_t chipSelect;
+      uint8_t chipEnable;
+};
+
+
+
+class NRf24L01PTest : public ::testing::Test, public ::testing::WithParamInterface<NRf24L01PTestParameters> {
    
    protected:
       
       NRf24L01PTest()
          : mPower(4, Mcu::I_Pin::MODE_OUTPUT)
-         , mChipSelect(8, Mcu::I_Pin::MODE_OUTPUT)
+         , mChipSelect(GetParam().chipSelect, Mcu::I_Pin::MODE_OUTPUT)
          , mSpi(Mcu::I_Spi::BIT_ORDER_MSBFIRST, Mcu::I_Spi::MODE_0, Mcu::I_Spi::SPEED_8_MHZ , mChipSelect)
-         , mChipEnable(17, Mcu::I_Pin::MODE_OUTPUT)
+         , mChipEnable(GetParam().chipEnable, Mcu::I_Pin::MODE_OUTPUT)
          , mNRf24L01P(powerOn(),mChipEnable) {
 
       }
@@ -65,6 +72,13 @@ class NRf24L01PTest : public ::testing::Test {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
+INSTANTIATE_TEST_CASE_P(Default, NRf24L01PTest,::testing::Values(
+         NRf24L01PTestParameters{8,17},
+         NRf24L01PTestParameters{7,24}
+));
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 template<typename T>
 void printArray(const T& pArray)
@@ -79,14 +93,14 @@ void printArray(const T& pArray)
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, readDefaultChannel) {
+TEST_P(NRf24L01PTest, readDefaultChannel) {
    EXPECT_EQ(0x2,(int)mNRf24L01P.channel());
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, writeAndReadBackChannel) {
+TEST_P(NRf24L01PTest, writeAndReadBackChannel) {
    uint8_t rf = 0x4c;
    mNRf24L01P.channel(rf);
    EXPECT_EQ((int)rf,(int)mNRf24L01P.channel());
@@ -95,13 +109,13 @@ TEST_F(NRf24L01PTest, writeAndReadBackChannel) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, readDefaultAutoRetransmitCount) {
+TEST_P(NRf24L01PTest, readDefaultAutoRetransmitCount) {
    EXPECT_EQ(0x03,(int)mNRf24L01P.autoRetransmitCount());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, writeAndReadBackAutoRetransmitCount) {
+TEST_P(NRf24L01PTest, writeAndReadBackAutoRetransmitCount) {
    uint8_t count = 0x0a;
    mNRf24L01P.autoRetransmitCount(count);
    EXPECT_EQ((int)count,(int)mNRf24L01P.autoRetransmitCount());
@@ -109,14 +123,14 @@ TEST_F(NRf24L01PTest, writeAndReadBackAutoRetransmitCount) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, readDefaultAutoRetransmitDelay) {
+TEST_P(NRf24L01PTest, readDefaultAutoRetransmitDelay) {
    EXPECT_EQ(0x00,(int)mNRf24L01P.autoRetransmitDelay());
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, writeAndReadBackAutoRetransmitDelay) {
+TEST_P(NRf24L01PTest, writeAndReadBackAutoRetransmitDelay) {
    uint8_t delay = 0x04;
    mNRf24L01P.autoRetransmitDelay(delay);
    EXPECT_EQ((int)delay,(int)mNRf24L01P.autoRetransmitDelay());
@@ -124,7 +138,7 @@ TEST_F(NRf24L01PTest, writeAndReadBackAutoRetransmitDelay) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, writeSameRegister) {
+TEST_P(NRf24L01PTest, writeSameRegister) {
    uint8_t delay = 0x04;
    uint8_t count = 0x0a;
    mNRf24L01P.autoRetransmitDelay(delay);
@@ -138,7 +152,7 @@ TEST_F(NRf24L01PTest, writeSameRegister) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, readDefaultRxPipes) {
+TEST_P(NRf24L01PTest, readDefaultRxPipes) {
 
    NRf24L01P::Pipe pipes[] = {
             NRf24L01P::PIPE_0,
@@ -149,7 +163,7 @@ TEST_F(NRf24L01PTest, readDefaultRxPipes) {
             NRf24L01P::PIPE_5,
    };
 
-   NRf24L01P::Address addresses[] = {
+   NRf24L01P::Address defaultAddresses[] = {
             {0xE7, 0xE7, 0xE7, 0xE7, 0xE7},
             {0xC2, 0xC2, 0xC2, 0xC2, 0xC2},
             {0xC2, 0xC2, 0xC2, 0xC2, 0xC3},
@@ -160,16 +174,13 @@ TEST_F(NRf24L01PTest, readDefaultRxPipes) {
 
    for (std::size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
       NRf24L01P::Address address = mNRf24L01P.receiveAddress(pipes[i]).raw();
-//      printf("RX_ADDR_P%d = ",pipes[i]);
-//      printArray(address.raw());
-//      printf("\n");
-      ASSERT_THAT(address.raw(), testing::ElementsAreArray(addresses[i].raw().begin(),addresses[i].raw().size()));
+      ASSERT_THAT(address.raw(), testing::ElementsAreArray(defaultAddresses[i].raw().begin(),defaultAddresses[i].raw().size()));
    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(NRf24L01PTest, readWriteRxPipes) {
+TEST_P(NRf24L01PTest, writeAndReadBackRxPipes) {
 
    NRf24L01P::Pipe pipes[] = {
             NRf24L01P::PIPE_0,
@@ -195,15 +206,32 @@ TEST_F(NRf24L01PTest, readWriteRxPipes) {
 
    for (std::size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
       NRf24L01P::Address address = mNRf24L01P.receiveAddress(pipes[i]).raw();
-//      printf("RX_ADDR_P%d = ",pipes[i]);
-//      printArray(address.raw());
-//      printf("\n");
       ASSERT_THAT(address.raw(), testing::ElementsAreArray(addresses[i].raw().begin(),addresses[i].raw().size()));
    }
 
 }
 
 //-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PTest, readDefaultTx) {
+   NRf24L01P::Address defaultAddress = NRf24L01P::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
+
+   NRf24L01P::Address address = mNRf24L01P.transmitAddress();
+   ASSERT_THAT(defaultAddress.raw(), testing::ElementsAreArray(address.raw().begin(),address.raw().size()));
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PTest, writeAndReadBackTx) {
+   NRf24L01P::Address newAddress = NRf24L01P::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
+   mNRf24L01P.transmitAddress(newAddress);
+
+   NRf24L01P::Address address = mNRf24L01P.transmitAddress();
+   ASSERT_THAT(newAddress.raw(), testing::ElementsAreArray(address.raw().begin(),address.raw().size()));
+ }
+
+//-------------------------------------------------------------------------------------------------
+
 
 } // namespace Device
 } // namespace Bt
