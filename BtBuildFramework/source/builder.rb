@@ -102,6 +102,8 @@ class Builder
           username = BuildFramework.instance.configuration[:username] 
           password = BuildFramework.instance.configuration[:password] 
           run_folder = BuildFramework.instance.configuration[:run_folder] 
+          test_filter = BuildFramework.instance.configuration[:test_filter] 
+          test_filter = "--gtest_filter=#{test_filter}" unless test_filter.nil?  
           puts "Copy test"  
           # cp "#{target_folder}/test/#{project_name}_test" , BuildFramework.instance.configuration[:remote_run_folder]
           Net::SCP.start(hostname, username, :password => password) do |scp|
@@ -112,7 +114,7 @@ class Builder
           Net::SSH.start(hostname, username, :password => password) do |ssh|  
             puts "Run test"          
             STDOUT.flush
-            run_ssh(ssh,"sudo #{run_folder}/#{project_name}_test")  
+            run_ssh(ssh,"sudo #{run_folder}/#{project_name}_test #{test_filter}")  
           end  
         end
       end   

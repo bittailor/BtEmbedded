@@ -4,7 +4,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::NRf24L01PTest
+//  Bt::Device::NRf24L01PIntegrationTest
 //  
 //*************************************************************************************************
 
@@ -22,18 +22,43 @@ namespace Device {
 
 //-------------------------------------------------------------------------------------------------
 
-struct NRf24L01PTestParameters {
+struct NRf24L01PIntegrationTestParameters {
       uint8_t chipSelect;
       uint8_t chipEnable;
 };
+//-------------------------------------------------------------------------------------------------
 
-
-
-class NRf24L01PTest : public ::testing::Test, public ::testing::WithParamInterface<NRf24L01PTestParameters> {
+/**
+ * This test need to have two NRf24L01P transceivers connected!
+ *
+ * Raspberry Pi:
+ *
+ *    Pi                   nRf24 (1)
+ *    ------------------------------
+ *    3.3                  VCC
+ *    GND                  GND
+ *    17                   CE
+ *    8                    CSN
+ *    11(SCK)              SCK
+ *    10(MOSI)             MO
+ *    9(MISO)              MI
+ *
+ *    Pi                   nRf24 (2)
+ *    ------------------------------
+ *    3.3                  VCC
+ *    GND                  GND
+ *    24                   CE
+ *    7                    CSN
+ *    11(SCK)              SCK
+ *    10(MOSI)             MO
+ *    9(MISO)              MI
+ *
+ */
+class NRf24L01PIntegrationTest : public ::testing::Test, public ::testing::WithParamInterface<NRf24L01PIntegrationTestParameters> {
    
    protected:
       
-      NRf24L01PTest()
+      NRf24L01PIntegrationTest()
          : mPower(4, Mcu::I_Pin::MODE_OUTPUT)
          , mChipSelect(GetParam().chipSelect, Mcu::I_Pin::MODE_OUTPUT)
          , mSpi(Mcu::I_Spi::BIT_ORDER_MSBFIRST, Mcu::I_Spi::MODE_0, Mcu::I_Spi::SPEED_8_MHZ , mChipSelect)
@@ -57,9 +82,6 @@ class NRf24L01PTest : public ::testing::Test, public ::testing::WithParamInterfa
          mPower.write(false);
       }
 
-
-
-
       Mcu::Pin mPower;
       Mcu::Pin mChipSelect;
       Mcu::Spi mSpi;
@@ -72,9 +94,9 @@ class NRf24L01PTest : public ::testing::Test, public ::testing::WithParamInterfa
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-INSTANTIATE_TEST_CASE_P(Default, NRf24L01PTest,::testing::Values(
-         NRf24L01PTestParameters{8,17},
-         NRf24L01PTestParameters{7,24}
+INSTANTIATE_TEST_CASE_P(Default, NRf24L01PIntegrationTest,::testing::Values(
+         NRf24L01PIntegrationTestParameters{8,17},
+         NRf24L01PIntegrationTestParameters{7,24}
 ));
 
 //-------------------------------------------------------------------------------------------------
@@ -93,14 +115,14 @@ void printArray(const T& pArray)
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, readDefaultChannel) {
+TEST_P(NRf24L01PIntegrationTest, readDefaultChannel) {
    EXPECT_EQ(0x2,(int)mNRf24L01P.channel());
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, writeAndReadBackChannel) {
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackChannel) {
    uint8_t rf = 0x4c;
    mNRf24L01P.channel(rf);
    EXPECT_EQ((int)rf,(int)mNRf24L01P.channel());
@@ -109,13 +131,13 @@ TEST_P(NRf24L01PTest, writeAndReadBackChannel) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, readDefaultAutoRetransmitCount) {
+TEST_P(NRf24L01PIntegrationTest, readDefaultAutoRetransmitCount) {
    EXPECT_EQ(0x03,(int)mNRf24L01P.autoRetransmitCount());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, writeAndReadBackAutoRetransmitCount) {
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackAutoRetransmitCount) {
    uint8_t count = 0x0a;
    mNRf24L01P.autoRetransmitCount(count);
    EXPECT_EQ((int)count,(int)mNRf24L01P.autoRetransmitCount());
@@ -123,14 +145,14 @@ TEST_P(NRf24L01PTest, writeAndReadBackAutoRetransmitCount) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, readDefaultAutoRetransmitDelay) {
+TEST_P(NRf24L01PIntegrationTest, readDefaultAutoRetransmitDelay) {
    EXPECT_EQ(0x00,(int)mNRf24L01P.autoRetransmitDelay());
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, writeAndReadBackAutoRetransmitDelay) {
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackAutoRetransmitDelay) {
    uint8_t delay = 0x04;
    mNRf24L01P.autoRetransmitDelay(delay);
    EXPECT_EQ((int)delay,(int)mNRf24L01P.autoRetransmitDelay());
@@ -138,7 +160,7 @@ TEST_P(NRf24L01PTest, writeAndReadBackAutoRetransmitDelay) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, writeSameRegister) {
+TEST_P(NRf24L01PIntegrationTest, writeSameRegister) {
    uint8_t delay = 0x04;
    uint8_t count = 0x0a;
    mNRf24L01P.autoRetransmitDelay(delay);
@@ -152,7 +174,7 @@ TEST_P(NRf24L01PTest, writeSameRegister) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, readDefaultRxPipes) {
+TEST_P(NRf24L01PIntegrationTest, readDefaultRxPipes) {
 
    NRf24L01P::Pipe pipes[] = {
             NRf24L01P::PIPE_0,
@@ -180,7 +202,7 @@ TEST_P(NRf24L01PTest, readDefaultRxPipes) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, writeAndReadBackRxPipes) {
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackRxPipes) {
 
    NRf24L01P::Pipe pipes[] = {
             NRf24L01P::PIPE_0,
@@ -213,7 +235,7 @@ TEST_P(NRf24L01PTest, writeAndReadBackRxPipes) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, readDefaultTx) {
+TEST_P(NRf24L01PIntegrationTest, readDefaultTx) {
    NRf24L01P::Address defaultAddress = NRf24L01P::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
 
    NRf24L01P::Address address = mNRf24L01P.transmitAddress();
@@ -222,7 +244,7 @@ TEST_P(NRf24L01PTest, readDefaultTx) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PTest, writeAndReadBackTx) {
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackTx) {
    NRf24L01P::Address newAddress = NRf24L01P::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
    mNRf24L01P.transmitAddress(newAddress);
 

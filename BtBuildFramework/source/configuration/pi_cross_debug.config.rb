@@ -13,6 +13,8 @@ class Configuration
     self[:password] = ENV["pi_pwd"]
     self[:run_folder] = "/home/pi/Code/Run";  
     self[:run_ssh] = true;  
+     
+    # self[:test_filter] = "-*IntegrationTest.*";   
       
   end
   

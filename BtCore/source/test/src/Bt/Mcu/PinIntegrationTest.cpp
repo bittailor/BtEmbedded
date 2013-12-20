@@ -4,7 +4,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::PinTest
+//  Bt::Mcu::PinIntegrationTest
 //  
 //*************************************************************************************************
 
@@ -19,13 +19,17 @@ namespace Mcu {
 
 
 /**
- * This test need to have the to pins connected by a wire !
+ * This test need to have two pins connected by a wire !
+ *
+ * Raspberry Pi:
+ *    22 <=> 23
+ *
  */
-class PinTest : public ::testing::Test {
+class PinIntegrationTest : public ::testing::Test {
    
    protected:
       
-      PinTest()
+      PinIntegrationTest()
          : mOutputPin(22,I_Pin::MODE_OUTPUT)
          , mInputPin(23,I_Pin::MODE_INPUT) {
 
@@ -42,17 +46,17 @@ class PinTest : public ::testing::Test {
       Pin mInputPin;
 };
 
-TEST_F(PinTest, low) {
+TEST_F(PinIntegrationTest, low) {
    mOutputPin.write(false);
    ASSERT_FALSE(mInputPin.read());
 }
 
-TEST_F(PinTest, high) {
+TEST_F(PinIntegrationTest, high) {
    mOutputPin.write(true);
    ASSERT_TRUE(mInputPin.read());
 }
 
-TEST_F(PinTest, toggle) {
+TEST_F(PinIntegrationTest, toggle) {
    mOutputPin.write(true);
    ASSERT_TRUE(mInputPin.read());
    mOutputPin.write(false);
@@ -63,7 +67,7 @@ TEST_F(PinTest, toggle) {
    ASSERT_FALSE(mInputPin.read());
 }
 
-TEST_F(PinTest, mode) {
+TEST_F(PinIntegrationTest, mode) {
    mOutputPin.mode(I_Pin::MODE_INPUT);
    mInputPin.mode(I_Pin::MODE_OUTPUT);
    mInputPin.write(true);
