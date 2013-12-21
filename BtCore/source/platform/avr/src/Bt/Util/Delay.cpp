@@ -4,24 +4,24 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::CollectionUtility
+//  Bt::Util::Delay
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Util_CollectionUtility__hpp
-#define INC__Bt_Util_CollectionUtility__hpp
+#include "Bt/Util/Delay.hpp"
 
-#include <stddef.h>
 
 namespace Bt {
 namespace Util {
 
-template<typename T, int N> size_t sizeOfArray(const T (&pArray)[N]) {
-   return N;
+
+//-------------------------------------------------------------------------------------------------
+
+void delayInMilliseconds(unsigned int milliseconds) {
+   //TODO (BT) implement for avr
 }
 
+//-------------------------------------------------------------------------------------------------
 
 } // namespace Util
 } // namespace Bt
-
-#endif // INC__Bt_Util_CollectionUtility__hpp

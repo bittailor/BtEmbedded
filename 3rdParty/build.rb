@@ -4,7 +4,11 @@ if BuildFramework.instance.platform.name == "pi"
   task "3rdParty" => "bcm2835"  
 end
 
-static_library("gmock", 
-  FileList['source/lib/gtest/src/gtest-all.cc','source/lib/gmock/src/gmock-all.cc'],
-  ["source/include", "source/lib/gtest", "source/lib/gmock"])  
-task "3rdParty" => "gmock"  
+
+if BuildFramework.instance.platform.name != "avr"
+  static_library("gmock", 
+    FileList['source/lib/gtest/src/gtest-all.cc','source/lib/gmock/src/gmock-all.cc'],
+    ["source/include", "source/lib/gtest", "source/lib/gmock"])  
+  task "3rdParty" => "gmock"
+end
+  

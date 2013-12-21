@@ -25,6 +25,7 @@ build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= source 
 
 build <%= "#{target_folder}/main/#{project_name}.a" %>  : ar <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> 
 
+<% if compile_unittests %> 
 <% for test_source in test_sources %>
 build <%= test_source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= test_source %>
    includes = <%= test_includes.collect{|i| "-I"+i}.join(" ")  %> $includes	
@@ -33,3 +34,5 @@ build <%= test_source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= te
 
 build <%= "#{target_folder}/test/#{project_name}_test" %> : link <%= test_sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ')  %> <%= "#{target_folder}/main/#{project_name}.a" %>
    libs = <%= @libraries.collect{|l| "-l"+l}.join(" ") %>
+
+<% end %>

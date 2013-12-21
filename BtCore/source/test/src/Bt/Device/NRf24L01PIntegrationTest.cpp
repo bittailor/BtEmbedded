@@ -106,7 +106,7 @@ template<typename T>
 void printArray(const T& pArray)
 {
   printf(" 0x");
-  for(std::size_t i = pArray.size() ; i > 0 ; i--)
+  for(size_t i = pArray.size() ; i > 0 ; i--)
   {
     printf("%02x",pArray[i-1]);
   }
@@ -194,7 +194,7 @@ TEST_P(NRf24L01PIntegrationTest, readDefaultRxPipes) {
             {0xC2, 0xC2, 0xC2, 0xC2, 0xC6},
    };
 
-   for (std::size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
+   for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
       NRf24L01P::Address address = mNRf24L01P.receiveAddress(pipes[i]).raw();
       ASSERT_THAT(address.raw(), testing::ElementsAreArray(defaultAddresses[i].raw().begin(),defaultAddresses[i].raw().size()));
    }
@@ -222,11 +222,11 @@ TEST_P(NRf24L01PIntegrationTest, writeAndReadBackRxPipes) {
             {0xA1, 0xB1, 0xC1, 0xD1, 0xE5}
    };
 
-   for (std::size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
+   for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
       mNRf24L01P.receiveAddress(pipes[i], addresses[i]);
    }
 
-   for (std::size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
+   for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
       NRf24L01P::Address address = mNRf24L01P.receiveAddress(pipes[i]).raw();
       ASSERT_THAT(address.raw(), testing::ElementsAreArray(addresses[i].raw().begin(),addresses[i].raw().size()));
    }

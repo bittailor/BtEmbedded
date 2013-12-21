@@ -31,7 +31,7 @@ class BuildFramework
       @current_project = project_name(project)
       puts "@current_project #{@current_project}" if Rake.application.options.trace
       original_location = Dir.pwd
-      Dir.chdir(File.dirname(project))
+      Dir.chdir(File.dirname(project))     
       Kernel.load File.basename(project)
       Dir.chdir(original_location) 
     end

@@ -73,8 +73,14 @@ class Builder
     test_includes = [ 
       "source/main/inc",
       "source/mock/inc",  
-      "source/platform/#{@platform}/inc" ]  
+      "source/platform/#{@platform}/inc" ] 
       
+    compile_unittests = true
+    if BuildFramework.instance.configuration[:ignore_unittest] == true
+      puts "ignore_unittest is set" 
+      compile_unittests = false
+    end  
+        
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
     
     puts "target_folder is #{target_folder}" 

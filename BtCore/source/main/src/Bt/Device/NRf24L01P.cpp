@@ -10,7 +10,6 @@
 
 #include "Bt/Device/NRf24L01P.hpp"
 
-#include <algorithm>
 #include <stdint.h>
 #include <stdio.h>
 

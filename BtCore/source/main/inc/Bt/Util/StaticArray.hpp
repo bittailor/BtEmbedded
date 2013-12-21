@@ -11,12 +11,12 @@
 #ifndef INC__Bt_Util_StaticArray__hpp
 #define INC__Bt_Util_StaticArray__hpp
 
-#include <stdint.h>
+#include <stddef.h>
 
 namespace Bt {
 namespace Util {
 
-template<typename T, std::size_t SIZE>
+template<typename T, size_t SIZE>
 class StaticArray {
    public:
 
@@ -35,15 +35,15 @@ class StaticArray {
       ~StaticArray() {
       }
 
-      std::size_t size() const {
+      size_t size() const {
          return SIZE;
       }
 
-      virtual const T& operator[](std::size_t iIndex) const {
+      virtual const T& operator[](size_t iIndex) const {
          return mData[iIndex];
       }
 
-      virtual T& operator[](std::size_t iIndex) {
+      virtual T& operator[](size_t iIndex) {
          return mData[iIndex];
       }
 

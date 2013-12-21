@@ -11,7 +11,7 @@
 #ifndef INC__Bt_Mcu_I_Spi__hpp
 #define INC__Bt_Mcu_I_Spi__hpp
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace Bt {
 namespace Mcu {
