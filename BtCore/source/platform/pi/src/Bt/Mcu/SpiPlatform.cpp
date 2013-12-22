@@ -18,10 +18,31 @@
 namespace Bt {
 namespace Mcu {
 
+//-------------------------------------------------------------------------------------------------
+
+std::atomic<int> SpiPlatform::sInstanceCounter(0);
 
 //-------------------------------------------------------------------------------------------------
 
 SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed) {
+   if(sInstanceCounter.fetch_add(1) == 0 ) {
+      initialize(pBitOrder,pSpiMode,pSpeed);
+   }
+}
+
+
+
+//-------------------------------------------------------------------------------------------------
+
+SpiPlatform::~SpiPlatform() {
+   if(sInstanceCounter.fetch_sub(1) == 1 ) {
+      dispose();
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void SpiPlatform::initialize(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed) {
    GpioLibrary::ensureIsInitialized();
    bcm2835_spi_begin();
    bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
@@ -45,9 +66,10 @@ SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi:
 
 }
 
+
 //-------------------------------------------------------------------------------------------------
 
-SpiPlatform::~SpiPlatform() {
+void SpiPlatform::dispose() {
    bcm2835_spi_end();
 }
 

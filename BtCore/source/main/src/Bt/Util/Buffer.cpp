@@ -4,20 +4,14 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::Delay
+//  Bt::Util::Buffer
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Util_Delay__hpp
-#define INC__Bt_Util_Delay__hpp
+#include "Bt/Util/Buffer.hpp"
 
 namespace Bt {
 namespace Util {
 
-void delayInMilliseconds(unsigned int milliseconds);
-void delayInMicroseconds(unsigned int milliseconds);
-
 } // namespace Util
 } // namespace Bt
-
-#endif // INC__Bt_Util_Delay__hpp

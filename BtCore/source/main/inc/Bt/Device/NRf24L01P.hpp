@@ -13,72 +13,65 @@
 
 #include "Bt/Mcu/I_Spi.hpp"
 #include "Bt/Mcu/I_Pin.hpp"
-#include "Bt/Util/StaticArray.hpp"
+#include "Bt/Device/I_DeviceNRf24L01P.hpp"
 
 namespace Bt {
 namespace Device {
 
-class NRf24L01P 
+class NRf24L01P : public I_DeviceNRf24L01P
 {
    public:
 
-      enum Pipe {
-         PIPE_0,
-         PIPE_1,
-         PIPE_2,
-         PIPE_3,
-         PIPE_4,
-         PIPE_5,
-      };
+      enum {PAYLOAD_SIZE = 32};
 
-      class Address {
-         public:
-            Address(){
-            }
-
-            Address(Util::StaticArray<uint8_t,5> pRaw) : mRaw(pRaw){
-            }
-
-            Address(uint8_t pByte4, uint8_t pByte3, uint8_t pByte2, uint8_t pByte1, uint8_t pByte0) {
-               mRaw[0] = pByte0;
-               mRaw[1] = pByte1;
-               mRaw[2] = pByte2;
-               mRaw[3] = pByte3;
-               mRaw[4] = pByte4;
-            }
-
-            Util::StaticArray<uint8_t,5>& raw() {
-               return mRaw;
-            }
-
-         private:
-            Util::StaticArray<uint8_t,5> mRaw;
-      };
-
-      //typedef Util::StaticArray<uint8_t,5> Address;
 
 
       NRf24L01P(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable);
-      ~NRf24L01P();
+      virtual ~NRf24L01P();
 
-      uint8_t autoRetransmitDelay();
-      void autoRetransmitDelay(uint8_t pDelay);
+      virtual Status status();
 
+      virtual void clearDataReady();
+      virtual void clearDataSent();
+      virtual void clearRetransmitsExceeded();
 
-      uint8_t autoRetransmitCount();
-      void autoRetransmitCount(uint8_t pCount);
+      virtual bool powerUp();
+      virtual void powerUp(bool pValue);
 
-      uint8_t channel();
-      void channel(uint8_t pChannel);
+      virtual TransceiverMode transceiverMode();
+      virtual void transceiverMode(TransceiverMode pMode);
 
-      Address receiveAddress(Pipe pPipe);
-      void receiveAddress(Pipe pPipe, Address pAddress);
+      virtual void chipEnable(bool pValue);
 
-      Address transmitAddress();
-      void transmitAddress(Address pAddress);
+      virtual uint8_t autoRetransmitDelay();
+      virtual void autoRetransmitDelay(uint8_t pDelay);
 
+      virtual uint8_t autoRetransmitCount();
+      virtual void autoRetransmitCount(uint8_t pCount);
 
-   
+      virtual uint8_t autoRetransmitCounter();
+
+      virtual uint8_t channel();
+      virtual void channel(uint8_t pChannel);
+
+      virtual Address receiveAddress(Pipe pPipe);
+      virtual void receiveAddress(Pipe pPipe, Address pAddress);
+
+      virtual uint8_t receivePayloadSize(Pipe pPipe);
+      virtual void receivePayloadSize(Pipe pPipe, uint8_t pSize);
+
+      virtual Address transmitAddress();
+      virtual void transmitAddress(Address pAddress);
+
+      virtual bool isTransmitFifoEmpty();
+      virtual bool isTransmitFifoFull();
+
+      virtual bool isReceiveFifoEmpty();
+      virtual bool isReceiveFifoFull();
+
+      virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize);
+      virtual size_t readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize);
+
    private:
    	  // Constructor to prohibit copy construction.
       NRf24L01P(const NRf24L01P&);

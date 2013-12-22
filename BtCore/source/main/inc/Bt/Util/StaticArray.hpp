@@ -51,7 +51,7 @@ class StaticArray {
          return mData;
       }
 
-      T* end() {
+      iterator end() {
          return mData+SIZE;
       }
 

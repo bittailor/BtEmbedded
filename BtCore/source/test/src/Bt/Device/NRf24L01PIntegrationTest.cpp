@@ -115,6 +115,35 @@ void printArray(const T& pArray)
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
+TEST_P(NRf24L01PIntegrationTest, readDefaultPowerUp) {
+   EXPECT_FALSE(mNRf24L01P.powerUp());
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackPowerUp) {
+   mNRf24L01P.powerUp(true);
+   EXPECT_TRUE(mNRf24L01P.powerUp());
+}
+
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, readDefaultTransceiverMode) {
+   EXPECT_EQ(I_DeviceNRf24L01P::TX_MODE, mNRf24L01P.transceiverMode());
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackTransceiverMode) {
+   mNRf24L01P.transceiverMode(I_DeviceNRf24L01P::RX_MODE);
+   EXPECT_EQ(I_DeviceNRf24L01P::RX_MODE, mNRf24L01P.transceiverMode());
+}
+
+
+//-------------------------------------------------------------------------------------------------
+
 TEST_P(NRf24L01PIntegrationTest, readDefaultChannel) {
    EXPECT_EQ(0x2,(int)mNRf24L01P.channel());
 
@@ -235,6 +264,45 @@ TEST_P(NRf24L01PIntegrationTest, writeAndReadBackRxPipes) {
 
 //-------------------------------------------------------------------------------------------------
 
+TEST_P(NRf24L01PIntegrationTest, readDefaultReceivePayloadSize) {
+
+   NRf24L01P::Pipe pipes[] = {
+            NRf24L01P::PIPE_0,
+            NRf24L01P::PIPE_1,
+            NRf24L01P::PIPE_2,
+            NRf24L01P::PIPE_3,
+            NRf24L01P::PIPE_4,
+            NRf24L01P::PIPE_5,
+   };
+
+   for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
+      uint8_t size = mNRf24L01P.receivePayloadSize(pipes[i]);
+      ASSERT_THAT(0, (int)size);
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackReceivePayloadSize) {
+
+   NRf24L01P::Pipe pipes[] = {
+            NRf24L01P::PIPE_0,
+            NRf24L01P::PIPE_1,
+            NRf24L01P::PIPE_2,
+            NRf24L01P::PIPE_3,
+            NRf24L01P::PIPE_4,
+            NRf24L01P::PIPE_5,
+   };
+
+   for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
+      mNRf24L01P.receivePayloadSize(pipes[i], NRf24L01P::PAYLOAD_SIZE);
+      uint8_t size = mNRf24L01P.receivePayloadSize(pipes[i]);
+      ASSERT_THAT((int)NRf24L01P::PAYLOAD_SIZE, (int)size);
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
 TEST_P(NRf24L01PIntegrationTest, readDefaultTx) {
    NRf24L01P::Address defaultAddress = NRf24L01P::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
 
@@ -251,6 +319,70 @@ TEST_P(NRf24L01PIntegrationTest, writeAndReadBackTx) {
    NRf24L01P::Address address = mNRf24L01P.transmitAddress();
    ASSERT_THAT(newAddress.raw(), testing::ElementsAreArray(address.raw().begin(),address.raw().size()));
  }
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, readDefaultIsTransmitFifoEmpty) {
+   EXPECT_TRUE(mNRf24L01P.isTransmitFifoEmpty());
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, readDefaultIsTransmitFifoFull) {
+   EXPECT_FALSE(mNRf24L01P.isTransmitFifoFull());
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeOneTransmitPayload) {
+   uint8_t data[] = {1,2,3,4,5};
+
+   mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+
+   EXPECT_FALSE(mNRf24L01P.isTransmitFifoEmpty());
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeThreeTransmitPayloads) {
+   uint8_t data[] = {1,2,3,4,5};
+
+   mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+   mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+   mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+
+   EXPECT_TRUE(mNRf24L01P.isTransmitFifoFull());
+}
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeUndersizeTransmitPayload) {
+   uint8_t data[] = {1,2,3,4,5};
+
+   size_t written = mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+
+   EXPECT_EQ(Util::sizeOfArray(data), written);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeExactTransmitPayload) {
+   uint8_t data[NRf24L01P::PAYLOAD_SIZE] = {1,2,3,4,5};
+
+   size_t written = mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+
+   EXPECT_EQ(Util::sizeOfArray(data), written);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeOversizeTransmitPayload) {
+   uint8_t data[NRf24L01P::PAYLOAD_SIZE + 20] = {1,2,3,4,5};
+
+   size_t written = mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+
+   EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, written);
+   EXPECT_FALSE(mNRf24L01P.isTransmitFifoEmpty());
+}
 
 //-------------------------------------------------------------------------------------------------
 

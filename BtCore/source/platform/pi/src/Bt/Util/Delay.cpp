@@ -25,5 +25,12 @@ void delayInMilliseconds(unsigned int milliseconds) {
 
 //-------------------------------------------------------------------------------------------------
 
+void delayInMicroseconds(unsigned int microseconds) {
+   std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
+}
+
+//-------------------------------------------------------------------------------------------------
+
+
 } // namespace Util
 } // namespace Bt

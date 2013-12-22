@@ -4,20 +4,28 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::Delay
+//  Bt::Device::I_RfController
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Util_Delay__hpp
-#define INC__Bt_Util_Delay__hpp
+#ifndef INC__Bt_Device_I_RfController__hpp
+#define INC__Bt_Device_I_RfController__hpp
+
+#include <stddef.h>
 
 namespace Bt {
-namespace Util {
+namespace Device {
 
-void delayInMilliseconds(unsigned int milliseconds);
-void delayInMicroseconds(unsigned int milliseconds);
+class I_RfController {
+   public:
+      enum { MAX_PAYLOAD = 3*32};
 
-} // namespace Util
+      virtual ~I_RfController() {}
+      
+      virtual size_t payloadSize() = 0;
+};
+
+} // namespace Device
 } // namespace Bt
 
-#endif // INC__Bt_Util_Delay__hpp
+#endif // INC__Bt_Device_I_RfController__hpp
