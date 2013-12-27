@@ -72,6 +72,13 @@ class NRf24L01P : public I_DeviceNRf24L01P
       virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize);
       virtual size_t readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize);
 
+      virtual bool dynamicPayloadFeatureEnabled();
+      virtual void dynamicPayloadFeatureEnabled(bool pValue);
+
+      virtual bool dynamicPayloadEnabled(Pipe pPipe);
+      virtual void dynamicPayloadEnabled(Pipe pPipe, bool pValue);
+
+
    private:
    	  // Constructor to prohibit copy construction.
       NRf24L01P(const NRf24L01P&);

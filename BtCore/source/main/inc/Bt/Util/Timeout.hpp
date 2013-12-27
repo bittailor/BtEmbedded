@@ -4,20 +4,33 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::Delay
+//  Bt::Util::Timeout
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Util_Delay__hpp
-#define INC__Bt_Util_Delay__hpp
+#ifndef INC__Bt_Util_Timeout__hpp
+#define INC__Bt_Util_Timeout__hpp
+
+#include "Bt/Util/TimeoutPlatform.hpp"
 
 namespace Bt {
 namespace Util {
 
-void delayInMilliseconds(unsigned int milliseconds);
-void delayInMicroseconds(unsigned int microseconds);
+class Timeout : private TimeoutPlatform
+{
+
+
+   public:
+      Timeout(unsigned int pMilliseconds);
+      ~Timeout();
+
+      operator bool() const; // TODO (BT) implement the safe bool idiom !
+   
+   private:
+
+};
 
 } // namespace Util
 } // namespace Bt
 
-#endif // INC__Bt_Util_Delay__hpp
+#endif // INC__Bt_Util_Timeout__hpp

@@ -10,6 +10,7 @@
 
 #include <chrono>
 #include <thread>
+#include <algorithm>
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -33,7 +34,7 @@ namespace Device {
  *
  *    Pi                   nRf24 (1)
  *    ------------------------------
- *    3.3                  VCC
+ *    4                    VCC
  *    GND                  GND
  *    17                   CE
  *    8                    CSN
@@ -43,7 +44,7 @@ namespace Device {
  *
  *    Pi                   nRf24 (2)
  *    ------------------------------
- *    3.3                  VCC
+ *    4                    VCC
  *    GND                  GND
  *    24                   CE
  *    7                    CSN
@@ -53,7 +54,7 @@ namespace Device {
  *
  */
 class RfControllerNRf24L01PIntegrationTest : public ::testing::Test {
-   
+
    protected:
       
       RfControllerNRf24L01PIntegrationTest()
@@ -106,32 +107,112 @@ class RfControllerNRf24L01PIntegrationTest : public ::testing::Test {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(RfControllerNRf24L01PIntegrationTest, sendPipe0) {
-   uint8_t data[NRf24L01P::PAYLOAD_SIZE] = {1,2,3,4,5};
-
-   mRfControllerNRf24L01P2.startListening();
-   Util::delayInMilliseconds(200);
-   ASSERT_EQ(I_DeviceNRf24L01P::RX_MODE, mNRf24L01P2.transceiverMode());
-   mRfControllerNRf24L01P1.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
-
+void waitForDataAvailable(RfControllerNRf24L01P& pController) {
    int counter = 0;
-   while(!mRfControllerNRf24L01P2.isDataAvailable() && counter < 200) {
+   while(!pController.isDataAvailable() && counter < 200) {
       Util::delayInMilliseconds(5);
       counter++;
    }
+   ASSERT_TRUE(pController.isDataAvailable());
+}
 
-   ASSERT_TRUE(mRfControllerNRf24L01P2.isDataAvailable());
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
-   I_DeviceNRf24L01P::Pipe pipe = I_DeviceNRf24L01P::PIPE_5;
+TEST_F(RfControllerNRf24L01PIntegrationTest, send1To2OverPipe0) {
+   uint8_t data[NRf24L01P::PAYLOAD_SIZE] = {1,2,3,4,5};
+
+
+   mRfControllerNRf24L01P2.startListening();
+   mRfControllerNRf24L01P1.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
+
+   waitForDataAvailable(mRfControllerNRf24L01P2);
+
    uint8_t buffer[NRf24L01P::PAYLOAD_SIZE] = {0};
+   size_t readSize = mRfControllerNRf24L01P2.read(buffer,Util::sizeOfArray(data));
 
-   size_t readSize = mRfControllerNRf24L01P2.read(pipe,buffer,Util::sizeOfArray(data));
-
-   EXPECT_EQ(I_DeviceNRf24L01P::PIPE_0, pipe);
    EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, readSize);
    ASSERT_THAT(data, testing::ElementsAreArray(buffer));
 
 
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_F(RfControllerNRf24L01PIntegrationTest, send2To1OverPipe0) {
+   uint8_t data[NRf24L01P::PAYLOAD_SIZE] = {1,2,3,4,5};
+
+
+   mRfControllerNRf24L01P1.startListening();
+   mRfControllerNRf24L01P2.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
+
+   waitForDataAvailable(mRfControllerNRf24L01P1);
+
+   uint8_t buffer[NRf24L01P::PAYLOAD_SIZE] = {0};
+   size_t readSize = mRfControllerNRf24L01P1.read(buffer,Util::sizeOfArray(data));
+
+   EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, readSize);
+   ASSERT_THAT(data, testing::ElementsAreArray(buffer));
+
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_F(RfControllerNRf24L01PIntegrationTest, sendAndReveive) {
+   uint8_t data[NRf24L01P::PAYLOAD_SIZE];
+
+   mRfControllerNRf24L01P2.startListening();
+   mRfControllerNRf24L01P1.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
+   mRfControllerNRf24L01P1.startListening();
+
+   {
+      waitForDataAvailable(mRfControllerNRf24L01P2);
+      uint8_t buffer[NRf24L01P::PAYLOAD_SIZE] = {0};
+      mRfControllerNRf24L01P2.read(buffer,Util::sizeOfArray(buffer));
+      mRfControllerNRf24L01P2.write(I_DeviceNRf24L01P::PIPE_0,buffer,Util::sizeOfArray(buffer));
+   }
+
+   waitForDataAvailable(mRfControllerNRf24L01P1);
+   uint8_t readBuffer[NRf24L01P::PAYLOAD_SIZE] = {0};
+   size_t readSize = mRfControllerNRf24L01P1.read(readBuffer, Util::sizeOfArray(readBuffer));
+
+
+   EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, readSize);
+
+   ASSERT_THAT(data, testing::ElementsAreArray(readBuffer));
+}
+
+//-------------------------------------------------------------------------------------------------
+
+
+TEST_F(RfControllerNRf24L01PIntegrationTest, sendAndReveiveInALoop) {
+   uint8_t data[NRf24L01P::PAYLOAD_SIZE];
+   std::iota(std::begin(data),std::end(data),0);
+
+   for (size_t i = 0; i < 10 ; i++) {
+
+      std::cout << "Loop " << i << std::endl;
+      mRfControllerNRf24L01P2.startListening();
+
+      mRfControllerNRf24L01P1.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
+      mRfControllerNRf24L01P1.startListening();
+
+      {
+         waitForDataAvailable(mRfControllerNRf24L01P2);
+         uint8_t buffer[NRf24L01P::PAYLOAD_SIZE] = {0};
+         mRfControllerNRf24L01P2.read(buffer,Util::sizeOfArray(buffer));
+         mRfControllerNRf24L01P2.write(I_DeviceNRf24L01P::PIPE_0,buffer,Util::sizeOfArray(buffer));
+      }
+
+      waitForDataAvailable(mRfControllerNRf24L01P1);
+      uint8_t readBuffer[NRf24L01P::PAYLOAD_SIZE] = {0};
+      size_t readSize = mRfControllerNRf24L01P1.read(readBuffer, Util::sizeOfArray(readBuffer));
+
+
+      EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, readSize);
+      ASSERT_THAT(data, testing::ElementsAreArray(readBuffer));
+   }
 }
 
 //-------------------------------------------------------------------------------------------------

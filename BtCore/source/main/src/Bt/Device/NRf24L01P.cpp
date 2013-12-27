@@ -476,5 +476,54 @@ size_t NRf24L01P::readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) 
 
 //-------------------------------------------------------------------------------------------------
 
+bool NRf24L01P::dynamicPayloadFeatureEnabled() {
+   return readSubRegister(*mSpi, REGISTER_FEATURE, 1, 2);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void NRf24L01P::dynamicPayloadFeatureEnabled(bool pValue) {
+   writeSubRegister(*mSpi, REGISTER_FEATURE, pValue, 1, 2);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool NRf24L01P::dynamicPayloadEnabled(Pipe pPipe) {
+   uint8_t offset = 0;
+
+   switch (pPipe) {
+      case PIPE_0 : offset = 0; break;
+      case PIPE_1 : offset = 1; break;
+      case PIPE_2 : offset = 2; break;
+      case PIPE_3 : offset = 3; break;
+      case PIPE_4 : offset = 4; break;
+      case PIPE_5 : offset = 5; break;
+      default     : offset = 0; break;
+   }
+
+   return readSubRegister(*mSpi, REGISTER_DYNPD, 1, offset);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void NRf24L01P::dynamicPayloadEnabled(Pipe pPipe, bool pValue) {
+   uint8_t offset = 0;
+
+   switch (pPipe) {
+      case PIPE_0 : offset = 0; break;
+      case PIPE_1 : offset = 1; break;
+      case PIPE_2 : offset = 2; break;
+      case PIPE_3 : offset = 3; break;
+      case PIPE_4 : offset = 4; break;
+      case PIPE_5 : offset = 5; break;
+      default     : offset = 0; break;
+   }
+
+   writeSubRegister(*mSpi, REGISTER_DYNPD, pValue, 1, offset);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+
 } // namespace Device
 } // namespace Bt

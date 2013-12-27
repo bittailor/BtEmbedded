@@ -35,7 +35,7 @@ struct NRf24L01PIntegrationTestParameters {
  *
  *    Pi                   nRf24 (1)
  *    ------------------------------
- *    3.3                  VCC
+ *    4                    VCC
  *    GND                  GND
  *    17                   CE
  *    8                    CSN
@@ -45,7 +45,7 @@ struct NRf24L01PIntegrationTestParameters {
  *
  *    Pi                   nRf24 (2)
  *    ------------------------------
- *    3.3                  VCC
+ *    4                    VCC
  *    GND                  GND
  *    24                   CE
  *    7                    CSN
@@ -382,6 +382,38 @@ TEST_P(NRf24L01PIntegrationTest, writeOversizeTransmitPayload) {
 
    EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, written);
    EXPECT_FALSE(mNRf24L01P.isTransmitFifoEmpty());
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, readDefaultDynamicPayloadFeatureEnabled) {
+   EXPECT_FALSE(mNRf24L01P.dynamicPayloadFeatureEnabled());
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackDynamicPayloadFeatureEnabled) {
+   mNRf24L01P.dynamicPayloadFeatureEnabled(true);
+   EXPECT_TRUE(mNRf24L01P.dynamicPayloadFeatureEnabled());
+   mNRf24L01P.dynamicPayloadFeatureEnabled(false);
+   EXPECT_FALSE(mNRf24L01P.dynamicPayloadFeatureEnabled());
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, readDefaultDynamicPayloadEnabled) {
+   EXPECT_FALSE(mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0));
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(NRf24L01PIntegrationTest, writeAndReadBackDynamicPayloadEnabled) {
+   mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0, true);
+   EXPECT_TRUE(mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0));
+   mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0, false);
+   EXPECT_FALSE(mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0));
 }
 
 //-------------------------------------------------------------------------------------------------

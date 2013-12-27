@@ -28,9 +28,9 @@ class RfControllerNRf24L01P
       virtual size_t write(I_DeviceNRf24L01P::Pipe pPipe, uint8_t* data, size_t size);
 
       virtual void startListening();
-
       virtual bool isDataAvailable();
-      virtual size_t read(I_DeviceNRf24L01P::Pipe& pPipe, uint8_t* data, size_t size);
+      virtual size_t read(uint8_t* buffer, size_t size);
+      virtual size_t read(uint8_t* buffer, size_t size, I_DeviceNRf24L01P::Pipe& pPipe);
 
 
 

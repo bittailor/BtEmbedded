@@ -120,6 +120,12 @@ class I_DeviceNRf24L01P {
       virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize) = 0;
       virtual size_t readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) = 0;
 
+      virtual bool dynamicPayloadFeatureEnabled() = 0;
+      virtual void dynamicPayloadFeatureEnabled(bool pValue) = 0;
+
+      virtual bool dynamicPayloadEnabled(Pipe pPipe) = 0;
+      virtual void dynamicPayloadEnabled(Pipe pPipe, bool pValue) = 0;
+
 };
 
 } // namespace Device
