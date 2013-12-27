@@ -171,7 +171,7 @@ uint8_t writeRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister pRegister, Util::St
 
 //-------------------------------------------------------------------------------------------------
 
-NRf24L01P::NRf24L01P(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable)
+Rf24Device::Rf24Device(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable)
    : mSpi(&pSpi), mChipEnable(&pChipEnable)  {
    mChipEnable->write(false);
    Util::delayInMilliseconds(5);
@@ -179,13 +179,13 @@ NRf24L01P::NRf24L01P(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable)
 
 //-------------------------------------------------------------------------------------------------
 
-NRf24L01P::~NRf24L01P() {
+Rf24Device::~Rf24Device() {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-NRf24L01P::Status NRf24L01P::status()
+Rf24Device::Status Rf24Device::status()
 {
    uint8_t status = readRegister(*mSpi, REGISTER_STATUS);
    printf("status = %02x \n",status);
@@ -194,85 +194,85 @@ NRf24L01P::Status NRf24L01P::status()
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::clearDataReady() {
+void Rf24Device::clearDataReady() {
    writeSubRegister(*mSpi, REGISTER_STATUS,1,1,6);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::clearDataSent() {
+void Rf24Device::clearDataSent() {
    writeSubRegister(*mSpi, REGISTER_STATUS,1,1,5);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::clearRetransmitsExceeded() {
+void Rf24Device::clearRetransmitsExceeded() {
    writeSubRegister(*mSpi, REGISTER_STATUS,1,1,4);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool NRf24L01P::powerUp() {
+bool Rf24Device::powerUp() {
    return readSubRegister(*mSpi, REGISTER_CONFIG,1,1);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::powerUp(bool pValue) {
+void Rf24Device::powerUp(bool pValue) {
    writeSubRegister(*mSpi, REGISTER_CONFIG,pValue,1,1);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-NRf24L01P::TransceiverMode NRf24L01P::transceiverMode() {
+Rf24Device::TransceiverMode Rf24Device::transceiverMode() {
    return (readSubRegister(*mSpi, REGISTER_CONFIG,1,0)) ? RX_MODE : TX_MODE;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::transceiverMode(TransceiverMode pMode) {
+void Rf24Device::transceiverMode(TransceiverMode pMode) {
    writeSubRegister(*mSpi, REGISTER_CONFIG,pMode == RX_MODE,1,0);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::chipEnable(bool pValue) {
+void Rf24Device::chipEnable(bool pValue) {
    mChipEnable->write(pValue);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t NRf24L01P::autoRetransmitDelay() {
+uint8_t Rf24Device::autoRetransmitDelay() {
    return readSubRegister(*mSpi, REGISTER_SETUP_RETR,4,4);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::autoRetransmitDelay(uint8_t pDelay) {
+void Rf24Device::autoRetransmitDelay(uint8_t pDelay) {
    writeSubRegister(*mSpi, REGISTER_SETUP_RETR, pDelay, 4, 4);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t NRf24L01P::autoRetransmitCount() {
+uint8_t Rf24Device::autoRetransmitCount() {
    return readSubRegister(*mSpi, REGISTER_SETUP_RETR,4,0);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::autoRetransmitCount(uint8_t pCount) {
+void Rf24Device::autoRetransmitCount(uint8_t pCount) {
    writeSubRegister(*mSpi, REGISTER_SETUP_RETR, pCount, 4, 0);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t NRf24L01P::autoRetransmitCounter(){
+uint8_t Rf24Device::autoRetransmitCounter(){
    return readSubRegister(*mSpi, REGISTER_OBSERVE_TX,4,0);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t NRf24L01P::channel() {
+uint8_t Rf24Device::channel() {
    uint8_t value = readRegister(*mSpi, REGISTER_RF_CH) & MASK_RF_CH;
    printf("RF_CH = %02x \n",value);
    return value & 0x7F;
@@ -280,7 +280,7 @@ uint8_t NRf24L01P::channel() {
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::channel(uint8_t pChannel) {
+void Rf24Device::channel(uint8_t pChannel) {
    uint8_t value = pChannel & MASK_RF_CH;
    uint8_t status = writeRegister(*mSpi, REGISTER_RF_CH, value);
    printf("write RF_CH status = %02x \n",status);
@@ -288,7 +288,7 @@ void NRf24L01P::channel(uint8_t pChannel) {
 
 //-------------------------------------------------------------------------------------------------
 
-NRf24L01P::Address NRf24L01P::receiveAddress(Pipe pPipe) {
+Rf24Device::Address Rf24Device::receiveAddress(Pipe pPipe) {
    switch (pPipe) {
       case PIPE_0:
          return readRegister(*mSpi, REGISTER_RX_ADDR_P0);
@@ -316,7 +316,7 @@ NRf24L01P::Address NRf24L01P::receiveAddress(Pipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::receiveAddress(Pipe pPipe, Address pAddress) {
+void Rf24Device::receiveAddress(Pipe pPipe, Address pAddress) {
    switch (pPipe) {
       case PIPE_0:
          writeRegister(*mSpi, REGISTER_RX_ADDR_P0, pAddress.raw());
@@ -342,7 +342,7 @@ void NRf24L01P::receiveAddress(Pipe pPipe, Address pAddress) {
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t NRf24L01P::receivePayloadSize(Pipe pPipe) {
+uint8_t Rf24Device::receivePayloadSize(Pipe pPipe) {
    OneByteRegister oneByteRegister;
    switch (pPipe) {
       case PIPE_0 : oneByteRegister = REGISTER_RX_PW_P0; break;
@@ -359,7 +359,7 @@ uint8_t NRf24L01P::receivePayloadSize(Pipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::receivePayloadSize(Pipe pPipe, uint8_t pSize) {
+void Rf24Device::receivePayloadSize(Pipe pPipe, uint8_t pSize) {
    OneByteRegister oneByteRegister;
    switch (pPipe) {
       case PIPE_0 : oneByteRegister = REGISTER_RX_PW_P0; break;
@@ -375,44 +375,44 @@ void NRf24L01P::receivePayloadSize(Pipe pPipe, uint8_t pSize) {
 
 //-------------------------------------------------------------------------------------------------
 
-NRf24L01P::Address NRf24L01P::transmitAddress() {
+Rf24Device::Address Rf24Device::transmitAddress() {
    return readRegister(*mSpi, REGISTER_TX_ADDR);
 }
 
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::transmitAddress(Address pAddress) {
+void Rf24Device::transmitAddress(Address pAddress) {
    writeRegister(*mSpi, REGISTER_TX_ADDR, pAddress.raw());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool NRf24L01P::isTransmitFifoEmpty() {
+bool Rf24Device::isTransmitFifoEmpty() {
    return readSubRegister(*mSpi, REGISTER_FIFO_STATUS,1,4);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool NRf24L01P::isTransmitFifoFull() {
+bool Rf24Device::isTransmitFifoFull() {
    return readSubRegister(*mSpi, REGISTER_FIFO_STATUS,1,5);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool NRf24L01P::isReceiveFifoEmpty() {
+bool Rf24Device::isReceiveFifoEmpty() {
    return readSubRegister(*mSpi, REGISTER_FIFO_STATUS,1,0);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool NRf24L01P::isReceiveFifoFull() {
+bool Rf24Device::isReceiveFifoFull() {
    return readSubRegister(*mSpi, REGISTER_FIFO_STATUS,1,1);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t NRf24L01P::writeTransmitPayload(uint8_t* pData, size_t pSize) {
+size_t Rf24Device::writeTransmitPayload(uint8_t* pData, size_t pSize) {
 
    size_t dataSize;
    size_t stuffingSize;
@@ -440,7 +440,7 @@ size_t NRf24L01P::writeTransmitPayload(uint8_t* pData, size_t pSize) {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t NRf24L01P::readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) {
+size_t Rf24Device::readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) {
    size_t dataSize;
    size_t stuffingSize;
 
@@ -476,19 +476,19 @@ size_t NRf24L01P::readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) 
 
 //-------------------------------------------------------------------------------------------------
 
-bool NRf24L01P::dynamicPayloadFeatureEnabled() {
+bool Rf24Device::dynamicPayloadFeatureEnabled() {
    return readSubRegister(*mSpi, REGISTER_FEATURE, 1, 2);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::dynamicPayloadFeatureEnabled(bool pValue) {
+void Rf24Device::dynamicPayloadFeatureEnabled(bool pValue) {
    writeSubRegister(*mSpi, REGISTER_FEATURE, pValue, 1, 2);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool NRf24L01P::dynamicPayloadEnabled(Pipe pPipe) {
+bool Rf24Device::dynamicPayloadEnabled(Pipe pPipe) {
    uint8_t offset = 0;
 
    switch (pPipe) {
@@ -506,7 +506,7 @@ bool NRf24L01P::dynamicPayloadEnabled(Pipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void NRf24L01P::dynamicPayloadEnabled(Pipe pPipe, bool pValue) {
+void Rf24Device::dynamicPayloadEnabled(Pipe pPipe, bool pValue) {
    uint8_t offset = 0;
 
    switch (pPipe) {

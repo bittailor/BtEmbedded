@@ -22,7 +22,7 @@ namespace Device {
 
 //-------------------------------------------------------------------------------------------------
 
-RfControllerNRf24L01P::RfControllerNRf24L01P(I_DeviceNRf24L01P& pDevice)
+Rf24Controller::Rf24Controller(I_Rf24Device& pDevice)
 : mDevice(&pDevice), mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this), mCurrentState(&mPowerDown) {
 
    mDevice->autoRetransmitDelay(0x5);
@@ -31,13 +31,13 @@ RfControllerNRf24L01P::RfControllerNRf24L01P(I_DeviceNRf24L01P& pDevice)
 
 //-------------------------------------------------------------------------------------------------
 
-RfControllerNRf24L01P::~RfControllerNRf24L01P() {
+Rf24Controller::~Rf24Controller() {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t RfControllerNRf24L01P::write(I_DeviceNRf24L01P::Pipe pPipe, uint8_t* data, size_t size) {
+size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* data, size_t size) {
 
    StateBase* originalState = mCurrentState;
 
@@ -57,27 +57,27 @@ size_t RfControllerNRf24L01P::write(I_DeviceNRf24L01P::Pipe pPipe, uint8_t* data
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::startListening() {
+void Rf24Controller::startListening() {
    mCurrentState->ToRxMode();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool RfControllerNRf24L01P::isDataAvailable() {
+bool Rf24Controller::isDataAvailable() {
    return !mDevice->isReceiveFifoEmpty();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t RfControllerNRf24L01P::read(uint8_t* buffer, size_t size)
+size_t Rf24Controller::read(uint8_t* buffer, size_t size)
 {
-   I_DeviceNRf24L01P::Pipe pipe;
+   I_Rf24Device::Pipe pipe;
    return read(buffer, size, pipe);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t RfControllerNRf24L01P::read(uint8_t* data, size_t size, I_DeviceNRf24L01P::Pipe& pPipe) {
+size_t Rf24Controller::read(uint8_t* data, size_t size, I_Rf24Device::Pipe& pPipe) {
    if (mDevice->isReceiveFifoEmpty())
    {
       return 0;
@@ -87,28 +87,28 @@ size_t RfControllerNRf24L01P::read(uint8_t* data, size_t size, I_DeviceNRf24L01P
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::PowerDown::ToStandbyI() {
+void Rf24Controller::PowerDown::ToStandbyI() {
    mController->mDevice->powerUp(true);
    Util::delayInMicroseconds(1500); // TODO (BT) can reduce ext oszi ?
-   mController->mDevice->receivePayloadSize(I_DeviceNRf24L01P::PIPE_0,32);
-   mController->mDevice->receivePayloadSize(I_DeviceNRf24L01P::PIPE_1,32);
-   mController->mDevice->receivePayloadSize(I_DeviceNRf24L01P::PIPE_2,32);
-   mController->mDevice->receivePayloadSize(I_DeviceNRf24L01P::PIPE_3,32);
-   mController->mDevice->receivePayloadSize(I_DeviceNRf24L01P::PIPE_4,32);
-   mController->mDevice->receivePayloadSize(I_DeviceNRf24L01P::PIPE_5,32);
+   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_0,32);
+   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_1,32);
+   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_2,32);
+   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_3,32);
+   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_4,32);
+   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_5,32);
    mController->mCurrentState = &mController->mStandbyI;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::PowerDown::ToRxMode() {
+void Rf24Controller::PowerDown::ToRxMode() {
    ToStandbyI();
    mController->mCurrentState->ToRxMode();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::PowerDown::ToTxMode() {
+void Rf24Controller::PowerDown::ToTxMode() {
    ToStandbyI();
    mController->mCurrentState->ToTxMode();
 }
@@ -116,19 +116,19 @@ void RfControllerNRf24L01P::PowerDown::ToTxMode() {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::StandbyI::ToPowerDown() {
+void Rf24Controller::StandbyI::ToPowerDown() {
    mController->mDevice->powerUp(false);
    mController->mCurrentState = &mController->mPowerDown;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::StandbyI::ToRxMode() {
+void Rf24Controller::StandbyI::ToRxMode() {
    mController->mDevice->clearDataReady();
    mController->mDevice->clearDataSent();
    mController->mDevice->clearRetransmitsExceeded();
 
-   mController->mDevice->transceiverMode(I_DeviceNRf24L01P::RX_MODE);
+   mController->mDevice->transceiverMode(I_Rf24Device::RX_MODE);
    mController->mDevice->chipEnable(true);
    Util::delayInMicroseconds(130);
    mController->mCurrentState = &mController->mRxMode;
@@ -136,7 +136,7 @@ void RfControllerNRf24L01P::StandbyI::ToRxMode() {
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::StandbyI::ToTxMode() {
+void Rf24Controller::StandbyI::ToTxMode() {
    if (mController->mDevice->isTransmitFifoEmpty())
    {
       printf("StandbyI::ToTxMode: transmit fifo is empty => StandbyI ! \n");
@@ -147,7 +147,7 @@ void RfControllerNRf24L01P::StandbyI::ToTxMode() {
    mController->mDevice->clearDataSent();
    mController->mDevice->clearRetransmitsExceeded();
 
-   mController->mDevice->transceiverMode(I_DeviceNRf24L01P::TX_MODE);
+   mController->mDevice->transceiverMode(I_Rf24Device::TX_MODE);
    mController->mDevice->chipEnable(true);
    Util::delayInMicroseconds(140);
    mController->mCurrentState = &mController->mTxMode;
@@ -156,7 +156,7 @@ void RfControllerNRf24L01P::StandbyI::ToTxMode() {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::RxMode::ToPowerDown() {
+void Rf24Controller::RxMode::ToPowerDown() {
    ToStandbyI();
    mController->mCurrentState->ToPowerDown();
 }
@@ -164,16 +164,16 @@ void RfControllerNRf24L01P::RxMode::ToPowerDown() {
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::RxMode::ToStandbyI() {
+void Rf24Controller::RxMode::ToStandbyI() {
    mController->mDevice->chipEnable(false);
-   mController->mDevice->transceiverMode(I_DeviceNRf24L01P::TX_MODE);
+   mController->mDevice->transceiverMode(I_Rf24Device::TX_MODE);
    Util::delayInMicroseconds(10);
    mController->mCurrentState = &mController->mStandbyI;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::RxMode::ToTxMode() {
+void Rf24Controller::RxMode::ToTxMode() {
    ToStandbyI();
    mController->mCurrentState->ToTxMode();
 }
@@ -181,15 +181,15 @@ void RfControllerNRf24L01P::RxMode::ToTxMode() {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::TxMode::ToPowerDown() {
+void Rf24Controller::TxMode::ToPowerDown() {
    ToStandbyI();
    mController->mCurrentState->ToPowerDown();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::TxMode::ToStandbyI() {
-   I_DeviceNRf24L01P::Status status = mController->mDevice->status();
+void Rf24Controller::TxMode::ToStandbyI() {
+   I_Rf24Device::Status status = mController->mDevice->status();
    Util::Timeout timeout(10000);
    while(!(status.dataSent() || status.retransmitsExceeded() || timeout) ) {
       status = mController->mDevice->status();
@@ -219,7 +219,7 @@ void RfControllerNRf24L01P::TxMode::ToStandbyI() {
 
 //-------------------------------------------------------------------------------------------------
 
-void RfControllerNRf24L01P::TxMode::ToRxMode() {
+void Rf24Controller::TxMode::ToRxMode() {
    ToStandbyI();
    mController->mCurrentState->ToRxMode();
 }

@@ -18,7 +18,7 @@
 namespace Bt {
 namespace Device {
 
-class NRf24L01P : public I_DeviceNRf24L01P
+class Rf24Device : public I_Rf24Device
 {
    public:
 
@@ -26,8 +26,8 @@ class NRf24L01P : public I_DeviceNRf24L01P
 
 
 
-      NRf24L01P(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable);
-      virtual ~NRf24L01P();
+      Rf24Device(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable);
+      virtual ~Rf24Device();
 
       virtual Status status();
 
@@ -81,10 +81,10 @@ class NRf24L01P : public I_DeviceNRf24L01P
 
    private:
    	  // Constructor to prohibit copy construction.
-      NRf24L01P(const NRf24L01P&);
+      Rf24Device(const Rf24Device&);
 
       // Operator= to prohibit copy assignment
-      NRf24L01P& operator=(const NRf24L01P&);
+      Rf24Device& operator=(const Rf24Device&);
 
       Mcu::I_Spi* mSpi;
       Mcu::I_Pin* mChipEnable;

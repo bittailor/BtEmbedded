@@ -17,14 +17,9 @@
 namespace Bt {
 namespace Device {
 
-class I_DeviceNRf24L01P {
+class I_Rf24Device {
 
    public:
-
-      enum TransceiverMode {
-         TX_MODE,
-         RX_MODE
-      };
 
       enum Pipe {
          PIPE_0,
@@ -33,6 +28,11 @@ class I_DeviceNRf24L01P {
          PIPE_3,
          PIPE_4,
          PIPE_5,
+      };
+
+      enum TransceiverMode {
+         TX_MODE,
+         RX_MODE
       };
 
       class Status {
@@ -75,7 +75,7 @@ class I_DeviceNRf24L01P {
             Util::StaticArray<uint8_t,5> mRaw;
       };
 
-      virtual ~I_DeviceNRf24L01P() {}
+      virtual ~I_Rf24Device() {}
 
       virtual Status status() = 0;
 

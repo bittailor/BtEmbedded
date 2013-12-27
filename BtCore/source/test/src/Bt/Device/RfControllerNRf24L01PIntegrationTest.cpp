@@ -53,11 +53,11 @@ namespace Device {
  *    9(MISO)              MI
  *
  */
-class RfControllerNRf24L01PIntegrationTest : public ::testing::Test {
+class Rf24ControllerIntegrationTest : public ::testing::Test {
 
    protected:
       
-      RfControllerNRf24L01PIntegrationTest()
+      Rf24ControllerIntegrationTest()
                : mPower(4, Mcu::I_Pin::MODE_OUTPUT)
                , mChipEnable1(17, Mcu::I_Pin::MODE_OUTPUT)
                , mChipEnable2(24, Mcu::I_Pin::MODE_OUTPUT)
@@ -67,8 +67,8 @@ class RfControllerNRf24L01PIntegrationTest : public ::testing::Test {
                , mSpi2(Mcu::I_Spi::BIT_ORDER_MSBFIRST, Mcu::I_Spi::MODE_0, Mcu::I_Spi::SPEED_8_MHZ , mChipSelect2)
                , mNRf24L01P1(powerOn(),mChipEnable1)
                , mNRf24L01P2(mSpi2,mChipEnable2)
-               , mRfControllerNRf24L01P1(mNRf24L01P1)
-               , mRfControllerNRf24L01P2(mNRf24L01P2)
+               , mController1(mNRf24L01P1)
+               , mController2(mNRf24L01P2)
             {
 
             }
@@ -96,18 +96,18 @@ class RfControllerNRf24L01PIntegrationTest : public ::testing::Test {
       Mcu::Spi mSpi1;
       Mcu::Spi mSpi2;
 
-      NRf24L01P mNRf24L01P1;
-      NRf24L01P mNRf24L01P2;
+      Rf24Device mNRf24L01P1;
+      Rf24Device mNRf24L01P2;
 
-      RfControllerNRf24L01P mRfControllerNRf24L01P1;
-      RfControllerNRf24L01P mRfControllerNRf24L01P2;
+      Rf24Controller mController1;
+      Rf24Controller mController2;
 
 };
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-void waitForDataAvailable(RfControllerNRf24L01P& pController) {
+void waitForDataAvailable(Rf24Controller& pController) {
    int counter = 0;
    while(!pController.isDataAvailable() && counter < 200) {
       Util::delayInMilliseconds(5);
@@ -119,19 +119,19 @@ void waitForDataAvailable(RfControllerNRf24L01P& pController) {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(RfControllerNRf24L01PIntegrationTest, send1To2OverPipe0) {
-   uint8_t data[NRf24L01P::PAYLOAD_SIZE] = {1,2,3,4,5};
+TEST_F(Rf24ControllerIntegrationTest, send1To2OverPipe0) {
+   uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
 
 
-   mRfControllerNRf24L01P2.startListening();
-   mRfControllerNRf24L01P1.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
+   mController2.startListening();
+   mController1.write(I_Rf24Device::PIPE_0, data , Util::sizeOfArray(data));
 
-   waitForDataAvailable(mRfControllerNRf24L01P2);
+   waitForDataAvailable(mController2);
 
-   uint8_t buffer[NRf24L01P::PAYLOAD_SIZE] = {0};
-   size_t readSize = mRfControllerNRf24L01P2.read(buffer,Util::sizeOfArray(data));
+   uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
+   size_t readSize = mController2.read(buffer,Util::sizeOfArray(data));
 
-   EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, readSize);
+   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
    ASSERT_THAT(data, testing::ElementsAreArray(buffer));
 
 
@@ -139,19 +139,19 @@ TEST_F(RfControllerNRf24L01PIntegrationTest, send1To2OverPipe0) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(RfControllerNRf24L01PIntegrationTest, send2To1OverPipe0) {
-   uint8_t data[NRf24L01P::PAYLOAD_SIZE] = {1,2,3,4,5};
+TEST_F(Rf24ControllerIntegrationTest, send2To1OverPipe0) {
+   uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
 
 
-   mRfControllerNRf24L01P1.startListening();
-   mRfControllerNRf24L01P2.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
+   mController1.startListening();
+   mController2.write(I_Rf24Device::PIPE_0, data , Util::sizeOfArray(data));
 
-   waitForDataAvailable(mRfControllerNRf24L01P1);
+   waitForDataAvailable(mController1);
 
-   uint8_t buffer[NRf24L01P::PAYLOAD_SIZE] = {0};
-   size_t readSize = mRfControllerNRf24L01P1.read(buffer,Util::sizeOfArray(data));
+   uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
+   size_t readSize = mController1.read(buffer,Util::sizeOfArray(data));
 
-   EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, readSize);
+   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
    ASSERT_THAT(data, testing::ElementsAreArray(buffer));
 
 
@@ -159,26 +159,26 @@ TEST_F(RfControllerNRf24L01PIntegrationTest, send2To1OverPipe0) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(RfControllerNRf24L01PIntegrationTest, sendAndReveive) {
-   uint8_t data[NRf24L01P::PAYLOAD_SIZE];
+TEST_F(Rf24ControllerIntegrationTest, sendAndReveive) {
+   uint8_t data[Rf24Device::PAYLOAD_SIZE];
 
-   mRfControllerNRf24L01P2.startListening();
-   mRfControllerNRf24L01P1.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
-   mRfControllerNRf24L01P1.startListening();
+   mController2.startListening();
+   mController1.write(I_Rf24Device::PIPE_0, data , Util::sizeOfArray(data));
+   mController1.startListening();
 
    {
-      waitForDataAvailable(mRfControllerNRf24L01P2);
-      uint8_t buffer[NRf24L01P::PAYLOAD_SIZE] = {0};
-      mRfControllerNRf24L01P2.read(buffer,Util::sizeOfArray(buffer));
-      mRfControllerNRf24L01P2.write(I_DeviceNRf24L01P::PIPE_0,buffer,Util::sizeOfArray(buffer));
+      waitForDataAvailable(mController2);
+      uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
+      mController2.read(buffer,Util::sizeOfArray(buffer));
+      mController2.write(I_Rf24Device::PIPE_0,buffer,Util::sizeOfArray(buffer));
    }
 
-   waitForDataAvailable(mRfControllerNRf24L01P1);
-   uint8_t readBuffer[NRf24L01P::PAYLOAD_SIZE] = {0};
-   size_t readSize = mRfControllerNRf24L01P1.read(readBuffer, Util::sizeOfArray(readBuffer));
+   waitForDataAvailable(mController1);
+   uint8_t readBuffer[Rf24Device::PAYLOAD_SIZE] = {0};
+   size_t readSize = mController1.read(readBuffer, Util::sizeOfArray(readBuffer));
 
 
-   EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, readSize);
+   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
 
    ASSERT_THAT(data, testing::ElementsAreArray(readBuffer));
 }
@@ -186,31 +186,31 @@ TEST_F(RfControllerNRf24L01PIntegrationTest, sendAndReveive) {
 //-------------------------------------------------------------------------------------------------
 
 
-TEST_F(RfControllerNRf24L01PIntegrationTest, sendAndReveiveInALoop) {
-   uint8_t data[NRf24L01P::PAYLOAD_SIZE];
+TEST_F(Rf24ControllerIntegrationTest, sendAndReveiveInALoop) {
+   uint8_t data[Rf24Device::PAYLOAD_SIZE];
    std::iota(std::begin(data),std::end(data),0);
 
    for (size_t i = 0; i < 10 ; i++) {
 
       std::cout << "Loop " << i << std::endl;
-      mRfControllerNRf24L01P2.startListening();
+      mController2.startListening();
 
-      mRfControllerNRf24L01P1.write(I_DeviceNRf24L01P::PIPE_0, data , Util::sizeOfArray(data));
-      mRfControllerNRf24L01P1.startListening();
+      mController1.write(I_Rf24Device::PIPE_0, data , Util::sizeOfArray(data));
+      mController1.startListening();
 
       {
-         waitForDataAvailable(mRfControllerNRf24L01P2);
-         uint8_t buffer[NRf24L01P::PAYLOAD_SIZE] = {0};
-         mRfControllerNRf24L01P2.read(buffer,Util::sizeOfArray(buffer));
-         mRfControllerNRf24L01P2.write(I_DeviceNRf24L01P::PIPE_0,buffer,Util::sizeOfArray(buffer));
+         waitForDataAvailable(mController2);
+         uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
+         mController2.read(buffer,Util::sizeOfArray(buffer));
+         mController2.write(I_Rf24Device::PIPE_0,buffer,Util::sizeOfArray(buffer));
       }
 
-      waitForDataAvailable(mRfControllerNRf24L01P1);
-      uint8_t readBuffer[NRf24L01P::PAYLOAD_SIZE] = {0};
-      size_t readSize = mRfControllerNRf24L01P1.read(readBuffer, Util::sizeOfArray(readBuffer));
+      waitForDataAvailable(mController1);
+      uint8_t readBuffer[Rf24Device::PAYLOAD_SIZE] = {0};
+      size_t readSize = mController1.read(readBuffer, Util::sizeOfArray(readBuffer));
 
 
-      EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, readSize);
+      EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
       ASSERT_THAT(data, testing::ElementsAreArray(readBuffer));
    }
 }

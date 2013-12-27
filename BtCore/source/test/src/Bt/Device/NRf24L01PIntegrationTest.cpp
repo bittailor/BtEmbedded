@@ -54,16 +54,16 @@ struct NRf24L01PIntegrationTestParameters {
  *    9(MISO)              MI
  *
  */
-class NRf24L01PIntegrationTest : public ::testing::Test, public ::testing::WithParamInterface<NRf24L01PIntegrationTestParameters> {
+class Rf24DeviceIntegrationTest : public ::testing::Test, public ::testing::WithParamInterface<NRf24L01PIntegrationTestParameters> {
    
    protected:
       
-      NRf24L01PIntegrationTest()
+      Rf24DeviceIntegrationTest()
          : mPower(4, Mcu::I_Pin::MODE_OUTPUT)
          , mChipSelect(GetParam().chipSelect, Mcu::I_Pin::MODE_OUTPUT)
          , mSpi(Mcu::I_Spi::BIT_ORDER_MSBFIRST, Mcu::I_Spi::MODE_0, Mcu::I_Spi::SPEED_8_MHZ , mChipSelect)
          , mChipEnable(GetParam().chipEnable, Mcu::I_Pin::MODE_OUTPUT)
-         , mNRf24L01P(powerOn(),mChipEnable) {
+         , mDevice(powerOn(),mChipEnable) {
 
       }
 
@@ -87,14 +87,14 @@ class NRf24L01PIntegrationTest : public ::testing::Test, public ::testing::WithP
       Mcu::Spi mSpi;
       Mcu::Pin mChipEnable;
 
-      NRf24L01P mNRf24L01P;
+      Rf24Device mDevice;
 
 };
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-INSTANTIATE_TEST_CASE_P(Default, NRf24L01PIntegrationTest,::testing::Values(
+INSTANTIATE_TEST_CASE_P(Default, Rf24DeviceIntegrationTest,::testing::Values(
          NRf24L01PIntegrationTestParameters{8,17},
          NRf24L01PIntegrationTestParameters{7,24}
 ));
@@ -115,106 +115,106 @@ void printArray(const T& pArray)
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultPowerUp) {
-   EXPECT_FALSE(mNRf24L01P.powerUp());
+TEST_P(Rf24DeviceIntegrationTest, readDefaultPowerUp) {
+   EXPECT_FALSE(mDevice.powerUp());
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackPowerUp) {
-   mNRf24L01P.powerUp(true);
-   EXPECT_TRUE(mNRf24L01P.powerUp());
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackPowerUp) {
+   mDevice.powerUp(true);
+   EXPECT_TRUE(mDevice.powerUp());
 }
 
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultTransceiverMode) {
-   EXPECT_EQ(I_DeviceNRf24L01P::TX_MODE, mNRf24L01P.transceiverMode());
+TEST_P(Rf24DeviceIntegrationTest, readDefaultTransceiverMode) {
+   EXPECT_EQ(I_Rf24Device::TX_MODE, mDevice.transceiverMode());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackTransceiverMode) {
-   mNRf24L01P.transceiverMode(I_DeviceNRf24L01P::RX_MODE);
-   EXPECT_EQ(I_DeviceNRf24L01P::RX_MODE, mNRf24L01P.transceiverMode());
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackTransceiverMode) {
+   mDevice.transceiverMode(I_Rf24Device::RX_MODE);
+   EXPECT_EQ(I_Rf24Device::RX_MODE, mDevice.transceiverMode());
 }
 
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultChannel) {
-   EXPECT_EQ(0x2,(int)mNRf24L01P.channel());
+TEST_P(Rf24DeviceIntegrationTest, readDefaultChannel) {
+   EXPECT_EQ(0x2,(int)mDevice.channel());
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackChannel) {
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackChannel) {
    uint8_t rf = 0x4c;
-   mNRf24L01P.channel(rf);
-   EXPECT_EQ((int)rf,(int)mNRf24L01P.channel());
+   mDevice.channel(rf);
+   EXPECT_EQ((int)rf,(int)mDevice.channel());
 }
 
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultAutoRetransmitCount) {
-   EXPECT_EQ(0x03,(int)mNRf24L01P.autoRetransmitCount());
+TEST_P(Rf24DeviceIntegrationTest, readDefaultAutoRetransmitCount) {
+   EXPECT_EQ(0x03,(int)mDevice.autoRetransmitCount());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackAutoRetransmitCount) {
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackAutoRetransmitCount) {
    uint8_t count = 0x0a;
-   mNRf24L01P.autoRetransmitCount(count);
-   EXPECT_EQ((int)count,(int)mNRf24L01P.autoRetransmitCount());
+   mDevice.autoRetransmitCount(count);
+   EXPECT_EQ((int)count,(int)mDevice.autoRetransmitCount());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultAutoRetransmitDelay) {
-   EXPECT_EQ(0x00,(int)mNRf24L01P.autoRetransmitDelay());
+TEST_P(Rf24DeviceIntegrationTest, readDefaultAutoRetransmitDelay) {
+   EXPECT_EQ(0x00,(int)mDevice.autoRetransmitDelay());
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackAutoRetransmitDelay) {
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackAutoRetransmitDelay) {
    uint8_t delay = 0x04;
-   mNRf24L01P.autoRetransmitDelay(delay);
-   EXPECT_EQ((int)delay,(int)mNRf24L01P.autoRetransmitDelay());
+   mDevice.autoRetransmitDelay(delay);
+   EXPECT_EQ((int)delay,(int)mDevice.autoRetransmitDelay());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeSameRegister) {
+TEST_P(Rf24DeviceIntegrationTest, writeSameRegister) {
    uint8_t delay = 0x04;
    uint8_t count = 0x0a;
-   mNRf24L01P.autoRetransmitDelay(delay);
-   EXPECT_EQ((int)delay,(int)mNRf24L01P.autoRetransmitDelay());
-   EXPECT_EQ(0x03,(int)mNRf24L01P.autoRetransmitCount());
-   mNRf24L01P.autoRetransmitCount(count);
-   EXPECT_EQ((int)delay,(int)mNRf24L01P.autoRetransmitDelay());
-   EXPECT_EQ((int)count,(int)mNRf24L01P.autoRetransmitCount());
+   mDevice.autoRetransmitDelay(delay);
+   EXPECT_EQ((int)delay,(int)mDevice.autoRetransmitDelay());
+   EXPECT_EQ(0x03,(int)mDevice.autoRetransmitCount());
+   mDevice.autoRetransmitCount(count);
+   EXPECT_EQ((int)delay,(int)mDevice.autoRetransmitDelay());
+   EXPECT_EQ((int)count,(int)mDevice.autoRetransmitCount());
 }
 
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultRxPipes) {
+TEST_P(Rf24DeviceIntegrationTest, readDefaultRxPipes) {
 
-   NRf24L01P::Pipe pipes[] = {
-            NRf24L01P::PIPE_0,
-            NRf24L01P::PIPE_1,
-            NRf24L01P::PIPE_2,
-            NRf24L01P::PIPE_3,
-            NRf24L01P::PIPE_4,
-            NRf24L01P::PIPE_5,
+   Rf24Device::Pipe pipes[] = {
+            Rf24Device::PIPE_0,
+            Rf24Device::PIPE_1,
+            Rf24Device::PIPE_2,
+            Rf24Device::PIPE_3,
+            Rf24Device::PIPE_4,
+            Rf24Device::PIPE_5,
    };
 
-   NRf24L01P::Address defaultAddresses[] = {
+   Rf24Device::Address defaultAddresses[] = {
             {0xE7, 0xE7, 0xE7, 0xE7, 0xE7},
             {0xC2, 0xC2, 0xC2, 0xC2, 0xC2},
             {0xC2, 0xC2, 0xC2, 0xC2, 0xC3},
@@ -224,25 +224,25 @@ TEST_P(NRf24L01PIntegrationTest, readDefaultRxPipes) {
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
-      NRf24L01P::Address address = mNRf24L01P.receiveAddress(pipes[i]).raw();
+      Rf24Device::Address address = mDevice.receiveAddress(pipes[i]).raw();
       ASSERT_THAT(address.raw(), testing::ElementsAreArray(defaultAddresses[i].raw().begin(),defaultAddresses[i].raw().size()));
    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackRxPipes) {
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackRxPipes) {
 
-   NRf24L01P::Pipe pipes[] = {
-            NRf24L01P::PIPE_0,
-            NRf24L01P::PIPE_1,
-            NRf24L01P::PIPE_2,
-            NRf24L01P::PIPE_3,
-            NRf24L01P::PIPE_4,
-            NRf24L01P::PIPE_5
+   Rf24Device::Pipe pipes[] = {
+            Rf24Device::PIPE_0,
+            Rf24Device::PIPE_1,
+            Rf24Device::PIPE_2,
+            Rf24Device::PIPE_3,
+            Rf24Device::PIPE_4,
+            Rf24Device::PIPE_5
    };
 
-   NRf24L01P::Address addresses[] = {
+   Rf24Device::Address addresses[] = {
             {0x22, 0x23, 0x24, 0x25, 0x26},
             {0xA1, 0xB1, 0xC1, 0xD1, 0xE1},
             {0xA1, 0xB1, 0xC1, 0xD1, 0xE2},
@@ -252,11 +252,11 @@ TEST_P(NRf24L01PIntegrationTest, writeAndReadBackRxPipes) {
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
-      mNRf24L01P.receiveAddress(pipes[i], addresses[i]);
+      mDevice.receiveAddress(pipes[i], addresses[i]);
    }
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
-      NRf24L01P::Address address = mNRf24L01P.receiveAddress(pipes[i]).raw();
+      Rf24Device::Address address = mDevice.receiveAddress(pipes[i]).raw();
       ASSERT_THAT(address.raw(), testing::ElementsAreArray(addresses[i].raw().begin(),addresses[i].raw().size()));
    }
 
@@ -264,156 +264,156 @@ TEST_P(NRf24L01PIntegrationTest, writeAndReadBackRxPipes) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultReceivePayloadSize) {
+TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePayloadSize) {
 
-   NRf24L01P::Pipe pipes[] = {
-            NRf24L01P::PIPE_0,
-            NRf24L01P::PIPE_1,
-            NRf24L01P::PIPE_2,
-            NRf24L01P::PIPE_3,
-            NRf24L01P::PIPE_4,
-            NRf24L01P::PIPE_5,
+   Rf24Device::Pipe pipes[] = {
+            Rf24Device::PIPE_0,
+            Rf24Device::PIPE_1,
+            Rf24Device::PIPE_2,
+            Rf24Device::PIPE_3,
+            Rf24Device::PIPE_4,
+            Rf24Device::PIPE_5,
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
-      uint8_t size = mNRf24L01P.receivePayloadSize(pipes[i]);
+      uint8_t size = mDevice.receivePayloadSize(pipes[i]);
       ASSERT_THAT(0, (int)size);
    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackReceivePayloadSize) {
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePayloadSize) {
 
-   NRf24L01P::Pipe pipes[] = {
-            NRf24L01P::PIPE_0,
-            NRf24L01P::PIPE_1,
-            NRf24L01P::PIPE_2,
-            NRf24L01P::PIPE_3,
-            NRf24L01P::PIPE_4,
-            NRf24L01P::PIPE_5,
+   Rf24Device::Pipe pipes[] = {
+            Rf24Device::PIPE_0,
+            Rf24Device::PIPE_1,
+            Rf24Device::PIPE_2,
+            Rf24Device::PIPE_3,
+            Rf24Device::PIPE_4,
+            Rf24Device::PIPE_5,
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
-      mNRf24L01P.receivePayloadSize(pipes[i], NRf24L01P::PAYLOAD_SIZE);
-      uint8_t size = mNRf24L01P.receivePayloadSize(pipes[i]);
-      ASSERT_THAT((int)NRf24L01P::PAYLOAD_SIZE, (int)size);
+      mDevice.receivePayloadSize(pipes[i], Rf24Device::PAYLOAD_SIZE);
+      uint8_t size = mDevice.receivePayloadSize(pipes[i]);
+      ASSERT_THAT((int)Rf24Device::PAYLOAD_SIZE, (int)size);
    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultTx) {
-   NRf24L01P::Address defaultAddress = NRf24L01P::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
+TEST_P(Rf24DeviceIntegrationTest, readDefaultTx) {
+   Rf24Device::Address defaultAddress = Rf24Device::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
 
-   NRf24L01P::Address address = mNRf24L01P.transmitAddress();
+   Rf24Device::Address address = mDevice.transmitAddress();
    ASSERT_THAT(defaultAddress.raw(), testing::ElementsAreArray(address.raw().begin(),address.raw().size()));
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackTx) {
-   NRf24L01P::Address newAddress = NRf24L01P::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
-   mNRf24L01P.transmitAddress(newAddress);
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackTx) {
+   Rf24Device::Address newAddress = Rf24Device::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
+   mDevice.transmitAddress(newAddress);
 
-   NRf24L01P::Address address = mNRf24L01P.transmitAddress();
+   Rf24Device::Address address = mDevice.transmitAddress();
    ASSERT_THAT(newAddress.raw(), testing::ElementsAreArray(address.raw().begin(),address.raw().size()));
  }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultIsTransmitFifoEmpty) {
-   EXPECT_TRUE(mNRf24L01P.isTransmitFifoEmpty());
+TEST_P(Rf24DeviceIntegrationTest, readDefaultIsTransmitFifoEmpty) {
+   EXPECT_TRUE(mDevice.isTransmitFifoEmpty());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultIsTransmitFifoFull) {
-   EXPECT_FALSE(mNRf24L01P.isTransmitFifoFull());
+TEST_P(Rf24DeviceIntegrationTest, readDefaultIsTransmitFifoFull) {
+   EXPECT_FALSE(mDevice.isTransmitFifoFull());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeOneTransmitPayload) {
+TEST_P(Rf24DeviceIntegrationTest, writeOneTransmitPayload) {
    uint8_t data[] = {1,2,3,4,5};
 
-   mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+   mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
 
-   EXPECT_FALSE(mNRf24L01P.isTransmitFifoEmpty());
+   EXPECT_FALSE(mDevice.isTransmitFifoEmpty());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeThreeTransmitPayloads) {
+TEST_P(Rf24DeviceIntegrationTest, writeThreeTransmitPayloads) {
    uint8_t data[] = {1,2,3,4,5};
 
-   mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
-   mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
-   mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+   mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
+   mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
+   mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
 
-   EXPECT_TRUE(mNRf24L01P.isTransmitFifoFull());
+   EXPECT_TRUE(mDevice.isTransmitFifoFull());
 }
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeUndersizeTransmitPayload) {
+TEST_P(Rf24DeviceIntegrationTest, writeUndersizeTransmitPayload) {
    uint8_t data[] = {1,2,3,4,5};
 
-   size_t written = mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+   size_t written = mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
 
    EXPECT_EQ(Util::sizeOfArray(data), written);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeExactTransmitPayload) {
-   uint8_t data[NRf24L01P::PAYLOAD_SIZE] = {1,2,3,4,5};
+TEST_P(Rf24DeviceIntegrationTest, writeExactTransmitPayload) {
+   uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
 
-   size_t written = mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+   size_t written = mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
 
    EXPECT_EQ(Util::sizeOfArray(data), written);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeOversizeTransmitPayload) {
-   uint8_t data[NRf24L01P::PAYLOAD_SIZE + 20] = {1,2,3,4,5};
+TEST_P(Rf24DeviceIntegrationTest, writeOversizeTransmitPayload) {
+   uint8_t data[Rf24Device::PAYLOAD_SIZE + 20] = {1,2,3,4,5};
 
-   size_t written = mNRf24L01P.writeTransmitPayload(data, Util::sizeOfArray(data));
+   size_t written = mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
 
-   EXPECT_EQ((size_t)NRf24L01P::PAYLOAD_SIZE, written);
-   EXPECT_FALSE(mNRf24L01P.isTransmitFifoEmpty());
+   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, written);
+   EXPECT_FALSE(mDevice.isTransmitFifoEmpty());
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, readDefaultDynamicPayloadFeatureEnabled) {
-   EXPECT_FALSE(mNRf24L01P.dynamicPayloadFeatureEnabled());
-
-}
-
-//-------------------------------------------------------------------------------------------------
-
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackDynamicPayloadFeatureEnabled) {
-   mNRf24L01P.dynamicPayloadFeatureEnabled(true);
-   EXPECT_TRUE(mNRf24L01P.dynamicPayloadFeatureEnabled());
-   mNRf24L01P.dynamicPayloadFeatureEnabled(false);
-   EXPECT_FALSE(mNRf24L01P.dynamicPayloadFeatureEnabled());
-}
-
-//-------------------------------------------------------------------------------------------------
-
-TEST_P(NRf24L01PIntegrationTest, readDefaultDynamicPayloadEnabled) {
-   EXPECT_FALSE(mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0));
+TEST_P(Rf24DeviceIntegrationTest, readDefaultDynamicPayloadFeatureEnabled) {
+   EXPECT_FALSE(mDevice.dynamicPayloadFeatureEnabled());
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(NRf24L01PIntegrationTest, writeAndReadBackDynamicPayloadEnabled) {
-   mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0, true);
-   EXPECT_TRUE(mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0));
-   mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0, false);
-   EXPECT_FALSE(mNRf24L01P.dynamicPayloadEnabled(NRf24L01P::PIPE_0));
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackDynamicPayloadFeatureEnabled) {
+   mDevice.dynamicPayloadFeatureEnabled(true);
+   EXPECT_TRUE(mDevice.dynamicPayloadFeatureEnabled());
+   mDevice.dynamicPayloadFeatureEnabled(false);
+   EXPECT_FALSE(mDevice.dynamicPayloadFeatureEnabled());
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(Rf24DeviceIntegrationTest, readDefaultDynamicPayloadEnabled) {
+   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0));
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackDynamicPayloadEnabled) {
+   mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0, true);
+   EXPECT_TRUE(mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0));
+   mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0, false);
+   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0));
 }
 
 //-------------------------------------------------------------------------------------------------
