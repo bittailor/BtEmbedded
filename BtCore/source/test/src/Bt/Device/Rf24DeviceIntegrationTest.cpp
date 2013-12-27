@@ -4,14 +4,14 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::NRf24L01PIntegrationTest
+//  Bt::Device::Rf24DeviceIntegrationTest
 //  
 //*************************************************************************************************
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "Bt/Device/NRf24L01P.hpp"
+#include "Bt/Device/Rf24Device.hpp"
 #include "Bt/Mcu/Pin.hpp"
 #include "Bt/Mcu/Spi.hpp"
 #include "Bt/Util/Delay.hpp"
@@ -22,7 +22,7 @@ namespace Device {
 
 //-------------------------------------------------------------------------------------------------
 
-struct NRf24L01PIntegrationTestParameters {
+struct Rf24DeviceIntegrationTestParameters {
       uint8_t chipSelect;
       uint8_t chipEnable;
 };
@@ -54,7 +54,7 @@ struct NRf24L01PIntegrationTestParameters {
  *    9(MISO)              MI
  *
  */
-class Rf24DeviceIntegrationTest : public ::testing::Test, public ::testing::WithParamInterface<NRf24L01PIntegrationTestParameters> {
+class Rf24DeviceIntegrationTest : public ::testing::Test, public ::testing::WithParamInterface<Rf24DeviceIntegrationTestParameters> {
    
    protected:
       
@@ -95,8 +95,8 @@ class Rf24DeviceIntegrationTest : public ::testing::Test, public ::testing::With
 //-------------------------------------------------------------------------------------------------
 
 INSTANTIATE_TEST_CASE_P(Default, Rf24DeviceIntegrationTest,::testing::Values(
-         NRf24L01PIntegrationTestParameters{8,17},
-         NRf24L01PIntegrationTestParameters{7,24}
+         Rf24DeviceIntegrationTestParameters{8,17},
+         Rf24DeviceIntegrationTestParameters{7,24}
 ));
 
 //-------------------------------------------------------------------------------------------------

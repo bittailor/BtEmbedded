@@ -4,12 +4,12 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::I_DeviceNRf24L01P
+//  Bt::Device::I_Rf24Device
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Device_I_DeviceNRf24L01P__hpp
-#define INC__Bt_Device_I_DeviceNRf24L01P__hpp
+#ifndef INC__Bt_Device_I_Rf24Device__hpp
+#define INC__Bt_Device_I_Rf24Device__hpp
 
 #include <stdint.h>
 #include "Bt/Util/StaticArray.hpp"
@@ -131,4 +131,4 @@ class I_Rf24Device {
 } // namespace Device
 } // namespace Bt
 
-#endif // INC__Bt_Device_I_DeviceNRf24L01P__hpp
+#endif // INC__Bt_Device_I_Rf24Device__hpp

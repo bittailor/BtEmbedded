@@ -4,16 +4,16 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::NRf24L01P
+//  Bt::Device::Rf24Device
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Device_NRf24L01P__hpp
-#define INC__Bt_Device_NRf24L01P__hpp
+#ifndef INC__Bt_Device_Rf24Device__hpp
+#define INC__Bt_Device_Rf24Device__hpp
 
 #include "Bt/Mcu/I_Spi.hpp"
 #include "Bt/Mcu/I_Pin.hpp"
-#include "Bt/Device/I_DeviceNRf24L01P.hpp"
+#include "Bt/Device/I_Rf24Device.hpp"
 
 namespace Bt {
 namespace Device {
@@ -94,4 +94,4 @@ class Rf24Device : public I_Rf24Device
 } // namespace Device
 } // namespace Bt
 
-#endif // INC__Bt_Device_NRf24L01P__hpp
+#endif // INC__Bt_Device_Rf24Device__hpp

@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-#include "Bt/Device/I_DeviceNRf24L01P.hpp"
+#include "Bt/Device/I_Rf24Device.hpp"
 #include "Bt/Net/RfSocket.hpp"
 
 namespace Bt {

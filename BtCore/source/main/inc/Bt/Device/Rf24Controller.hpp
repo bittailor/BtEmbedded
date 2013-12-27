@@ -4,17 +4,17 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::RfControllerNRf24L01P
+//  Bt::Device::Rf24Controller
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Device_RfControllerNRf24L01P__hpp
-#define INC__Bt_Device_RfControllerNRf24L01P__hpp
+#ifndef INC__Bt_Device_Rf24Controller__hpp
+#define INC__Bt_Device_Rf24Controller__hpp
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "Bt/Device/I_DeviceNRf24L01P.hpp"
+#include "Bt/Device/I_Rf24Device.hpp"
 
 namespace Bt {
 namespace Device {
@@ -108,4 +108,4 @@ class Rf24Controller
 } // namespace Device
 } // namespace Bt
 
-#endif // INC__Bt_Device_RfControllerNRf24L01P__hpp
+#endif // INC__Bt_Device_Rf24Controller__hpp
