@@ -28,6 +28,7 @@ class Rf24Controller
       virtual size_t write(I_Rf24Device::Pipe pPipe, uint8_t* data, size_t size);
 
       virtual void startListening();
+      virtual void stopListening();
       virtual bool isDataAvailable();
       virtual size_t read(uint8_t* buffer, size_t size);
       virtual size_t read(uint8_t* buffer, size_t size, I_Rf24Device::Pipe& pPipe);

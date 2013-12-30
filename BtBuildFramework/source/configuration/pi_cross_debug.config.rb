@@ -15,6 +15,7 @@ class Configuration
     self[:run_ssh] = true;  
      
     # self[:test_filter] = "-*IntegrationTest.*";   
+    # self[:test_filter] = "Quick*.*";   
       
   end
   

@@ -66,6 +66,7 @@ uint32_t bcm2835_peri_read(volatile uint32_t* paddr)
 	// if subsequent code changes to a different peripheral
 	uint32_t ret = *paddr;
 	uint32_t dummy = *paddr;
+	((void)dummy);
 	return ret;
     }
 }

@@ -36,6 +36,7 @@ enum Commands {
    CMD_W_REGISTER    = 0x20,
    CMD_R_RX_PAYLOAD  = 0x61,
    CMD_W_TX_PAYLOAD  = 0xA0,
+   CMD_FLUSH_TX      = 0xE1,
    CMD_NOP = 0xFF
 };
 
@@ -115,7 +116,7 @@ Util::StaticArray<uint8_t,5> readRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister
 
    pSpi.chipSelect(true);
    pSpi.transfer(cmd);
-   for (size_t i = 0; i < value.size() ; ++i) {
+   for (size_t i = 0 ; i < value.size()  ; ++i) {
       value[i] = pSpi.transfer(CMD_NOP);
    }
    pSpi.chipSelect(false);
@@ -157,7 +158,7 @@ uint8_t writeRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister pRegister, Util::St
 
    pSpi.chipSelect(true);
    uint8_t status = pSpi.transfer(cmd);
-   for (size_t i = 0; i < pValue.size() ; ++i) {
+   for (size_t i = 0 ; i < pValue.size() ; ++i) {
       pSpi.transfer(pValue[i]);
    }
    pSpi.chipSelect(false);
@@ -337,7 +338,7 @@ void Rf24Device::receiveAddress(Pipe pPipe, Address pAddress) {
       default     : oneByteRegister = REGISTER_RX_ADDR_P2; break;
    }
 
-   writeRegister(*mSpi, oneByteRegister, pAddress.raw()           [0]);
+   writeRegister(*mSpi, oneByteRegister, pAddress.raw()[0]);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -396,6 +397,14 @@ bool Rf24Device::isTransmitFifoEmpty() {
 
 bool Rf24Device::isTransmitFifoFull() {
    return readSubRegister(*mSpi, REGISTER_FIFO_STATUS,1,5);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void Rf24Device::flushTransmitFifo() {
+   mSpi->chipSelect(true);
+   mSpi->transfer(CMD_FLUSH_TX);
+   mSpi->chipSelect(false);
 }
 
 //-------------------------------------------------------------------------------------------------

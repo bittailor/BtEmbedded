@@ -19,6 +19,22 @@
 namespace Bt {
 namespace Device {
 
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
+namespace{
+
+template<typename T>
+void printArray(const T& pArray)
+{
+  printf(" 0x");
+  for(size_t i = pArray.size() ; i > 0 ; i--)
+  {
+    printf("%02x",pArray[i-1]);
+  }
+}
+
+}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -42,23 +58,72 @@ size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* data, size_t siz
    StateBase* originalState = mCurrentState;
 
    mCurrentState->ToStandbyI();
-   mDevice->transmitAddress(mDevice->receiveAddress(pPipe));
+   I_Rf24Device::Address backupAddressPipe0 = mDevice->receiveAddress(I_Rf24Device::PIPE_0);
+   I_Rf24Device::Address pipeAddress = mDevice->receiveAddress(pPipe);
+   mDevice->transmitAddress(pipeAddress);
+   mDevice->receiveAddress(I_Rf24Device::PIPE_0, pipeAddress);
+
+   printf("WriteInfo::\n");
+   printf("   Pipe = %u",pPipe); printf("\n");
+   printf("   pipeAddress = "); printArray(pipeAddress.raw()); printf("\n");
+   printf("   transmitAddress = "); printArray(mDevice->transmitAddress().raw()); printf("\n");
+   printf("   receiveAddress pipe 0 = "); printArray(mDevice->receiveAddress(I_Rf24Device::PIPE_0).raw()); printf("\n");
+   printf("   backupAddressPipe0  = "); printArray(backupAddressPipe0.raw()); printf("\n");
+   printf("\n");
+
    mDevice->writeTransmitPayload(data, size);
    mCurrentState->ToTxMode();
 
+   I_Rf24Device::Status status = mDevice->status();
+   Util::Timeout timeout(10000);
+   while(!(status.dataSent() || status.retransmitsExceeded() || timeout) ) {
+      status = mDevice->status();
+      printf("TxMode::ToStandbyI: autoRetransmitCounter = %u \n", (mDevice->autoRetransmitCounter()) );
+      Util::delayInMicroseconds(10);
+   }
+
+   size_t sentSize = size;
+
+   if (status.retransmitsExceeded()) {
+      mDevice->clearRetransmitsExceeded();
+      printf("TxMode::ToStandbyI: send failed retransmits exceeded ! \n");
+      sentSize = 0;
+   }
 
 
+   if (timeout) {
+      mDevice->clearRetransmitsExceeded();
+      mDevice->flushTransmitFifo();
+      printf("TxMode::ToStandbyI: send failed timeout ! \n");
+      sentSize = 0;
+   }
+
+   if (status.dataSent()) {
+      mDevice->clearDataSent();
+   }
+
+   mDevice->receiveAddress(I_Rf24Device::PIPE_0, backupAddressPipe0);
+
+   printf("Post WriteInfo::\n");
+   printf("   receiveAddress pipe 0 = "); printArray(mDevice->receiveAddress(I_Rf24Device::PIPE_0).raw()); printf("\n");
+   printf("\n");
 
    mCurrentState->ToStandbyI();
    originalState->ApplyTo(*mCurrentState);
 
-   return size;
+   return sentSize;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void Rf24Controller::startListening() {
    mCurrentState->ToRxMode();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void Rf24Controller::stopListening() {
+   mCurrentState->ToStandbyI();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -189,29 +254,6 @@ void Rf24Controller::TxMode::ToPowerDown() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24Controller::TxMode::ToStandbyI() {
-   I_Rf24Device::Status status = mController->mDevice->status();
-   Util::Timeout timeout(10000);
-   while(!(status.dataSent() || status.retransmitsExceeded() || timeout) ) {
-      status = mController->mDevice->status();
-      printf("TxMode::ToStandbyI: autoRetransmitCounter = %u \n", (mController->mDevice->autoRetransmitCounter()) );
-      Util::delayInMicroseconds(10);
-   }
-
-   if (timeout) {
-      mController->mDevice->clearRetransmitsExceeded();
-      printf("TxMode::ToStandbyI: send failed timeout ! \n");
-
-   }
-
-   if (status.dataSent()) {
-      mController->mDevice->clearDataSent();
-   }
-   if (status.retransmitsExceeded()) {
-         mController->mDevice->clearRetransmitsExceeded();
-         printf("TxMode::ToStandbyI: send failed retransmits exceeded ! \n");
-
-   }
-
    mController->mDevice->chipEnable(false);
    Util::delayInMicroseconds(10);
    mController->mCurrentState = &mController->mStandbyI;

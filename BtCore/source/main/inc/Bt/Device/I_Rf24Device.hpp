@@ -113,6 +113,7 @@ class I_Rf24Device {
 
       virtual bool isTransmitFifoEmpty() = 0;
       virtual bool isTransmitFifoFull() = 0;
+      virtual void flushTransmitFifo() =0;
 
       virtual bool isReceiveFifoEmpty() = 0;
       virtual bool isReceiveFifoFull() = 0;
