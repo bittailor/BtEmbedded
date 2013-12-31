@@ -340,7 +340,7 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePayloadSize) {
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
       mDevice.receivePayloadSize(pipes[i], Rf24Device::PAYLOAD_SIZE);
       uint8_t size = mDevice.receivePayloadSize(pipes[i]);
-      ASSERT_THAT((int)Rf24Device::PAYLOAD_SIZE, (int)size);
+      EXPECT_EQ((int)Rf24Device::PAYLOAD_SIZE, (int)size);
    }
 }
 
