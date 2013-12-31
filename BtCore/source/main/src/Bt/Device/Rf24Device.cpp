@@ -343,6 +343,42 @@ void Rf24Device::receiveAddress(Pipe pPipe, Address pAddress) {
 
 //-------------------------------------------------------------------------------------------------
 
+bool Rf24Device::receivePipeEnabled(Pipe pPipe) {
+   uint8_t offset = 0;
+
+   switch (pPipe) {
+      case PIPE_0 : offset = 0; break;
+      case PIPE_1 : offset = 1; break;
+      case PIPE_2 : offset = 2; break;
+      case PIPE_3 : offset = 3; break;
+      case PIPE_4 : offset = 4; break;
+      case PIPE_5 : offset = 5; break;
+      default     : offset = 0; break;
+   }
+
+   return readSubRegister(*mSpi, REGISTER_EN_RXADDR, 1, offset);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void Rf24Device::receivePipeEnabled(Pipe pPipe, bool pValue) {
+   uint8_t offset = 0;
+
+   switch (pPipe) {
+      case PIPE_0 : offset = 0; break;
+      case PIPE_1 : offset = 1; break;
+      case PIPE_2 : offset = 2; break;
+      case PIPE_3 : offset = 3; break;
+      case PIPE_4 : offset = 4; break;
+      case PIPE_5 : offset = 5; break;
+      default     : offset = 0; break;
+   }
+
+   writeSubRegister(*mSpi, REGISTER_EN_RXADDR, pValue, 1, offset);
+}
+
+//-------------------------------------------------------------------------------------------------
+
 uint8_t Rf24Device::receivePayloadSize(Pipe pPipe) {
    OneByteRegister oneByteRegister;
    switch (pPipe) {

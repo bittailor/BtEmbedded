@@ -252,6 +252,61 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackRxPipes) {
 
 //-------------------------------------------------------------------------------------------------
 
+TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePipeEnabled) {
+
+   Rf24Device::Pipe pipes[] = {
+            Rf24Device::PIPE_0,
+            Rf24Device::PIPE_1,
+            Rf24Device::PIPE_2,
+            Rf24Device::PIPE_3,
+            Rf24Device::PIPE_4,
+            Rf24Device::PIPE_5,
+   };
+
+   bool defaults[] = {
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+   };
+
+   for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
+      EXPECT_EQ(defaults[i], mDevice.receivePipeEnabled(pipes[i]));
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePipeEnabled) {
+
+   Rf24Device::Pipe pipes[] = {
+            Rf24Device::PIPE_0,
+            Rf24Device::PIPE_1,
+            Rf24Device::PIPE_2,
+            Rf24Device::PIPE_3,
+            Rf24Device::PIPE_4,
+            Rf24Device::PIPE_5,
+   };
+
+   bool value[] = {
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+   };
+
+   for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
+      mDevice.receivePipeEnabled(pipes[i], value[i]);
+      EXPECT_EQ(value[i], mDevice.receivePipeEnabled(pipes[i]));
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
 TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePayloadSize) {
 
    Rf24Device::Pipe pipes[] = {
@@ -265,7 +320,7 @@ TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePayloadSize) {
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
       uint8_t size = mDevice.receivePayloadSize(pipes[i]);
-      ASSERT_THAT(0, (int)size);
+      EXPECT_EQ(0, (int)size);
    }
 }
 

@@ -24,6 +24,17 @@ namespace Device {
 
 namespace{
 
+I_Rf24Device::Pipe sAllPipes [] =
+{
+         I_Rf24Device::PIPE_0,
+         I_Rf24Device::PIPE_1,
+         I_Rf24Device::PIPE_2,
+         I_Rf24Device::PIPE_3,
+         I_Rf24Device::PIPE_4,
+         I_Rf24Device::PIPE_5
+};
+
+
 template<typename T>
 void printArray(const T& pArray)
 {
@@ -56,20 +67,12 @@ Rf24Controller::~Rf24Controller() {
 size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* data, size_t size) {
 
    StateBase* originalState = mCurrentState;
-
    mCurrentState->ToStandbyI();
-   I_Rf24Device::Address backupAddressPipe0 = mDevice->receiveAddress(I_Rf24Device::PIPE_0);
-   I_Rf24Device::Address pipeAddress = mDevice->receiveAddress(pPipe);
-   mDevice->transmitAddress(pipeAddress);
-   mDevice->receiveAddress(I_Rf24Device::PIPE_0, pipeAddress);
 
-   printf("WriteInfo::\n");
-   printf("   Pipe = %u",pPipe); printf("\n");
-   printf("   pipeAddress = "); printArray(pipeAddress.raw()); printf("\n");
-   printf("   transmitAddress = "); printArray(mDevice->transmitAddress().raw()); printf("\n");
-   printf("   receiveAddress pipe 0 = "); printArray(mDevice->receiveAddress(I_Rf24Device::PIPE_0).raw()); printf("\n");
-   printf("   backupAddressPipe0  = "); printArray(backupAddressPipe0.raw()); printf("\n");
-   printf("\n");
+   I_Rf24Device::Address backupPipe0 = mDevice->receiveAddress(I_Rf24Device::PIPE_0);
+   I_Rf24Device::Address transmitPipeAddress = mDevice->receiveAddress(pPipe);
+   mDevice->transmitAddress(transmitPipeAddress);
+   mDevice->receiveAddress(I_Rf24Device::PIPE_0, transmitPipeAddress);
 
    mDevice->writeTransmitPayload(data, size);
    mCurrentState->ToTxMode();
@@ -102,11 +105,7 @@ size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* data, size_t siz
       mDevice->clearDataSent();
    }
 
-   mDevice->receiveAddress(I_Rf24Device::PIPE_0, backupAddressPipe0);
-
-   printf("Post WriteInfo::\n");
-   printf("   receiveAddress pipe 0 = "); printArray(mDevice->receiveAddress(I_Rf24Device::PIPE_0).raw()); printf("\n");
-   printf("\n");
+   mDevice->receiveAddress(I_Rf24Device::PIPE_0, backupPipe0);
 
    mCurrentState->ToStandbyI();
    originalState->ApplyTo(*mCurrentState);
@@ -152,15 +151,22 @@ size_t Rf24Controller::read(uint8_t* data, size_t size, I_Rf24Device::Pipe& pPip
 
 //-------------------------------------------------------------------------------------------------
 
+void Rf24Controller::configureDevice() {
+   for (auto pipe : sAllPipes) {
+         mDevice->receivePayloadSize(pipe, I_Rf24Device::PAYLOAD_SIZE);
+         mDevice->receivePipeEnabled(pipe, true);
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
 void Rf24Controller::PowerDown::ToStandbyI() {
    mController->mDevice->powerUp(true);
    Util::delayInMicroseconds(1500); // TODO (BT) can reduce ext oszi ?
-   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_0,32);
-   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_1,32);
-   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_2,32);
-   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_3,32);
-   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_4,32);
-   mController->mDevice->receivePayloadSize(I_Rf24Device::PIPE_5,32);
+
+   mController->configureDevice();
+
    mController->mCurrentState = &mController->mStandbyI;
 }
 

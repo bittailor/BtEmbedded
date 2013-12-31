@@ -223,14 +223,14 @@ TEST_F(Rf24ControllerIntegrationTest, sendAndReveiveInALoop) {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-class DISABLED_Rf24ControllerAllPipesIntegrationTest
+class Rf24ControllerAllPipesIntegrationTest
          : public Rf24ControllerIntegrationTestBase
          , public ::testing::WithParamInterface<I_Rf24Device::Pipe>{
 
 };
 
 INSTANTIATE_TEST_CASE_P(AllPipes,
-                        DISABLED_Rf24ControllerAllPipesIntegrationTest,
+                        Rf24ControllerAllPipesIntegrationTest,
                         ::testing::Values(
                                  I_Rf24Device::PIPE_0,
                                  I_Rf24Device::PIPE_1,
@@ -241,7 +241,7 @@ INSTANTIATE_TEST_CASE_P(AllPipes,
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(DISABLED_Rf24ControllerAllPipesIntegrationTest, send1To2) {
+TEST_P(Rf24ControllerAllPipesIntegrationTest, send1To2) {
    uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
 
 
@@ -256,42 +256,6 @@ TEST_P(DISABLED_Rf24ControllerAllPipesIntegrationTest, send1To2) {
    EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
    ASSERT_THAT(data, testing::ElementsAreArray(buffer));
 
-
-}
-
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-
-class DISABLED_QuickIntegrationTest
-         : public Rf24ControllerIntegrationTestBase {
-
-};
-
-//-------------------------------------------------------------------------------------------------
-
-TEST_F(DISABLED_QuickIntegrationTest, send1To2) {
-   uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
-
-   I_Rf24Device::Address a1(0xA1,0xA1,0xA1,0xA1,0xA1);
-   I_Rf24Device::Address a2(0xA1,0xA1,0xA1,0xA1,0xA2);
-
-   mDevice1.receiveAddress(I_Rf24Device::PIPE_1,a1);
-   mDevice2.receiveAddress(I_Rf24Device::PIPE_1,a1);
-   mDevice1.receiveAddress(I_Rf24Device::PIPE_2,a2);
-   mDevice2.receiveAddress(I_Rf24Device::PIPE_2,a2);
-
-   mController2.startListening();
-   mController1.write(I_Rf24Device::PIPE_2, data , Util::sizeOfArray(data));
-
-   waitForDataAvailable(mController2);
-
-   I_Rf24Device::Pipe pipe;
-   uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
-   size_t readSize = mController2.read(buffer,Util::sizeOfArray(data),pipe);
-
-   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
-   ASSERT_THAT(I_Rf24Device::PIPE_2, pipe);
-   ASSERT_THAT(data, testing::ElementsAreArray(buffer));
 
 }
 

@@ -93,6 +93,7 @@ class Rf24Controller
       // Operator= to prohibit copy assignment
       Rf24Controller& operator=(const Rf24Controller&);
 
+      void configureDevice();
 
       I_Rf24Device* mDevice;
       PowerDown mPowerDown;

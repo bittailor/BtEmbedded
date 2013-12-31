@@ -21,6 +21,10 @@ class I_Rf24Device {
 
    public:
 
+      enum {
+         PAYLOAD_SIZE = 32
+      };
+
       enum Pipe {
          PIPE_0,
          PIPE_1,
@@ -104,6 +108,9 @@ class I_Rf24Device {
 
       virtual Address receiveAddress(Pipe pPipe) = 0;
       virtual void receiveAddress(Pipe pPipe, Address pAddress) = 0;
+
+      virtual bool receivePipeEnabled(Pipe pPipe) = 0;
+      virtual void receivePipeEnabled(Pipe pPipe, bool pValue) = 0;
 
       virtual uint8_t receivePayloadSize(Pipe pPipe) = 0;
       virtual void receivePayloadSize(Pipe pPipe, uint8_t pSize) = 0;
