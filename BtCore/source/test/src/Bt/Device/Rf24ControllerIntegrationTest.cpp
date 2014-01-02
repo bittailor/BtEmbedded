@@ -26,9 +26,10 @@
 namespace Bt {
 namespace Device {
 
+//-------------------------------------------------------------------------------------------------
 
 /**
- * This test need to have two NRf24L01P transceivers connected!
+ * These tests need to have two NRf24L01P transceivers connected!
  *
  * Raspberry Pi:
  *
@@ -53,6 +54,30 @@ namespace Device {
  *    9(MISO)              MI
  *
  */
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
+namespace {
+
+template<typename T> T* asArray(std::vector<T>& pVector) {
+   return &pVector[0];
+}
+
+void waitForDataAvailable(Rf24Controller& pController) {
+   int counter = 0;
+   while(!pController.isDataAvailable() && counter < 200) {
+      Util::delayInMilliseconds(5);
+      counter++;
+   }
+   ASSERT_TRUE(pController.isDataAvailable());
+}
+
+}
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
 class Rf24ControllerIntegrationTestBase : public ::testing::Test {
 
    protected:
@@ -80,7 +105,7 @@ class Rf24ControllerIntegrationTestBase : public ::testing::Test {
          mPower.write(false);
          Util::delayInMilliseconds(1);
          mPower.write(true);
-         Util::delayInMilliseconds(200);
+         Util::delayInMilliseconds(1);
          return mSpi1;
       }
 
@@ -104,6 +129,8 @@ class Rf24ControllerIntegrationTestBase : public ::testing::Test {
 
 };
 
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 class Rf24ControllerIntegrationTest : public Rf24ControllerIntegrationTestBase {
 
@@ -112,152 +139,141 @@ class Rf24ControllerIntegrationTest : public Rf24ControllerIntegrationTestBase {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-void waitForDataAvailable(Rf24Controller& pController) {
-   int counter = 0;
-   while(!pController.isDataAvailable() && counter < 200) {
-      Util::delayInMilliseconds(5);
-      counter++;
-   }
-   ASSERT_TRUE(pController.isDataAvailable());
-}
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-TEST_F(Rf24ControllerIntegrationTest, send1To2OverPipe0) {
-   uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
-
-
-   mController2.startListening();
-   mController1.write(I_Rf24Device::PIPE_0, data , Util::sizeOfArray(data));
-
-   waitForDataAvailable(mController2);
-
-   uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
-   size_t readSize = mController2.read(buffer,Util::sizeOfArray(data));
-
-   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
-   ASSERT_THAT(data, testing::ElementsAreArray(buffer));
-
-
-}
-
-//-------------------------------------------------------------------------------------------------
-
-TEST_F(Rf24ControllerIntegrationTest, send2To1OverPipe0) {
-   uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
-
-
-   mController1.startListening();
-   mController2.write(I_Rf24Device::PIPE_0, data , Util::sizeOfArray(data));
-
-   waitForDataAvailable(mController1);
-
-   uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
-   size_t readSize = mController1.read(buffer,Util::sizeOfArray(data));
-
-   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
-   ASSERT_THAT(data, testing::ElementsAreArray(buffer));
-
-
-}
-
-//-------------------------------------------------------------------------------------------------
-
-TEST_F(Rf24ControllerIntegrationTest, sendAndReveive) {
-   uint8_t data[Rf24Device::PAYLOAD_SIZE];
-
-   mController2.startListening();
-   mController1.write(I_Rf24Device::PIPE_0, data , Util::sizeOfArray(data));
-   mController1.startListening();
-
-   {
-      waitForDataAvailable(mController2);
-      uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
-      mController2.read(buffer,Util::sizeOfArray(buffer));
-      mController2.write(I_Rf24Device::PIPE_0,buffer,Util::sizeOfArray(buffer));
-   }
-
-   waitForDataAvailable(mController1);
-   uint8_t readBuffer[Rf24Device::PAYLOAD_SIZE] = {0};
-   size_t readSize = mController1.read(readBuffer, Util::sizeOfArray(readBuffer));
-
-
-   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
-
-   ASSERT_THAT(data, testing::ElementsAreArray(readBuffer));
-}
-
-//-------------------------------------------------------------------------------------------------
-
-
-TEST_F(Rf24ControllerIntegrationTest, sendAndReveiveInALoop) {
-   uint8_t data[Rf24Device::PAYLOAD_SIZE];
-   std::iota(std::begin(data),std::end(data),0);
-
-   for (size_t i = 0; i < 10 ; i++) {
-
-      std::cout << "Loop " << i << std::endl;
-      mController2.startListening();
-
-      mController1.write(I_Rf24Device::PIPE_0, data , Util::sizeOfArray(data));
-      mController1.startListening();
-
-      {
-         waitForDataAvailable(mController2);
-         uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
-         mController2.read(buffer,Util::sizeOfArray(buffer));
-         mController2.write(I_Rf24Device::PIPE_0,buffer,Util::sizeOfArray(buffer));
-      }
-
-      waitForDataAvailable(mController1);
-      uint8_t readBuffer[Rf24Device::PAYLOAD_SIZE] = {0};
-      size_t readSize = mController1.read(readBuffer, Util::sizeOfArray(readBuffer));
-
-
-      EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
-      ASSERT_THAT(data, testing::ElementsAreArray(readBuffer));
-   }
-}
-
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-
-class Rf24ControllerAllPipesIntegrationTest
+class Rf24Controller$Pipe$Size$IntegrationTest
          : public Rf24ControllerIntegrationTestBase
-         , public ::testing::WithParamInterface<I_Rf24Device::Pipe>{
+         , public ::testing::WithParamInterface< ::std::tr1::tuple<I_Rf24Device::Pipe, size_t>>{
 
 };
 
 INSTANTIATE_TEST_CASE_P(AllPipes,
-                        Rf24ControllerAllPipesIntegrationTest,
-                        ::testing::Values(
-                                 I_Rf24Device::PIPE_0,
-                                 I_Rf24Device::PIPE_1,
-                                 I_Rf24Device::PIPE_2,
-                                 I_Rf24Device::PIPE_3,
-                                 I_Rf24Device::PIPE_4,
-                                 I_Rf24Device::PIPE_5));
+                        Rf24Controller$Pipe$Size$IntegrationTest,
+                        ::testing::Combine(
+                                 ::testing::Values(
+                                          I_Rf24Device::PIPE_0,
+                                          I_Rf24Device::PIPE_1,
+                                          I_Rf24Device::PIPE_2,
+                                          I_Rf24Device::PIPE_3,
+                                          I_Rf24Device::PIPE_4,
+                                          I_Rf24Device::PIPE_5
+                                 ),
+                                 ::testing::Values(
+                                          1u,
+                                          2u,
+                                          16u,
+                                          Rf24Device::MAX_PAYLOAD_SIZE-1u,
+                                          Rf24Device::MAX_PAYLOAD_SIZE
+                                 )
+                        )
+);
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24ControllerAllPipesIntegrationTest, send1To2) {
-   uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
-
+TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendDevice1ToDevice2) {
+   size_t size = ::std::tr1::get<1>(GetParam());
+   std::vector<uint8_t> data(size);
+   std::iota(data.begin(), data.end(), 1);
 
    mController2.startListening();
-   mController1.write(GetParam(), data , Util::sizeOfArray(data));
+   mController1.write(::std::tr1::get<0>(GetParam()), asArray(data), data.size());
 
    waitForDataAvailable(mController2);
 
-   uint8_t buffer[Rf24Device::PAYLOAD_SIZE] = {0};
-   size_t readSize = mController2.read(buffer,Util::sizeOfArray(data));
+   I_Rf24Device::Pipe pipe;
+   std::vector<uint8_t> buffer(size);
+   size_t readSize = mController2.read(asArray(buffer), buffer.size(), pipe);
 
-   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, readSize);
-   ASSERT_THAT(data, testing::ElementsAreArray(buffer));
+   EXPECT_EQ(::std::tr1::get<0>(GetParam()), pipe);
+   EXPECT_EQ(size, readSize);
+   ASSERT_THAT(buffer, testing::ElementsAreArray(asArray(data), data.size()));
 
 
 }
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendDevice2ToDevice1) {
+   size_t size = ::std::tr1::get<1>(GetParam());
+   std::vector<uint8_t> data(size);
+   std::iota(data.begin(), data.end(), 1);
+
+   mController1.startListening();
+   mController2.write(::std::tr1::get<0>(GetParam()), asArray(data), data.size());
+
+   waitForDataAvailable(mController1);
+
+   I_Rf24Device::Pipe pipe;
+   std::vector<uint8_t> buffer(size);
+   size_t readSize = mController1.read(asArray(buffer), buffer.size(), pipe);
+
+   EXPECT_EQ(::std::tr1::get<0>(GetParam()), pipe);
+   EXPECT_EQ(size, readSize);
+   ASSERT_THAT(buffer, testing::ElementsAreArray(asArray(data), data.size()));
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendAndReveive) {
+   size_t size = ::std::tr1::get<1>(GetParam());
+   std::vector<uint8_t> data(size);
+   std::iota(data.begin(), data.end(), 1);
+
+   mController2.startListening();
+   mController1.write(::std::tr1::get<0>(GetParam()), asArray(data), data.size());
+   mController1.startListening();
+
+   {
+      waitForDataAvailable(mController2);
+      std::vector<uint8_t> buffer(size);
+      mController2.read(asArray(buffer), buffer.size());
+      mController2.write(::std::tr1::get<0>(GetParam()), asArray(buffer), buffer.size());
+   }
+
+   waitForDataAvailable(mController1);
+   std::vector<uint8_t> readBuffer(size);
+   size_t readSize = mController1.read(asArray(readBuffer), readBuffer.size());
+
+
+   EXPECT_EQ(size, readSize);
+
+   ASSERT_THAT(readBuffer, testing::ElementsAreArray(asArray(data), data.size()));
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendAndReveiveInALoop) {
+   size_t size = ::std::tr1::get<1>(GetParam());
+   std::vector<uint8_t> data(size);
+   std::iota(data.begin(), data.end(), 1);
+
+   for (size_t i = 0; i < 3 ; i++) {
+
+      // std::cout << "Loop " << i << std::endl;
+      mController2.startListening();
+
+      mController1.write(::std::tr1::get<0>(GetParam()), asArray(data), data.size());
+      mController1.startListening();
+
+      {
+         waitForDataAvailable(mController2);
+         std::vector<uint8_t> buffer(size);
+         mController2.read(asArray(buffer), buffer.size());
+         mController2.write(::std::tr1::get<0>(GetParam()), asArray(buffer), buffer.size());
+      }
+
+      waitForDataAvailable(mController1);
+      std::vector<uint8_t> readBuffer(size);
+      size_t readSize = mController1.read(asArray(readBuffer), readBuffer.size());
+
+
+      EXPECT_EQ(size, readSize);
+      ASSERT_THAT(readBuffer, testing::ElementsAreArray(asArray(data), data.size()));
+   }
+}
+
 
 //-------------------------------------------------------------------------------------------------
 

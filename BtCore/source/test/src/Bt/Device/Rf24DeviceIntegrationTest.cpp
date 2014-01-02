@@ -22,14 +22,8 @@ namespace Device {
 
 //-------------------------------------------------------------------------------------------------
 
-struct Rf24DeviceIntegrationTestParameters {
-      uint8_t chipSelect;
-      uint8_t chipEnable;
-};
-//-------------------------------------------------------------------------------------------------
-
 /**
- * This test need to have two NRf24L01P transceivers connected!
+ * These tests need to have two NRf24L01P transceivers connected!
  *
  * Raspberry Pi:
  *
@@ -54,6 +48,18 @@ struct Rf24DeviceIntegrationTestParameters {
  *    9(MISO)              MI
  *
  */
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
+struct Rf24DeviceIntegrationTestParameters {
+      uint8_t chipSelect;
+      uint8_t chipEnable;
+};
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
 class Rf24DeviceIntegrationTest : public ::testing::Test, public ::testing::WithParamInterface<Rf24DeviceIntegrationTestParameters> {
    
    protected:
@@ -338,9 +344,9 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePayloadSize) {
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
-      mDevice.receivePayloadSize(pipes[i], Rf24Device::PAYLOAD_SIZE);
+      mDevice.receivePayloadSize(pipes[i], Rf24Device::MAX_PAYLOAD_SIZE);
       uint8_t size = mDevice.receivePayloadSize(pipes[i]);
-      EXPECT_EQ((int)Rf24Device::PAYLOAD_SIZE, (int)size);
+      EXPECT_EQ((int)Rf24Device::MAX_PAYLOAD_SIZE, (int)size);
    }
 }
 
@@ -409,7 +415,7 @@ TEST_P(Rf24DeviceIntegrationTest, writeUndersizeTransmitPayload) {
 //-------------------------------------------------------------------------------------------------
 
 TEST_P(Rf24DeviceIntegrationTest, writeExactTransmitPayload) {
-   uint8_t data[Rf24Device::PAYLOAD_SIZE] = {1,2,3,4,5};
+   uint8_t data[Rf24Device::MAX_PAYLOAD_SIZE] = {1,2,3,4,5};
 
    size_t written = mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
 
@@ -419,11 +425,11 @@ TEST_P(Rf24DeviceIntegrationTest, writeExactTransmitPayload) {
 //-------------------------------------------------------------------------------------------------
 
 TEST_P(Rf24DeviceIntegrationTest, writeOversizeTransmitPayload) {
-   uint8_t data[Rf24Device::PAYLOAD_SIZE + 20] = {1,2,3,4,5};
+   uint8_t data[Rf24Device::MAX_PAYLOAD_SIZE + 20] = {1,2,3,4,5};
 
    size_t written = mDevice.writeTransmitPayload(data, Util::sizeOfArray(data));
 
-   EXPECT_EQ((size_t)Rf24Device::PAYLOAD_SIZE, written);
+   EXPECT_EQ((size_t)Rf24Device::MAX_PAYLOAD_SIZE, written);
    EXPECT_FALSE(mDevice.isTransmitFifoEmpty());
 }
 

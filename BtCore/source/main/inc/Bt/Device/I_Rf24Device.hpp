@@ -22,7 +22,7 @@ class I_Rf24Device {
    public:
 
       enum {
-         PAYLOAD_SIZE = 32
+         MAX_PAYLOAD_SIZE = 32
       };
 
       enum Pipe {
@@ -126,6 +126,8 @@ class I_Rf24Device {
       virtual bool isReceiveFifoFull() = 0;
 
       virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize) = 0;
+
+      virtual size_t availableReceivePayload() = 0;
       virtual size_t readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) = 0;
 
       virtual bool dynamicPayloadFeatureEnabled() = 0;

@@ -74,6 +74,8 @@ class Rf24Device : public I_Rf24Device
       virtual bool isReceiveFifoFull();
 
       virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize);
+
+      virtual size_t availableReceivePayload();
       virtual size_t readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize);
 
       virtual bool dynamicPayloadFeatureEnabled();

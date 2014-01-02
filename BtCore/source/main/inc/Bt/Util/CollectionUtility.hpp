@@ -20,7 +20,6 @@ template<typename T, int N> size_t sizeOfArray(const T (&pArray)[N]) {
    return N;
 }
 
-
 } // namespace Util
 } // namespace Bt
 

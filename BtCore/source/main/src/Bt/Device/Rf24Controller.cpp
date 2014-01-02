@@ -64,7 +64,7 @@ Rf24Controller::~Rf24Controller() {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* data, size_t size) {
+size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* pData, size_t pSize) {
 
    StateBase* originalState = mCurrentState;
    mCurrentState->ToStandbyI();
@@ -74,18 +74,19 @@ size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* data, size_t siz
    mDevice->transmitAddress(transmitPipeAddress);
    mDevice->receiveAddress(I_Rf24Device::PIPE_0, transmitPipeAddress);
 
-   mDevice->writeTransmitPayload(data, size);
+   mDevice->writeTransmitPayload(pData, pSize);
+
    mCurrentState->ToTxMode();
 
    I_Rf24Device::Status status = mDevice->status();
    Util::Timeout timeout(10000);
    while(!(status.dataSent() || status.retransmitsExceeded() || timeout) ) {
       status = mDevice->status();
-      printf("TxMode::ToStandbyI: autoRetransmitCounter = %u \n", (mDevice->autoRetransmitCounter()) );
+      // printf("TxMode::ToStandbyI: autoRetransmitCounter = %u \n", (mDevice->autoRetransmitCounter()) );
       Util::delayInMicroseconds(10);
    }
 
-   size_t sentSize = size;
+   size_t sentSize = pSize;
 
    if (status.retransmitsExceeded()) {
       mDevice->clearRetransmitsExceeded();
@@ -133,28 +134,33 @@ bool Rf24Controller::isDataAvailable() {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24Controller::read(uint8_t* buffer, size_t size)
+size_t Rf24Controller::read(uint8_t* pBuffer, size_t pSize)
 {
    I_Rf24Device::Pipe pipe;
-   return read(buffer, size, pipe);
+   return read(pBuffer, pSize, pipe);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24Controller::read(uint8_t* data, size_t size, I_Rf24Device::Pipe& pPipe) {
+size_t Rf24Controller::read(uint8_t* pData, size_t pSize, I_Rf24Device::Pipe& pPipe) {
    if (mDevice->isReceiveFifoEmpty())
    {
       return 0;
    }
-   return mDevice->readReceivePayload(pPipe, data, size);
+   return mDevice->readReceivePayload(pPipe, pData, pSize);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void Rf24Controller::configureDevice() {
+
+   mDevice->dynamicPayloadFeatureEnabled(true);
+
+
    for (auto pipe : sAllPipes) {
-         mDevice->receivePayloadSize(pipe, I_Rf24Device::PAYLOAD_SIZE);
+         mDevice->receivePayloadSize(pipe, I_Rf24Device::MAX_PAYLOAD_SIZE);
          mDevice->receivePipeEnabled(pipe, true);
+         mDevice->dynamicPayloadEnabled(pipe, true);
    }
 }
 
@@ -163,7 +169,8 @@ void Rf24Controller::configureDevice() {
 
 void Rf24Controller::PowerDown::ToStandbyI() {
    mController->mDevice->powerUp(true);
-   Util::delayInMicroseconds(1500); // TODO (BT) can reduce ext oszi ?
+   // Util::delayInMicroseconds(1500); // TODO (BT) can reduce ext oszi ?
+   Util::delayInMicroseconds(150); // TODO (BT) can reduce ext oszi ?
 
    mController->configureDevice();
 

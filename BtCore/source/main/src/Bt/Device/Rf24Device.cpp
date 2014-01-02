@@ -37,6 +37,7 @@ enum Commands {
    CMD_R_RX_PAYLOAD  = 0x61,
    CMD_W_TX_PAYLOAD  = 0xA0,
    CMD_FLUSH_TX      = 0xE1,
+   CMD_R_RX_PL_WID   = 0x60,
    CMD_NOP = 0xFF
 };
 
@@ -189,7 +190,7 @@ Rf24Device::~Rf24Device() {
 Rf24Device::Status Rf24Device::status()
 {
    uint8_t status = readRegister(*mSpi, REGISTER_STATUS);
-   printf("status = %02x \n",status);
+   //printf("status = %02x \n",status);
    return Status(status & 0x40, status & 0x20, status & 0x10);
 }
 
@@ -460,23 +461,17 @@ bool Rf24Device::isReceiveFifoFull() {
 size_t Rf24Device::writeTransmitPayload(uint8_t* pData, size_t pSize) {
 
    size_t dataSize;
-   size_t stuffingSize;
 
-   if (pSize >= PAYLOAD_SIZE) {
-      dataSize = PAYLOAD_SIZE;
-      stuffingSize = 0;
-   } else {
+   if (pSize <= MAX_PAYLOAD_SIZE) {
       dataSize = pSize;
-      stuffingSize = PAYLOAD_SIZE - pSize;
+   } else {
+      dataSize = MAX_PAYLOAD_SIZE;
    }
 
    mSpi->chipSelect(true);
    mSpi->transfer(CMD_W_TX_PAYLOAD);
    for (size_t i = 0; i < dataSize ; ++i) {
       mSpi->transfer(pData[i]);
-   }
-   for (size_t i = 0; i < stuffingSize ; ++i) {
-      mSpi->transfer(0);
    }
    mSpi->chipSelect(false);
 
@@ -485,9 +480,17 @@ size_t Rf24Device::writeTransmitPayload(uint8_t* pData, size_t pSize) {
 
 //-------------------------------------------------------------------------------------------------
 
+size_t Rf24Device::availableReceivePayload() {
+   mSpi->chipSelect(true);
+   mSpi->transfer(CMD_R_RX_PL_WID);
+   size_t size = mSpi->transfer(CMD_NOP);
+   mSpi->chipSelect(false);
+   return size;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 size_t Rf24Device::readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) {
-   size_t dataSize;
-   size_t stuffingSize;
 
    switch(readSubRegister(*mSpi,REGISTER_STATUS,3,1))
    {
@@ -499,12 +502,16 @@ size_t Rf24Device::readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize)
       case 5 : pPipe = PIPE_5 ; break;
    }
 
-   if (pSize >= PAYLOAD_SIZE) {
-      dataSize = PAYLOAD_SIZE;
+   size_t availableSize = availableReceivePayload();
+   size_t dataSize;
+   size_t stuffingSize;
+
+   if (pSize >= availableSize) {
+      dataSize = availableSize;
       stuffingSize = 0;
    } else {
       dataSize = pSize;
-      stuffingSize = PAYLOAD_SIZE - pSize;
+      stuffingSize = availableSize - pSize;
    }
 
    mSpi->chipSelect(true);
