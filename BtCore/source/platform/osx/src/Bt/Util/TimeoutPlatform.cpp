@@ -4,35 +4,35 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::SpiPlatform
+//  Bt::Util::TimeoutPlatform
 //  
 //*************************************************************************************************
 
-#include "Bt/Mcu/SpiPlatform.hpp"
+#include "Bt/Util/TimeoutPlatform.hpp"
 
 namespace Bt {
-namespace Mcu {
+namespace Util {
 
 
 //-------------------------------------------------------------------------------------------------
 
-SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed) {
+TimeoutPlatform::TimeoutPlatform(unsigned int pMilliseconds) : mDuration(pMilliseconds), mStart(std::chrono::high_resolution_clock::now()) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-SpiPlatform::~SpiPlatform() {
+TimeoutPlatform::~TimeoutPlatform() {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t SpiPlatform::transfer(uint8_t data) {
-   return 0u;
+bool TimeoutPlatform::check() const {
+   return (std::chrono::high_resolution_clock::now() - mStart) > mDuration;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-} // namespace Mcu
+} // namespace Util
 } // namespace Bt

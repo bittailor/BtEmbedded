@@ -11,15 +11,19 @@
 #ifndef INC__Bt_Mcu_SpiPlatform__hpp
 #define INC__Bt_Mcu_SpiPlatform__hpp
 
+#include "Bt/Mcu/I_Spi.hpp"
+
 namespace Bt {
 namespace Mcu {
 
 class SpiPlatform 
 {
    public:
-      SpiPlatform();
+      SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed);
       ~SpiPlatform();
    
+      uint8_t transfer(uint8_t data);
+
    private:
    	  // Constructor to prohibit copy construction.
       SpiPlatform(const SpiPlatform&);

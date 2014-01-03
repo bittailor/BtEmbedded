@@ -4,41 +4,40 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::Pin
+//  Bt::Mcu::PinPlatform
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Mcu_Pin__hpp
-#define INC__Bt_Mcu_Pin__hpp
+#ifndef INC__Bt_Mcu_PinPlatform__hpp
+#define INC__Bt_Mcu_PinPlatform__hpp
 
 #include <stdint.h>
+
 #include "Bt/Mcu/I_Pin.hpp"
-#include "Bt/Mcu/PinPlatform.hpp"
 
 namespace Bt {
 namespace Mcu {
 
-class Pin : public I_Pin, private PinPlatform
+class PinPlatform 
 {
    public:
-      Pin(uint8_t pPinId, Mode pInitialMode);
-      ~Pin();
+      PinPlatform(uint8_t pPinId, I_Pin::Mode pInitialMode);
 
-      virtual void mode(Mode pMode);
+      void mode(I_Pin::Mode pMode);
 
-      virtual void write(bool pHigh);
+      void write(bool gHigh);
 
-      virtual bool read();
-
+      bool read();
+   
    private:
    	  // Constructor to prohibit copy construction.
-      Pin(const Pin&);
+      PinPlatform(const PinPlatform&);
 
       // Operator= to prohibit copy assignment
-      Pin& operator=(const Pin&);
+      PinPlatform& operator=(const PinPlatform&);
 };
 
 } // namespace Mcu
 } // namespace Bt
 
-#endif // INC__Bt_Mcu_Pin__hpp
+#endif // INC__Bt_Mcu_PinPlatform__hpp

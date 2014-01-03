@@ -22,8 +22,12 @@ namespace Net {
 
 class RfSocket 
 {
+   private:
+      enum { FRAME_BUFFER_SIZE = Device::I_RfController::MAX_PAYLOAD_SIZE };
+      enum { HEADER_SIZE = 2 };
 
    public:
+      enum { MAX_PAYLOAD = FRAME_BUFFER_SIZE - HEADER_SIZE};
 
       typedef uint8_t NodeId;
 
@@ -36,12 +40,7 @@ class RfSocket
       void writeDatagram(NodeId pDestination, uint8_t* pBuffer, size_t size);
       size_t receive(Util::Buffer<uint8_t>& pBuffer);
 
-
-
    private:
-      enum { FRAME_BUFFER_SIZE = Device::I_RfController::MAX_PAYLOAD };
-      enum { HEADER_SIZE = 3 };
-      enum { MAX_PAYLOAD = FRAME_BUFFER_SIZE - HEADER_SIZE };
 
    	  // Constructor to prohibit copy construction.
       RfSocket(const RfSocket&);
@@ -52,7 +51,7 @@ class RfSocket
 
 
       NodeId mNodeId;
-      Util::StaticArray<uint8_t,Device::I_RfController::MAX_PAYLOAD> mSendFrameBuffer;
+      Util::StaticArray<uint8_t,Device::I_RfController::MAX_PAYLOAD_SIZE> mSendFrameBuffer;
       Device::I_RfController* mController;
 
 };

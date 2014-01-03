@@ -18,6 +18,51 @@ namespace Net {
 
 namespace {
 
+   class RfSocketHeader {
+      public:
+         RfSocketHeader(uint8_t* pBuffer) : mBuffer(pBuffer) {
+
+         }
+
+         RfSocket::NodeId source() {
+            return mBuffer[0];
+         }
+
+         void source(RfSocket::NodeId source) {
+            mBuffer[0] = source;
+         }
+
+         RfSocket::NodeId destination() {
+            return mBuffer[1];
+         }
+
+         void destination(RfSocket::NodeId destination) {
+            mBuffer[1] = destination;
+         }
+
+         uint8_t sequenceId() {
+            return mBuffer[2];
+         }
+
+         void sequenceId(uint8_t sequenceId) {
+            mBuffer[2] = sequenceId;
+         }
+
+         bool last() {
+            return mBuffer[3] & 0x20;
+         }
+
+         void last(bool last) {
+            mBuffer[3] = last;
+         }
+
+
+
+
+
+      private:
+         uint8_t* mBuffer;
+   };
 
 }
 
@@ -36,19 +81,21 @@ RfSocket::~RfSocket() {
 //-------------------------------------------------------------------------------------------------
 
 void RfSocket::writeDatagram(NodeId pDestination, uint8_t* pBuffer, size_t size) {
+
+   Device::I_Rf24Device::Pipe pipe = Device::I_Rf24Device::PIPE_0; // TODO (BT) calculate pipe !
+
+
+   size_t remainingBytesToSend = size;
+
    /*
-   Device::I_DeviceNRf24L01P::Pipe pipe = Device::I_DeviceNRf24L01P::PIPE_0; // TODO (BT) calculate pipe !
-
-
-   size_t remainingBytesToSend = pBuffer.size();
-
    while(remainingBytesToSend > 0) {
       mSendFrameBuffer[0] = mNodeId;
       mSendFrameBuffer[1] = pDestination;
       mSendFrameBuffer[2] = pBuffer.size();
+      mSendFrameBuffer[2] = pBuffer.size();
       size_t bytesToSend = std::min((size_t)MAX_PAYLOAD, remainingBytesToSend);
       remainingBytesToSend -= bytesToSend;
-      mController->send()
+      mController->send();
 
 
 
@@ -69,11 +116,12 @@ void RfSocket::writeDatagram(NodeId pDestination, uint8_t* pBuffer, size_t size)
 
    size_t bytesToSend = pBuffer.size();
    while(bytesToSend > mController->payloadSize()) {
-      mController.write()
+      mController.write();
    }
-
-   mController->
    */
+
+   // mController->
+
 }
 
 //-------------------------------------------------------------------------------------------------

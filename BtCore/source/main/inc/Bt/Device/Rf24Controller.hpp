@@ -14,12 +14,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <Bt/Device/I_RfController.hpp>
 #include "Bt/Device/I_Rf24Device.hpp"
 
 namespace Bt {
 namespace Device {
 
-class Rf24Controller 
+class Rf24Controller : public I_RfController
 {
    public:
 

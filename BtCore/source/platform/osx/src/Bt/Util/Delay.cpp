@@ -4,35 +4,33 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::SpiPlatform
+//  Bt::Util::Delay
 //  
 //*************************************************************************************************
 
-#include "Bt/Mcu/SpiPlatform.hpp"
+#include "Bt/Util/Delay.hpp"
+
+#include <chrono>
+#include <thread>
 
 namespace Bt {
-namespace Mcu {
+namespace Util {
 
 
 //-------------------------------------------------------------------------------------------------
 
-SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed) {
-
+void delayInMilliseconds(unsigned int milliseconds) {
+   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
 //-------------------------------------------------------------------------------------------------
 
-SpiPlatform::~SpiPlatform() {
-
+void delayInMicroseconds(unsigned int microseconds) {
+   std::this_thread::sleep_for(std::chrono::microseconds(microseconds));
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t SpiPlatform::transfer(uint8_t data) {
-   return 0u;
-}
 
-//-------------------------------------------------------------------------------------------------
-
-} // namespace Mcu
+} // namespace Util
 } // namespace Bt
