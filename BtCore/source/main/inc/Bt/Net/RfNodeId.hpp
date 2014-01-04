@@ -16,28 +16,16 @@
 namespace Bt {
 namespace Net {
 
-class RfNodeId 
+class RfNode 
 {
    public:
-      RfNodeId(uint8_t pId);
+      RfNode(uint8_t pId);
 
       uint8_t id() const { return mId; }
       uint8_t level() const { return mLevel; }
 
-
-
-
-      bool isDirectChild(const RfNodeId& pNodeId) const;
-
-
-
-   
    private:
       static uint8_t calculateLevel(uint8_t pId);
-
-      RfNodeId(uint8_t pId, uint8_t pLevel);
-
-
 
       uint8_t mId;
       uint8_t mLevel;

@@ -64,6 +64,13 @@ Rf24Controller::~Rf24Controller() {
 
 //-------------------------------------------------------------------------------------------------
 
+bool Rf24Controller::write(Pipe pPipe, Packet pPacket) {
+   size_t size = write(pPipe, pPacket.buffer(), pPacket.size());
+   return size != 0;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* pData, size_t pSize) {
 
    StateBase* originalState = mCurrentState;
@@ -130,6 +137,25 @@ void Rf24Controller::stopListening() {
 
 bool Rf24Controller::isDataAvailable() {
    return !mDevice->isReceiveFifoEmpty();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool Rf24Controller::read(Packet pPacket) {
+   I_Rf24Device::Pipe pipe;
+   return read(pPacket, pipe);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool Rf24Controller::read(Packet pPacket, Pipe& pPipe) {
+   if (mDevice->isReceiveFifoEmpty())
+   {
+      return false;
+   }
+   size_t size = mDevice->readReceivePayload(pPipe, pPacket.buffer(), Packet::BUFFER_CAPACITY);
+   pPacket.size(size);
+   return true;
 }
 
 //-------------------------------------------------------------------------------------------------

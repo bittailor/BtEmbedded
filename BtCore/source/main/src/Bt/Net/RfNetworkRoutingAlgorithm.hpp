@@ -20,7 +20,7 @@ namespace Net {
 class RfNetworkRoutingAlgorithm 
 {
    public:
-      Device::I_RfController::Pipe calculateRoutingPipe(RfNodeId pSelf, RfNodeId pDestination);
+      Device::I_RfController::Pipe calculateRoutingPipe(RfNode pSelf, RfNode pDestination);
 };
 
 } // namespace Net

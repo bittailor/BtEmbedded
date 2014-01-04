@@ -26,11 +26,12 @@ class RfNetworkSocket : public I_RfNetworkSocket
       enum { HEADER_SIZE = 2 };
 
    public:
-      RfNetworkSocket(RfNodeId pNodeId, Device::I_RfController& pController);
+      RfNetworkSocket(RfNode pNodeId, Device::I_RfController& pController);
 
       void workcycle();
 
-      void writeDatagram(RfNodeId pDestination, uint8_t* pBuffer, size_t size);
+      void writeDatagram(RfNode pDestination, uint8_t* pBuffer, size_t size);
+
 
 
 
@@ -38,7 +39,6 @@ class RfNetworkSocket : public I_RfNetworkSocket
 
    private:
 
-      class NetworkPacket;
 
    	  // Constructor to prohibit copy construction.
       RfNetworkSocket(const RfNetworkSocket&);
@@ -46,10 +46,10 @@ class RfNetworkSocket : public I_RfNetworkSocket
       // Operator= to prohibit copy assignment
       RfNetworkSocket& operator=(const RfNetworkSocket&);
 
-      size_t write(NetworkPacket& packet);
+      bool write(Packet& packet);
 
 
-      RfNodeId mNodeId;
+      RfNode mNodeId;
       Device::I_RfController* mController;
       RfNetworkRoutingAlgorithm mRouting;
 

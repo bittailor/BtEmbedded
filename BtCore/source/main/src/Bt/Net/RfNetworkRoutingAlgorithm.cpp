@@ -15,7 +15,7 @@ namespace Net {
 
 //-------------------------------------------------------------------------------------------------
 
-Device::I_RfController::Pipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNodeId pSelf, RfNodeId pDestination) {
+Device::I_RfController::Pipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode pSelf, RfNode pDestination) {
    if (pSelf.level() >= pDestination.level()){
       return Device::I_RfController::Pipe::PIPE_0;
    }
