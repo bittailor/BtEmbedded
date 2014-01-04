@@ -82,10 +82,10 @@ RfSocket::~RfSocket() {
 
 void RfSocket::writeDatagram(NodeId pDestination, uint8_t* pBuffer, size_t size) {
 
-   Device::I_Rf24Device::Pipe pipe = Device::I_Rf24Device::PIPE_0; // TODO (BT) calculate pipe !
+   //Device::I_Rf24Device::Pipe pipe = calculatePipe();
 
 
-   size_t remainingBytesToSend = size;
+   //size_t remainingBytesToSend = size;
 
    /*
    while(remainingBytesToSend > 0) {

@@ -153,12 +153,12 @@ INSTANTIATE_TEST_CASE_P(AllPipes,
                         Rf24Controller$Pipe$Size$IntegrationTest,
                         ::testing::Combine(
                                  ::testing::Values(
-                                          I_Rf24Device::PIPE_0,
-                                          I_Rf24Device::PIPE_1,
-                                          I_Rf24Device::PIPE_2,
-                                          I_Rf24Device::PIPE_3,
-                                          I_Rf24Device::PIPE_4,
-                                          I_Rf24Device::PIPE_5
+                                          I_Rf24Device::Pipe::PIPE_0,
+                                          I_Rf24Device::Pipe::PIPE_1,
+                                          I_Rf24Device::Pipe::PIPE_2,
+                                          I_Rf24Device::Pipe::PIPE_3,
+                                          I_Rf24Device::Pipe::PIPE_4,
+                                          I_Rf24Device::Pipe::PIPE_5
                                  ),
                                  ::testing::Values(
                                           1u,

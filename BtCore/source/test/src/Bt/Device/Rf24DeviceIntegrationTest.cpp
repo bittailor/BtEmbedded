@@ -200,12 +200,12 @@ TEST_P(Rf24DeviceIntegrationTest, writeSameRegister) {
 TEST_P(Rf24DeviceIntegrationTest, readDefaultRxPipes) {
 
    Rf24Device::Pipe pipes[] = {
-            Rf24Device::PIPE_0,
-            Rf24Device::PIPE_1,
-            Rf24Device::PIPE_2,
-            Rf24Device::PIPE_3,
-            Rf24Device::PIPE_4,
-            Rf24Device::PIPE_5,
+            Rf24Device::Pipe::PIPE_0,
+            Rf24Device::Pipe::PIPE_1,
+            Rf24Device::Pipe::PIPE_2,
+            Rf24Device::Pipe::PIPE_3,
+            Rf24Device::Pipe::PIPE_4,
+            Rf24Device::Pipe::PIPE_5,
    };
 
    Rf24Device::Address defaultAddresses[] = {
@@ -228,12 +228,12 @@ TEST_P(Rf24DeviceIntegrationTest, readDefaultRxPipes) {
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackRxPipes) {
 
    Rf24Device::Pipe pipes[] = {
-            Rf24Device::PIPE_0,
-            Rf24Device::PIPE_1,
-            Rf24Device::PIPE_2,
-            Rf24Device::PIPE_3,
-            Rf24Device::PIPE_4,
-            Rf24Device::PIPE_5
+            Rf24Device::Pipe::PIPE_0,
+            Rf24Device::Pipe::PIPE_1,
+            Rf24Device::Pipe::PIPE_2,
+            Rf24Device::Pipe::PIPE_3,
+            Rf24Device::Pipe::PIPE_4,
+            Rf24Device::Pipe::PIPE_5
    };
 
    Rf24Device::Address addresses[] = {
@@ -261,12 +261,12 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackRxPipes) {
 TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePipeEnabled) {
 
    Rf24Device::Pipe pipes[] = {
-            Rf24Device::PIPE_0,
-            Rf24Device::PIPE_1,
-            Rf24Device::PIPE_2,
-            Rf24Device::PIPE_3,
-            Rf24Device::PIPE_4,
-            Rf24Device::PIPE_5,
+            Rf24Device::Pipe::PIPE_0,
+            Rf24Device::Pipe::PIPE_1,
+            Rf24Device::Pipe::PIPE_2,
+            Rf24Device::Pipe::PIPE_3,
+            Rf24Device::Pipe::PIPE_4,
+            Rf24Device::Pipe::PIPE_5,
    };
 
    bool defaults[] = {
@@ -288,12 +288,12 @@ TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePipeEnabled) {
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePipeEnabled) {
 
    Rf24Device::Pipe pipes[] = {
-            Rf24Device::PIPE_0,
-            Rf24Device::PIPE_1,
-            Rf24Device::PIPE_2,
-            Rf24Device::PIPE_3,
-            Rf24Device::PIPE_4,
-            Rf24Device::PIPE_5,
+            Rf24Device::Pipe::PIPE_0,
+            Rf24Device::Pipe::PIPE_1,
+            Rf24Device::Pipe::PIPE_2,
+            Rf24Device::Pipe::PIPE_3,
+            Rf24Device::Pipe::PIPE_4,
+            Rf24Device::Pipe::PIPE_5,
    };
 
    bool value[] = {
@@ -316,12 +316,12 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePipeEnabled) {
 TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePayloadSize) {
 
    Rf24Device::Pipe pipes[] = {
-            Rf24Device::PIPE_0,
-            Rf24Device::PIPE_1,
-            Rf24Device::PIPE_2,
-            Rf24Device::PIPE_3,
-            Rf24Device::PIPE_4,
-            Rf24Device::PIPE_5,
+            Rf24Device::Pipe::PIPE_0,
+            Rf24Device::Pipe::PIPE_1,
+            Rf24Device::Pipe::PIPE_2,
+            Rf24Device::Pipe::PIPE_3,
+            Rf24Device::Pipe::PIPE_4,
+            Rf24Device::Pipe::PIPE_5,
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
@@ -335,12 +335,12 @@ TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePayloadSize) {
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePayloadSize) {
 
    Rf24Device::Pipe pipes[] = {
-            Rf24Device::PIPE_0,
-            Rf24Device::PIPE_1,
-            Rf24Device::PIPE_2,
-            Rf24Device::PIPE_3,
-            Rf24Device::PIPE_4,
-            Rf24Device::PIPE_5,
+            Rf24Device::Pipe::PIPE_0,
+            Rf24Device::Pipe::PIPE_1,
+            Rf24Device::Pipe::PIPE_2,
+            Rf24Device::Pipe::PIPE_3,
+            Rf24Device::Pipe::PIPE_4,
+            Rf24Device::Pipe::PIPE_5,
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
@@ -452,17 +452,17 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackDynamicPayloadFeatureEnabled) 
 //-------------------------------------------------------------------------------------------------
 
 TEST_P(Rf24DeviceIntegrationTest, readDefaultDynamicPayloadEnabled) {
-   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0));
+   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0));
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackDynamicPayloadEnabled) {
-   mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0, true);
-   EXPECT_TRUE(mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0));
-   mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0, false);
-   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(Rf24Device::PIPE_0));
+   mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0, true);
+   EXPECT_TRUE(mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0));
+   mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0, false);
+   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0));
 }
 
 //-------------------------------------------------------------------------------------------------

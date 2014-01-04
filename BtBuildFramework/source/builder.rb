@@ -72,6 +72,7 @@ class Builder
     
     test_includes = [ 
       "source/main/inc",
+      "source/main/src",  
       "source/mock/inc",  
       "source/platform/#{@platform}/inc" ] 
       

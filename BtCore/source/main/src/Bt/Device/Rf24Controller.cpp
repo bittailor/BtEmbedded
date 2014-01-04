@@ -24,14 +24,14 @@ namespace Device {
 
 namespace{
 
-I_Rf24Device::Pipe sAllPipes [] =
+I_RfController::Pipe sAllPipes [] =
 {
-         I_Rf24Device::PIPE_0,
-         I_Rf24Device::PIPE_1,
-         I_Rf24Device::PIPE_2,
-         I_Rf24Device::PIPE_3,
-         I_Rf24Device::PIPE_4,
-         I_Rf24Device::PIPE_5
+         I_RfController::Pipe::PIPE_0,
+         I_RfController::Pipe::PIPE_1,
+         I_RfController::Pipe::PIPE_2,
+         I_RfController::Pipe::PIPE_3,
+         I_RfController::Pipe::PIPE_4,
+         I_RfController::Pipe::PIPE_5
 };
 
 
@@ -69,10 +69,10 @@ size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* pData, size_t pS
    StateBase* originalState = mCurrentState;
    mCurrentState->ToStandbyI();
 
-   I_Rf24Device::Address backupPipe0 = mDevice->receiveAddress(I_Rf24Device::PIPE_0);
+   I_Rf24Device::Address backupPipe0 = mDevice->receiveAddress(I_Rf24Device::Pipe::PIPE_0);
    I_Rf24Device::Address transmitPipeAddress = mDevice->receiveAddress(pPipe);
    mDevice->transmitAddress(transmitPipeAddress);
-   mDevice->receiveAddress(I_Rf24Device::PIPE_0, transmitPipeAddress);
+   mDevice->receiveAddress(I_Rf24Device::Pipe::PIPE_0, transmitPipeAddress);
 
    mDevice->writeTransmitPayload(pData, pSize);
 
@@ -106,7 +106,7 @@ size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* pData, size_t pS
       mDevice->clearDataSent();
    }
 
-   mDevice->receiveAddress(I_Rf24Device::PIPE_0, backupPipe0);
+   mDevice->receiveAddress(I_Rf24Device::Pipe::PIPE_0, backupPipe0);
 
    mCurrentState->ToStandbyI();
    originalState->ApplyTo(*mCurrentState);

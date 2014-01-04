@@ -25,7 +25,7 @@ class I_Rf24Device {
          MAX_PAYLOAD_SIZE = 32
       };
 
-      enum Pipe {
+      enum class Pipe {
          PIPE_0,
          PIPE_1,
          PIPE_2,

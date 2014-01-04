@@ -48,8 +48,6 @@ class RfSocket
       // Operator= to prohibit copy assignment
       RfSocket& operator=(const RfSocket&);
 
-
-
       NodeId mNodeId;
       Util::StaticArray<uint8_t,Device::I_RfController::MAX_PAYLOAD_SIZE> mSendFrameBuffer;
       Device::I_RfController* mController;

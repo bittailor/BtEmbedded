@@ -27,13 +27,14 @@ class Rf24Controller : public I_RfController
       Rf24Controller(I_Rf24Device& pDevice);
       ~Rf24Controller();
 
-      virtual size_t write(I_Rf24Device::Pipe pPipe, uint8_t* pData, size_t pSize);
+      virtual size_t write(Pipe pPipe, uint8_t* pData, size_t pSize);
 
       virtual void startListening();
       virtual void stopListening();
       virtual bool isDataAvailable();
       virtual size_t read(uint8_t* pBuffer, size_t pSize);
-      virtual size_t read(uint8_t* pBuffer, size_t pSize, I_Rf24Device::Pipe& pPipe);
+      virtual size_t read(uint8_t* pBuffer, size_t pSize, Pipe& pPipe);
+
 
 
 
