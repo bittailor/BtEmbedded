@@ -5,13 +5,13 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::Rf24Controller
+//  Bt::Rf24::Rf24Controller
 //  
 //*************************************************************************************************
 
 #include <stdio.h>
 
-#include "Bt/Device/Rf24Controller.hpp"
+#include "Bt/Rf24/Rf24Controller.hpp"
 
 #include "Bt/Util/Delay.hpp"
 #include "Bt/Util/Timeout.hpp"

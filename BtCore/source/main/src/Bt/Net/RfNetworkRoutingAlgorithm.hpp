@@ -11,7 +11,7 @@
 #ifndef INC__Bt_Net_RfNetworkRoutingAlgorithm__hpp
 #define INC__Bt_Net_RfNetworkRoutingAlgorithm__hpp
 
-#include "Bt/Device/I_RfController.hpp"
+#include "Bt/Rf24/I_RfController.hpp"
 #include "Bt/Net/RfNode.hpp"
 
 namespace Bt {

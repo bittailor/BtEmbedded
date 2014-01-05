@@ -4,7 +4,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::Rf24Device
+//  Bt::Rf24::Rf24Device
 //  
 //*************************************************************************************************
 
@@ -13,7 +13,7 @@
 
 #include "Bt/Mcu/I_Spi.hpp"
 #include "Bt/Mcu/I_Pin.hpp"
-#include "Bt/Device/I_Rf24Device.hpp"
+#include "Bt/Rf24/I_Rf24Device.hpp"
 
 namespace Bt {
 namespace Rf24 {

@@ -4,14 +4,14 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::Rf24DeviceIntegrationTest
+//  Bt::Rf24::Rf24DeviceIntegrationTest
 //  
 //*************************************************************************************************
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "Bt/Device/Rf24Device.hpp"
+#include "Bt/Rf24/Rf24Device.hpp"
 #include "Bt/Mcu/Pin.hpp"
 #include "Bt/Mcu/Spi.hpp"
 #include "Bt/Util/Delay.hpp"

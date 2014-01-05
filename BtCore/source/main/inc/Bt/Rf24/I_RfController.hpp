@@ -4,7 +4,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::I_RfController
+//  Bt::Rf24::I_RfController
 //  
 //*************************************************************************************************
 
@@ -13,7 +13,7 @@
 
 #include <stddef.h>
 
-#include "Bt/Device/I_Rf24Device.hpp"
+#include "Bt/Rf24/I_Rf24Device.hpp"
 
 namespace Bt {
 namespace Rf24 {

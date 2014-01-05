@@ -4,7 +4,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Device::Rf24ControllerIntegrationTest
+//  Bt::Rf24::Rf24ControllerIntegrationTest
 //  
 //*************************************************************************************************
 
@@ -16,8 +16,8 @@
 #include <gmock/gmock.h>
 
 
-#include "Bt/Device/Rf24Controller.hpp"
-#include "Bt/Device/Rf24Device.hpp"
+#include "Bt/Rf24/Rf24Controller.hpp"
+#include "Bt/Rf24/Rf24Device.hpp"
 #include "Bt/Mcu/Pin.hpp"
 #include "Bt/Mcu/Spi.hpp"
 #include "Bt/Util/Delay.hpp"

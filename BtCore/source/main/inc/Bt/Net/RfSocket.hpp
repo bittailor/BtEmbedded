@@ -14,7 +14,7 @@
 #include <stdint.h>
 
 #include "Bt/Util/Buffer.hpp"
-#include <Bt/Device/I_RfController.hpp>
+#include <Bt/Rf24/I_RfController.hpp>
 
 
 namespace Bt {
