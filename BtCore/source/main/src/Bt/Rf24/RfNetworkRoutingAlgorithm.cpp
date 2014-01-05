@@ -4,14 +4,14 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfNetworkRoutingAlgorithm
+//  Bt::Rf24::RfNetworkRoutingAlgorithm
 //  
 //*************************************************************************************************
 
-#include "Bt/Net/RfNetworkRoutingAlgorithm.hpp"
+#include "Bt/Rf24/RfNetworkRoutingAlgorithm.hpp"
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
@@ -65,5 +65,5 @@ bool RfNetworkRoutingAlgorithm::isLeafNode(RfNode pSelf) {
 
 //-------------------------------------------------------------------------------------------------
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt

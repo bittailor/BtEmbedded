@@ -4,18 +4,18 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfNetworkRoutingAlgorithm
+//  Bt::Rf24::RfNetworkRoutingAlgorithm
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_RfNetworkRoutingAlgorithm__hpp
-#define INC__Bt_Net_RfNetworkRoutingAlgorithm__hpp
+#ifndef INC__Bt_Rf24_RfNetworkRoutingAlgorithm__hpp
+#define INC__Bt_Rf24_RfNetworkRoutingAlgorithm__hpp
 
 #include "Bt/Rf24/I_Rf24Controller.hpp"
-#include "Bt/Net/RfNode.hpp"
+#include "Bt/Rf24/RfNode.hpp"
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 class RfNetworkRoutingAlgorithm 
 {
@@ -25,7 +25,7 @@ class RfNetworkRoutingAlgorithm
       bool isLeafNode(RfNode pSelf);
 };
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt
 
-#endif // INC__Bt_Net_RfNetworkRoutingAlgorithm__hpp
+#endif // INC__Bt_Rf24_RfNetworkRoutingAlgorithm__hpp

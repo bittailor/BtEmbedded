@@ -4,15 +4,15 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::I_RfTransportSocket
+//  Bt::Rf24::I_RfTransportSocket
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_I_RfTransportSocket__hpp
-#define INC__Bt_Net_I_RfTransportSocket__hpp
+#ifndef INC__Bt_Rf24_I_RfTransportSocket__hpp
+#define INC__Bt_Rf24_I_RfTransportSocket__hpp
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 class I_RfTransportSocket {
    public:
@@ -21,7 +21,7 @@ class I_RfTransportSocket {
       virtual void function() = 0;
 };
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt
 
-#endif // INC__Bt_Net_I_RfTransportSocket__hpp
+#endif // INC__Bt_Rf24_I_RfTransportSocket__hpp

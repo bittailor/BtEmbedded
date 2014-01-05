@@ -4,16 +4,16 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfNetworkRoutingAlgorithmTest
+//  Bt::Rf24::RfNetworkRoutingAlgorithmTest
 //  
 //*************************************************************************************************
 
 #include <gtest/gtest.h>
 
-#include "Bt/Net/RfNetworkRoutingAlgorithm.hpp"
+#include "Bt/Rf24/RfNetworkRoutingAlgorithm.hpp"
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 class RfNetworkRoutingAlgorithmTest : public ::testing::Test {
    
@@ -110,5 +110,5 @@ TEST_F(RfNetworkRoutingAlgorithmTest, routingToChildMultipleLevel) {
 }
 
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt

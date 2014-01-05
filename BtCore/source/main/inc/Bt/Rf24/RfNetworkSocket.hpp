@@ -4,20 +4,20 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfNetworkSocket
+//  Bt::Rf24::RfNetworkSocket
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_RfNetworkSocket__hpp
-#define INC__Bt_Net_RfNetworkSocket__hpp
+#ifndef INC__Bt_Rf24_RfNetworkSocket__hpp
+#define INC__Bt_Rf24_RfNetworkSocket__hpp
 
 #include "Bt/Rf24/I_Rf24Controller.hpp"
-#include "Bt/Net/RfNode.hpp"
-#include "Bt/Net/I_RfNetworkSocket.hpp"
-#include "Bt/Net/RfNetworkRoutingAlgorithm.hpp"
+#include "Bt/Rf24/RfNode.hpp"
+#include "Bt/Rf24/I_RfNetworkSocket.hpp"
+#include "Bt/Rf24/RfNetworkRoutingAlgorithm.hpp"
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 class RfNetworkSocket : public I_RfNetworkSocket
 {
@@ -55,7 +55,7 @@ class RfNetworkSocket : public I_RfNetworkSocket
 
 };
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt
 
-#endif // INC__Bt_Net_RfNetworkSocket__hpp
+#endif // INC__Bt_Rf24_RfNetworkSocket__hpp

@@ -4,15 +4,15 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfTransportSocket
+//  Bt::Rf24::RfTransportSocket
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_RfTransportSocket__hpp
-#define INC__Bt_Net_RfTransportSocket__hpp
+#ifndef INC__Bt_Rf24_RfTransportSocket__hpp
+#define INC__Bt_Rf24_RfTransportSocket__hpp
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 class RfTransportSocket 
 {
@@ -28,7 +28,7 @@ class RfTransportSocket
       RfTransportSocket& operator=(const RfTransportSocket&);
 };
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt
 
-#endif // INC__Bt_Net_RfTransportSocket__hpp
+#endif // INC__Bt_Rf24_RfTransportSocket__hpp

@@ -4,16 +4,16 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfNetworkSocket
+//  Bt::Rf24::RfNetworkSocket
 //  
 //*************************************************************************************************
 
 #include <string.h>
 
-#include "Bt/Net/RfNetworkSocket.hpp"
+#include "Bt/Rf24/RfNetworkSocket.hpp"
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
@@ -115,5 +115,5 @@ void RfNetworkSocket::receiveInternal(Packet& pPacket) {
 
 //-------------------------------------------------------------------------------------------------
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt

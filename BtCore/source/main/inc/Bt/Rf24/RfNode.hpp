@@ -4,17 +4,17 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfNode
+//  Bt::Rf24::RfNode
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_RfNode__hpp
-#define INC__Bt_Net_RfNode__hpp
+#ifndef INC__Bt_Rf24_RfNode__hpp
+#define INC__Bt_Rf24_RfNode__hpp
 
 #include <stdint.h>
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 class RfNode 
 {
@@ -31,7 +31,7 @@ class RfNode
       uint8_t mLevel;
 };
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt
 
-#endif // INC__Bt_Net_RfNode__hpp
+#endif // INC__Bt_Rf24_RfNode__hpp

@@ -4,17 +4,17 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::I_RfNetworkSocket
+//  Bt::Rf24::I_RfNetworkSocket
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_I_RfNetworkSocket__hpp
-#define INC__Bt_Net_I_RfNetworkSocket__hpp
+#ifndef INC__Bt_Rf24_I_RfNetworkSocket__hpp
+#define INC__Bt_Rf24_I_RfNetworkSocket__hpp
 
 #include <stdint.h>
 
 namespace Bt {
-namespace Net {
+namespace Rf24 {
 
 class I_RfNetworkSocket {
    public:
@@ -87,7 +87,7 @@ class I_RfNetworkSocket::I_Listener {
 
 
 
-} // namespace Net
+} // namespace Rf24
 } // namespace Bt
 
-#endif // INC__Bt_Net_I_RfNetworkSocket__hpp
+#endif // INC__Bt_Rf24_I_RfNetworkSocket__hpp
