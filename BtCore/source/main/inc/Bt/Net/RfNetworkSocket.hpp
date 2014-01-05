@@ -22,11 +22,11 @@ namespace Net {
 class RfNetworkSocket : public I_RfNetworkSocket
 {
    private:
-      enum { FRAME_BUFFER_SIZE = Device::I_RfController::MAX_PAYLOAD_SIZE };
+      enum { FRAME_BUFFER_SIZE = Rf24::I_RfController::MAX_PAYLOAD_SIZE };
       enum { HEADER_SIZE = 2 };
 
    public:
-      RfNetworkSocket(RfNode pNodeId, Device::I_RfController& pController);
+      RfNetworkSocket(RfNode pNodeId, Rf24::I_RfController& pController);
 
       virtual bool startListening(I_Listener& pListener);
       virtual bool stopListening();
@@ -49,7 +49,7 @@ class RfNetworkSocket : public I_RfNetworkSocket
 
 
       RfNode mNodeId;
-      Device::I_RfController* mController;
+      Rf24::I_RfController* mController;
       RfNetworkRoutingAlgorithm mRouting;
       I_Listener* mListener;
 

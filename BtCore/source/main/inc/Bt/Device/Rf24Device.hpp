@@ -16,7 +16,7 @@
 #include "Bt/Device/I_Rf24Device.hpp"
 
 namespace Bt {
-namespace Device {
+namespace Rf24 {
 
 class Rf24Device : public I_Rf24Device
 {

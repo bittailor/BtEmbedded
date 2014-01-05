@@ -20,8 +20,8 @@ namespace Net {
 class RfNetworkRoutingAlgorithm 
 {
    public:
-      Device::I_RfController::Pipe calculateRoutingPipe(RfNode pSelf, RfNode pDestination);
-      Device::I_RfController::Address calculatePipeAddress(RfNode pSelf, Device::I_RfController::Pipe pPipe);
+      Rf24::I_RfController::Pipe calculateRoutingPipe(RfNode pSelf, RfNode pDestination);
+      Rf24::I_RfController::Address calculatePipeAddress(RfNode pSelf, Rf24::I_RfController::Pipe pPipe);
       bool isLeafNode(RfNode pSelf);
 };
 

@@ -18,7 +18,7 @@
 #include "Bt/Util/CollectionUtility.hpp"
 
 namespace Bt {
-namespace Device {
+namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 

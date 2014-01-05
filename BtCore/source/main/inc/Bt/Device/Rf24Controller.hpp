@@ -18,7 +18,7 @@
 #include "Bt/Device/I_Rf24Device.hpp"
 
 namespace Bt {
-namespace Device {
+namespace Rf24 {
 
 class Rf24Controller : public I_RfController
 {

@@ -20,7 +20,7 @@
 
 
 namespace Bt {
-namespace Device {
+namespace Rf24 {
 
 namespace {
 

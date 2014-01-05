@@ -17,10 +17,10 @@ namespace Net {
 
 //-------------------------------------------------------------------------------------------------
 
-RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, Device::I_RfController& pController)
+RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, Rf24::I_RfController& pController)
 : mNodeId(pNodeId), mController(&pController), mListener(0)  {
 
-   Device::I_RfController::Configuration configuration;
+   Rf24::I_RfController::Configuration configuration;
 
 
 /*
@@ -101,7 +101,7 @@ void RfNetworkSocket::workcycle() {
 //-------------------------------------------------------------------------------------------------
 
 bool RfNetworkSocket::sendInternal(Packet& pPacket) {
-   Device::I_RfController::Pipe pipe = mRouting.calculateRoutingPipe(mNodeId, pPacket.destination());
+   Rf24::I_RfController::Pipe pipe = mRouting.calculateRoutingPipe(mNodeId, pPacket.destination());
    return mController->write(pipe, pPacket.mControllerPackage);
 }
 

@@ -68,7 +68,7 @@ namespace {
 
 //-------------------------------------------------------------------------------------------------
 
-RfSocket::RfSocket(NodeId pNodeId, Device::I_RfController& pController) : mNodeId(pNodeId), mController(&pController) {
+RfSocket::RfSocket(NodeId pNodeId, Rf24::I_RfController& pController) : mNodeId(pNodeId), mController(&pController) {
 
 }
 

@@ -15,7 +15,7 @@
 #include "Bt/Util/StaticArray.hpp"
 
 namespace Bt {
-namespace Device {
+namespace Rf24 {
 
 class I_Rf24Device {
 
