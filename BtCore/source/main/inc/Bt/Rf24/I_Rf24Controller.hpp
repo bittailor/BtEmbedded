@@ -4,7 +4,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Rf24::I_RfController
+//  Bt::Rf24::I_Rf24Controller
 //  
 //*************************************************************************************************
 
@@ -18,7 +18,7 @@
 namespace Bt {
 namespace Rf24 {
 
-class I_RfController {
+class I_Rf24Controller {
    public:
 
       class Packet;
@@ -29,7 +29,7 @@ class I_RfController {
 
       enum { MAX_PAYLOAD_SIZE = I_Rf24Device::MAX_PAYLOAD_SIZE };
 
-      virtual ~I_RfController() {}
+      virtual ~I_Rf24Controller() {}
 
       virtual void configure(const Configuration& pConfiguration) = 0;
 
@@ -48,7 +48,7 @@ class I_RfController {
       virtual size_t read(uint8_t* pBuffer, size_t pSize, Pipe& pPipe) = 0;
 };
 
-class I_RfController::Packet {
+class I_Rf24Controller::Packet {
    public:
       enum { BUFFER_CAPACITY = I_Rf24Device::MAX_PAYLOAD_SIZE };
 
@@ -69,12 +69,12 @@ class I_RfController::Packet {
       size_t mSize;
 };
 
-class I_RfController::Configuration {
+class I_Rf24Controller::Configuration {
    public:
 
       struct PipeConfiguration {
          bool mEnabled;
-         I_RfController::Address mAddress;
+         I_Rf24Controller::Address mAddress;
       };
 
       PipeConfiguration& operator[](I_Rf24Device::Pipe pPipe) {

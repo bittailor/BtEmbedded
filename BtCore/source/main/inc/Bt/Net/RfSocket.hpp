@@ -14,7 +14,7 @@
 #include <stdint.h>
 
 #include "Bt/Util/Buffer.hpp"
-#include <Bt/Rf24/I_RfController.hpp>
+#include <Bt/Rf24/I_Rf24Controller.hpp>
 
 
 namespace Bt {
@@ -23,7 +23,7 @@ namespace Net {
 class RfSocket 
 {
    private:
-      enum { FRAME_BUFFER_SIZE = Rf24::I_RfController::MAX_PAYLOAD_SIZE };
+      enum { FRAME_BUFFER_SIZE = Rf24::I_Rf24Controller::MAX_PAYLOAD_SIZE };
       enum { HEADER_SIZE = 2 };
 
    public:
@@ -31,7 +31,7 @@ class RfSocket
 
       typedef uint8_t NodeId;
 
-      RfSocket(NodeId pNodeId, Rf24::I_RfController& pController);
+      RfSocket(NodeId pNodeId, Rf24::I_Rf24Controller& pController);
       ~RfSocket();
    
       void startListening();
@@ -49,8 +49,8 @@ class RfSocket
       RfSocket& operator=(const RfSocket&);
 
       NodeId mNodeId;
-      Util::StaticArray<uint8_t,Rf24::I_RfController::MAX_PAYLOAD_SIZE> mSendFrameBuffer;
-      Rf24::I_RfController* mController;
+      Util::StaticArray<uint8_t,Rf24::I_Rf24Controller::MAX_PAYLOAD_SIZE> mSendFrameBuffer;
+      Rf24::I_Rf24Controller* mController;
 
 };
 

@@ -35,7 +35,7 @@ class I_RfNetworkSocket {
 class I_RfNetworkSocket::Packet {
    public:
       enum { HEADER_SIZE = 2 };
-      enum { PAYLOAD_CAPACITY = Rf24::I_RfController::Packet::BUFFER_CAPACITY - HEADER_SIZE };
+      enum { PAYLOAD_CAPACITY = Rf24::I_Rf24Controller::Packet::BUFFER_CAPACITY - HEADER_SIZE };
 
 
       uint8_t source() {
@@ -70,7 +70,7 @@ class I_RfNetworkSocket::Packet {
          mControllerPackage.buffer()[0] = source;
       }
 
-      Rf24::I_RfController::Packet mControllerPackage;
+      Rf24::I_Rf24Controller::Packet mControllerPackage;
 };
 
 //-------------------------------------------------------------------------------------------------

@@ -24,14 +24,14 @@ namespace Rf24 {
 
 namespace{
 
-I_RfController::Pipe sAllPipes [] =
+I_Rf24Controller::Pipe sAllPipes [] =
 {
-         I_RfController::Pipe::PIPE_0,
-         I_RfController::Pipe::PIPE_1,
-         I_RfController::Pipe::PIPE_2,
-         I_RfController::Pipe::PIPE_3,
-         I_RfController::Pipe::PIPE_4,
-         I_RfController::Pipe::PIPE_5
+         I_Rf24Controller::Pipe::PIPE_0,
+         I_Rf24Controller::Pipe::PIPE_1,
+         I_Rf24Controller::Pipe::PIPE_2,
+         I_Rf24Controller::Pipe::PIPE_3,
+         I_Rf24Controller::Pipe::PIPE_4,
+         I_Rf24Controller::Pipe::PIPE_5
 };
 
 
