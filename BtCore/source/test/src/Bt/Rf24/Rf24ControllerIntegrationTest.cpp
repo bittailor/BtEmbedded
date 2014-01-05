@@ -99,6 +99,19 @@ class Rf24ControllerIntegrationTestBase : public ::testing::Test {
             }
 
       virtual void SetUp() {
+
+
+         I_Rf24Controller::Configuration configuration;
+         configuration[RfPipe::PIPE_0] = {true,RfAddress(0xE7,0xE7,0xE7,0xE7,0xE7)};
+         configuration[RfPipe::PIPE_1] = {true,RfAddress(0xC2,0xC2,0xC2,0xC2,0xC2)};
+         configuration[RfPipe::PIPE_2] = {true,RfAddress(0xC2,0xC2,0xC2,0xC2,0xC3)};
+         configuration[RfPipe::PIPE_3] = {true,RfAddress(0xC2,0xC2,0xC2,0xC2,0xC4)};
+         configuration[RfPipe::PIPE_4] = {true,RfAddress(0xC2,0xC2,0xC2,0xC2,0xC5)};
+         configuration[RfPipe::PIPE_5] = {true,RfAddress(0xC2,0xC2,0xC2,0xC2,0xC6)};
+
+
+         mController1.configure(configuration);
+         mController2.configure(configuration);
       }
 
       Mcu::I_Spi& powerOn() {

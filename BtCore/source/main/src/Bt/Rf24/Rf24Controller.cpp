@@ -181,15 +181,23 @@ void Rf24Controller::configureDevice() {
 
    mDevice->dynamicPayloadFeatureEnabled(true);
 
-   //for(size_t i ; i < mConfiguration.)
-   
-   
-   
    for (auto pipe : RfPipes::ALL_PIPES) {
+      auto pipeConfiguration = mConfiguration[pipe];
+      if(pipeConfiguration.mEnabled) {
          mDevice->receivePayloadSize(pipe, I_Rf24Device::MAX_PAYLOAD_SIZE);
          mDevice->receivePipeEnabled(pipe, true);
          mDevice->dynamicPayloadEnabled(pipe, true);
+         mDevice->receiveAddress(pipe,pipeConfiguration.mAddress);
+      } else {
+         mDevice->receivePipeEnabled(pipe, false);
+      }
    }
+
+//   for (auto pipe : RfPipes::ALL_PIPES) {
+//         mDevice->receivePayloadSize(pipe, I_Rf24Device::MAX_PAYLOAD_SIZE);
+//         mDevice->receivePipeEnabled(pipe, true);
+//         mDevice->dynamicPayloadEnabled(pipe, true);
+//   }
    
 }
 
