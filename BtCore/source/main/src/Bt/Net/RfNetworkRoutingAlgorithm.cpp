@@ -43,5 +43,27 @@ Device::I_RfController::Pipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfN
 
 //-------------------------------------------------------------------------------------------------
 
+Device::I_RfController::Address RfNetworkRoutingAlgorithm::calculatePipeAddress(RfNode pSelf, Device::I_RfController::Pipe pPipe) {
+   uint8_t byte0;
+   uint8_t child = pSelf.id() * 5;
+   switch(pPipe) {
+      case Device::I_RfController::Pipe::PIPE_0 : byte0 = pSelf.id(); break;
+      case Device::I_RfController::Pipe::PIPE_1 : byte0 = child + 1; break;
+      case Device::I_RfController::Pipe::PIPE_2 : byte0 = child + 2; break;
+      case Device::I_RfController::Pipe::PIPE_3 : byte0 = child + 3; break;
+      case Device::I_RfController::Pipe::PIPE_4 : byte0 = child + 4; break;
+      case Device::I_RfController::Pipe::PIPE_5 : byte0 = child + 5; break;
+   }
+   return Device::I_RfController::Address(0xC2,0xC2,0xC2,0xC2,byte0);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool RfNetworkRoutingAlgorithm::isLeafNode(RfNode pSelf) {
+   return pSelf.id() > 50;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 } // namespace Net
 } // namespace Bt

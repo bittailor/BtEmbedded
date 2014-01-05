@@ -20,13 +20,17 @@ class I_RfNetworkSocket {
    public:
 
       class Packet;
+      class I_Listener;
 
       virtual ~I_RfNetworkSocket() {}
       
+      virtual bool startListening(I_Listener& pListener) = 0;
+      virtual bool stopListening() = 0;
 
-
+      virtual bool send(Packet& pPacket) = 0;
 };
 
+//-------------------------------------------------------------------------------------------------
 
 class I_RfNetworkSocket::Packet {
    public:
@@ -37,8 +41,6 @@ class I_RfNetworkSocket::Packet {
       uint8_t source() {
          return mControllerPackage.buffer()[0];
       }
-
-
 
       uint8_t destination() {
          return mControllerPackage.buffer()[1];
@@ -68,9 +70,22 @@ class I_RfNetworkSocket::Packet {
          mControllerPackage.buffer()[0] = source;
       }
 
-
       Device::I_RfController::Packet mControllerPackage;
 };
+
+//-------------------------------------------------------------------------------------------------
+
+class I_RfNetworkSocket::I_Listener {
+   public:
+      virtual ~I_Listener() {}
+
+      virtual void packetReceived(Packet& pPacket) = 0;
+
+};
+
+//-------------------------------------------------------------------------------------------------
+
+
 
 } // namespace Net
 } // namespace Bt

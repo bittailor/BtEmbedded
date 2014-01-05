@@ -27,6 +27,8 @@ class Rf24Controller : public I_RfController
       Rf24Controller(I_Rf24Device& pDevice);
       ~Rf24Controller();
 
+      virtual void configure(const Configuration& pConfiguration);
+
       virtual bool write(Pipe pPipe, Packet pPacket);
 
       virtual size_t write(Pipe pPipe, uint8_t* pData, size_t pSize);
@@ -104,6 +106,7 @@ class Rf24Controller : public I_RfController
 
       void configureDevice();
 
+      Configuration mConfiguration;
       I_Rf24Device* mDevice;
       PowerDown mPowerDown;
       StandbyI mStandbyI;

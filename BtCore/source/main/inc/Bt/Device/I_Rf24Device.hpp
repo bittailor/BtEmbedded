@@ -34,6 +34,8 @@ class I_Rf24Device {
          PIPE_5,
       };
 
+      enum { NUMBER_OF_PIPES = static_cast<int>(Pipe::PIPE_5) + 1 };
+
       enum TransceiverMode {
          TX_MODE,
          RX_MODE

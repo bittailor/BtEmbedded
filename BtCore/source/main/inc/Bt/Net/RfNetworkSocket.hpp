@@ -12,7 +12,7 @@
 #define INC__Bt_Net_RfNetworkSocket__hpp
 
 #include "Bt/Device/I_RfController.hpp"
-#include "Bt/Net/RfNodeId.hpp"
+#include "Bt/Net/RfNode.hpp"
 #include "Bt/Net/I_RfNetworkSocket.hpp"
 #include "Bt/Net/RfNetworkRoutingAlgorithm.hpp"
 
@@ -28,14 +28,12 @@ class RfNetworkSocket : public I_RfNetworkSocket
    public:
       RfNetworkSocket(RfNode pNodeId, Device::I_RfController& pController);
 
-      void workcycle();
+      virtual bool startListening(I_Listener& pListener);
+      virtual bool stopListening();
 
-      void writeDatagram(RfNode pDestination, uint8_t* pBuffer, size_t size);
+      virtual bool send(Packet& pPacket);
 
-
-
-
-
+      virtual void workcycle();
 
    private:
 
@@ -46,12 +44,14 @@ class RfNetworkSocket : public I_RfNetworkSocket
       // Operator= to prohibit copy assignment
       RfNetworkSocket& operator=(const RfNetworkSocket&);
 
-      bool write(Packet& packet);
+      bool sendInternal(Packet& pPacket);
+      void receiveInternal(Packet& pPacket);
 
 
       RfNode mNodeId;
       Device::I_RfController* mController;
       RfNetworkRoutingAlgorithm mRouting;
+      I_Listener* mListener;
 
 };
 

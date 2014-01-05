@@ -64,6 +64,16 @@ Rf24Controller::~Rf24Controller() {
 
 //-------------------------------------------------------------------------------------------------
 
+void Rf24Controller::configure(const Configuration& pConfiguration) {
+
+   StateBase* originalState = mCurrentState;
+   mCurrentState->ToPowerDown();
+   mConfiguration = pConfiguration;
+   originalState->ApplyTo(*mCurrentState);
+}
+
+//-------------------------------------------------------------------------------------------------
+
 bool Rf24Controller::write(Pipe pPipe, Packet pPacket) {
    size_t size = write(pPipe, pPacket.buffer(), pPacket.size());
    return size != 0;
@@ -182,12 +192,16 @@ void Rf24Controller::configureDevice() {
 
    mDevice->dynamicPayloadFeatureEnabled(true);
 
-
+   //for(size_t i ; i < mConfiguration.)
+   
+   
+   
    for (auto pipe : sAllPipes) {
          mDevice->receivePayloadSize(pipe, I_Rf24Device::MAX_PAYLOAD_SIZE);
          mDevice->receivePipeEnabled(pipe, true);
          mDevice->dynamicPayloadEnabled(pipe, true);
    }
+   
 }
 
 //-------------------------------------------------------------------------------------------------

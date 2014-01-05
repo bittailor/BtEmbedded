@@ -4,13 +4,13 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfNodeIdTest
+//  Bt::Net::RfNodeTest
 //  
 //*************************************************************************************************
 
 #include <gtest/gtest.h>
 
-#include "Bt/Net/RfNodeId.hpp"
+#include "Bt/Net/RfNode.hpp"
 
 namespace Bt {
 namespace Net {

@@ -22,12 +22,16 @@ class I_RfController {
    public:
 
       class Packet;
+      struct Configuration;
 
       using Pipe = I_Rf24Device::Pipe;
+      using Address = I_Rf24Device::Address;
 
       enum { MAX_PAYLOAD_SIZE = I_Rf24Device::MAX_PAYLOAD_SIZE };
 
       virtual ~I_RfController() {}
+
+      virtual void configure(const Configuration& pConfiguration) = 0;
 
       virtual bool write(Pipe pPipe, Packet pPacket) = 0;
 
@@ -63,6 +67,22 @@ class I_RfController::Packet {
    private:
       uint8_t mBuffer[BUFFER_CAPACITY] ;
       size_t mSize;
+};
+
+class I_RfController::Configuration {
+   public:
+
+      struct PipeConfiguration {
+         bool mEnabled;
+         I_RfController::Address mAddress;
+      };
+
+      PipeConfiguration& operator[](I_Rf24Device::Pipe pPipe) {
+         return mPipeConfigurations[static_cast<size_t>(pPipe)];
+      }
+
+   private:
+      Util::StaticArray<PipeConfiguration,I_Rf24Device::NUMBER_OF_PIPES> mPipeConfigurations;
 };
 
 

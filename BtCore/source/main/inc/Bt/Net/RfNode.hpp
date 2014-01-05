@@ -4,12 +4,12 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::RfNodeId
+//  Bt::Net::RfNode
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_RfNodeId__hpp
-#define INC__Bt_Net_RfNodeId__hpp
+#ifndef INC__Bt_Net_RfNode__hpp
+#define INC__Bt_Net_RfNode__hpp
 
 #include <stdint.h>
 
@@ -34,4 +34,4 @@ class RfNode
 } // namespace Net
 } // namespace Bt
 
-#endif // INC__Bt_Net_RfNodeId__hpp
+#endif // INC__Bt_Net_RfNode__hpp
