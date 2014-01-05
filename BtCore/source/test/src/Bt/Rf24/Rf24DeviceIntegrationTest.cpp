@@ -199,16 +199,16 @@ TEST_P(Rf24DeviceIntegrationTest, writeSameRegister) {
 
 TEST_P(Rf24DeviceIntegrationTest, readDefaultRxPipes) {
 
-   Rf24Device::Pipe pipes[] = {
-            Rf24Device::Pipe::PIPE_0,
-            Rf24Device::Pipe::PIPE_1,
-            Rf24Device::Pipe::PIPE_2,
-            Rf24Device::Pipe::PIPE_3,
-            Rf24Device::Pipe::PIPE_4,
-            Rf24Device::Pipe::PIPE_5,
+   RfPipe pipes[] = {
+            RfPipe::PIPE_0,
+            RfPipe::PIPE_1,
+            RfPipe::PIPE_2,
+            RfPipe::PIPE_3,
+            RfPipe::PIPE_4,
+            RfPipe::PIPE_5,
    };
 
-   Rf24Device::Address defaultAddresses[] = {
+   RfAddress defaultAddresses[] = {
             {0xE7, 0xE7, 0xE7, 0xE7, 0xE7},
             {0xC2, 0xC2, 0xC2, 0xC2, 0xC2},
             {0xC2, 0xC2, 0xC2, 0xC2, 0xC3},
@@ -218,7 +218,7 @@ TEST_P(Rf24DeviceIntegrationTest, readDefaultRxPipes) {
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
-      Rf24Device::Address address = mDevice.receiveAddress(pipes[i]).raw();
+      RfAddress address = mDevice.receiveAddress(pipes[i]).raw();
       ASSERT_THAT(address.raw(), testing::ElementsAreArray(defaultAddresses[i].raw().begin(),defaultAddresses[i].raw().size()));
    }
 }
@@ -227,16 +227,16 @@ TEST_P(Rf24DeviceIntegrationTest, readDefaultRxPipes) {
 
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackRxPipes) {
 
-   Rf24Device::Pipe pipes[] = {
-            Rf24Device::Pipe::PIPE_0,
-            Rf24Device::Pipe::PIPE_1,
-            Rf24Device::Pipe::PIPE_2,
-            Rf24Device::Pipe::PIPE_3,
-            Rf24Device::Pipe::PIPE_4,
-            Rf24Device::Pipe::PIPE_5
+   RfPipe pipes[] = {
+            RfPipe::PIPE_0,
+            RfPipe::PIPE_1,
+            RfPipe::PIPE_2,
+            RfPipe::PIPE_3,
+            RfPipe::PIPE_4,
+            RfPipe::PIPE_5
    };
 
-   Rf24Device::Address addresses[] = {
+   RfAddress addresses[] = {
             {0x22, 0x23, 0x24, 0x25, 0x26},
             {0xA1, 0xB1, 0xC1, 0xD1, 0xE1},
             {0xA1, 0xB1, 0xC1, 0xD1, 0xE2},
@@ -250,7 +250,7 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackRxPipes) {
    }
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
-      Rf24Device::Address address = mDevice.receiveAddress(pipes[i]).raw();
+      RfAddress address = mDevice.receiveAddress(pipes[i]).raw();
       ASSERT_THAT(address.raw(), testing::ElementsAreArray(addresses[i].raw().begin(),addresses[i].raw().size()));
    }
 
@@ -260,13 +260,13 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackRxPipes) {
 
 TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePipeEnabled) {
 
-   Rf24Device::Pipe pipes[] = {
-            Rf24Device::Pipe::PIPE_0,
-            Rf24Device::Pipe::PIPE_1,
-            Rf24Device::Pipe::PIPE_2,
-            Rf24Device::Pipe::PIPE_3,
-            Rf24Device::Pipe::PIPE_4,
-            Rf24Device::Pipe::PIPE_5,
+   RfPipe pipes[] = {
+            RfPipe::PIPE_0,
+            RfPipe::PIPE_1,
+            RfPipe::PIPE_2,
+            RfPipe::PIPE_3,
+            RfPipe::PIPE_4,
+            RfPipe::PIPE_5,
    };
 
    bool defaults[] = {
@@ -287,13 +287,13 @@ TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePipeEnabled) {
 
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePipeEnabled) {
 
-   Rf24Device::Pipe pipes[] = {
-            Rf24Device::Pipe::PIPE_0,
-            Rf24Device::Pipe::PIPE_1,
-            Rf24Device::Pipe::PIPE_2,
-            Rf24Device::Pipe::PIPE_3,
-            Rf24Device::Pipe::PIPE_4,
-            Rf24Device::Pipe::PIPE_5,
+   RfPipe pipes[] = {
+            RfPipe::PIPE_0,
+            RfPipe::PIPE_1,
+            RfPipe::PIPE_2,
+            RfPipe::PIPE_3,
+            RfPipe::PIPE_4,
+            RfPipe::PIPE_5,
    };
 
    bool value[] = {
@@ -315,13 +315,13 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePipeEnabled) {
 
 TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePayloadSize) {
 
-   Rf24Device::Pipe pipes[] = {
-            Rf24Device::Pipe::PIPE_0,
-            Rf24Device::Pipe::PIPE_1,
-            Rf24Device::Pipe::PIPE_2,
-            Rf24Device::Pipe::PIPE_3,
-            Rf24Device::Pipe::PIPE_4,
-            Rf24Device::Pipe::PIPE_5,
+   RfPipe pipes[] = {
+            RfPipe::PIPE_0,
+            RfPipe::PIPE_1,
+            RfPipe::PIPE_2,
+            RfPipe::PIPE_3,
+            RfPipe::PIPE_4,
+            RfPipe::PIPE_5,
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
@@ -334,13 +334,13 @@ TEST_P(Rf24DeviceIntegrationTest, readDefaultReceivePayloadSize) {
 
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePayloadSize) {
 
-   Rf24Device::Pipe pipes[] = {
-            Rf24Device::Pipe::PIPE_0,
-            Rf24Device::Pipe::PIPE_1,
-            Rf24Device::Pipe::PIPE_2,
-            Rf24Device::Pipe::PIPE_3,
-            Rf24Device::Pipe::PIPE_4,
-            Rf24Device::Pipe::PIPE_5,
+   RfPipe pipes[] = {
+            RfPipe::PIPE_0,
+            RfPipe::PIPE_1,
+            RfPipe::PIPE_2,
+            RfPipe::PIPE_3,
+            RfPipe::PIPE_4,
+            RfPipe::PIPE_5,
    };
 
    for (size_t i = 0 ; i < Util::sizeOfArray(pipes) ; i++) {
@@ -353,19 +353,19 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackReceivePayloadSize) {
 //-------------------------------------------------------------------------------------------------
 
 TEST_P(Rf24DeviceIntegrationTest, readDefaultTx) {
-   Rf24Device::Address defaultAddress = Rf24Device::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
+   RfAddress defaultAddress = RfAddress(0xE7,0xE7,0xE7,0xE7,0xE7);
 
-   Rf24Device::Address address = mDevice.transmitAddress();
+   RfAddress address = mDevice.transmitAddress();
    ASSERT_THAT(defaultAddress.raw(), testing::ElementsAreArray(address.raw().begin(),address.raw().size()));
 }
 
 //-------------------------------------------------------------------------------------------------
 
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackTx) {
-   Rf24Device::Address newAddress = Rf24Device::Address(0xE7,0xE7,0xE7,0xE7,0xE7);
+   RfAddress newAddress = RfAddress(0xE7,0xE7,0xE7,0xE7,0xE7);
    mDevice.transmitAddress(newAddress);
 
-   Rf24Device::Address address = mDevice.transmitAddress();
+   RfAddress address = mDevice.transmitAddress();
    ASSERT_THAT(newAddress.raw(), testing::ElementsAreArray(address.raw().begin(),address.raw().size()));
  }
 
@@ -452,17 +452,17 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackDynamicPayloadFeatureEnabled) 
 //-------------------------------------------------------------------------------------------------
 
 TEST_P(Rf24DeviceIntegrationTest, readDefaultDynamicPayloadEnabled) {
-   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0));
+   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(RfPipe::PIPE_0));
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
 TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackDynamicPayloadEnabled) {
-   mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0, true);
-   EXPECT_TRUE(mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0));
-   mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0, false);
-   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(Rf24Device::Pipe::PIPE_0));
+   mDevice.dynamicPayloadEnabled(RfPipe::PIPE_0, true);
+   EXPECT_TRUE(mDevice.dynamicPayloadEnabled(RfPipe::PIPE_0));
+   mDevice.dynamicPayloadEnabled(RfPipe::PIPE_0, false);
+   EXPECT_FALSE(mDevice.dynamicPayloadEnabled(RfPipe::PIPE_0));
 }
 
 //-------------------------------------------------------------------------------------------------

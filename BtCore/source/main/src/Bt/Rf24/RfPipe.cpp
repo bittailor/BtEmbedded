@@ -4,23 +4,21 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::CollectionUtility
+//  Bt::Rf24::RfPipe
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Util_CollectionUtility__hpp
-#define INC__Bt_Util_CollectionUtility__hpp
-
-#include <stddef.h>
+#include "Bt/Rf24/RfPipe.hpp"
 
 namespace Bt {
-namespace Util {
+namespace Rf24 {
 
-template<typename T, int N> constexpr size_t sizeOfArray(const T (&pArray)[N]) {
-   return N;
-}
 
-} // namespace Util
+//-------------------------------------------------------------------------------------------------
+
+constexpr RfPipe RfPipes::ALL_PIPES[6];
+
+//-------------------------------------------------------------------------------------------------
+
+} // namespace Rf24
 } // namespace Bt
-
-#endif // INC__Bt_Util_CollectionUtility__hpp

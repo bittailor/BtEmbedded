@@ -15,6 +15,8 @@
 #include "Bt/Mcu/I_Pin.hpp"
 #include "Bt/Rf24/I_Rf24Device.hpp"
 
+#include "Bt/Rf24/RfPipe.hpp"
+
 namespace Bt {
 namespace Rf24 {
 
@@ -54,17 +56,17 @@ class Rf24Device : public I_Rf24Device
       virtual uint8_t channel();
       virtual void channel(uint8_t pChannel);
 
-      virtual Address receiveAddress(Pipe pPipe);
-      virtual void receiveAddress(Pipe pPipe, Address pAddress);
+      virtual RfAddress receiveAddress(RfPipe pPipe);
+      virtual void receiveAddress(RfPipe pPipe, RfAddress pAddress);
 
-      virtual bool receivePipeEnabled(Pipe pPipe);
-      virtual void receivePipeEnabled(Pipe pPipe, bool pValue);
+      virtual bool receivePipeEnabled(RfPipe pPipe);
+      virtual void receivePipeEnabled(RfPipe pPipe, bool pValue);
 
-      virtual uint8_t receivePayloadSize(Pipe pPipe);
-      virtual void receivePayloadSize(Pipe pPipe, uint8_t pSize);
+      virtual uint8_t receivePayloadSize(RfPipe pPipe);
+      virtual void receivePayloadSize(RfPipe pPipe, uint8_t pSize);
 
-      virtual Address transmitAddress();
-      virtual void transmitAddress(Address pAddress);
+      virtual RfAddress transmitAddress();
+      virtual void transmitAddress(RfAddress pAddress);
 
       virtual bool isTransmitFifoEmpty();
       virtual bool isTransmitFifoFull();
@@ -76,13 +78,13 @@ class Rf24Device : public I_Rf24Device
       virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize);
 
       virtual size_t availableReceivePayload();
-      virtual size_t readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize);
+      virtual size_t readReceivePayload(RfPipe& pPipe, uint8_t* pData, size_t pSize);
 
       virtual bool dynamicPayloadFeatureEnabled();
       virtual void dynamicPayloadFeatureEnabled(bool pValue);
 
-      virtual bool dynamicPayloadEnabled(Pipe pPipe);
-      virtual void dynamicPayloadEnabled(Pipe pPipe, bool pValue);
+      virtual bool dynamicPayloadEnabled(RfPipe pPipe);
+      virtual void dynamicPayloadEnabled(RfPipe pPipe, bool pValue);
 
 
    private:

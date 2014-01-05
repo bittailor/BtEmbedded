@@ -12,7 +12,10 @@
 #define INC__Bt_Device_I_Rf24Device__hpp
 
 #include <stdint.h>
+
 #include "Bt/Util/StaticArray.hpp"
+#include "Bt/Rf24/RfPipe.hpp"
+#include "Bt/Rf24/RfAddress.hpp"
 
 namespace Bt {
 namespace Rf24 {
@@ -24,17 +27,6 @@ class I_Rf24Device {
       enum {
          MAX_PAYLOAD_SIZE = 32
       };
-
-      enum class Pipe {
-         PIPE_0,
-         PIPE_1,
-         PIPE_2,
-         PIPE_3,
-         PIPE_4,
-         PIPE_5,
-      };
-
-      enum { NUMBER_OF_PIPES = static_cast<int>(Pipe::PIPE_5) + 1 };
 
       enum TransceiverMode {
          TX_MODE,
@@ -57,29 +49,7 @@ class I_Rf24Device {
             bool mRetransmitsExceeded;
       };
 
-      class Address {
-         public:
-            Address(){
-            }
 
-            Address(Util::StaticArray<uint8_t,5> pRaw) : mRaw(pRaw){
-            }
-
-            Address(uint8_t pByte4, uint8_t pByte3, uint8_t pByte2, uint8_t pByte1, uint8_t pByte0) {
-               mRaw[0] = pByte0;
-               mRaw[1] = pByte1;
-               mRaw[2] = pByte2;
-               mRaw[3] = pByte3;
-               mRaw[4] = pByte4;
-            }
-
-            Util::StaticArray<uint8_t,5>& raw() {
-               return mRaw;
-            }
-
-         private:
-            Util::StaticArray<uint8_t,5> mRaw;
-      };
 
       virtual ~I_Rf24Device() {}
 
@@ -108,17 +78,17 @@ class I_Rf24Device {
       virtual uint8_t channel() = 0;
       virtual void channel(uint8_t pChannel) = 0;
 
-      virtual Address receiveAddress(Pipe pPipe) = 0;
-      virtual void receiveAddress(Pipe pPipe, Address pAddress) = 0;
+      virtual RfAddress receiveAddress(RfPipe pPipe) = 0;
+      virtual void receiveAddress(RfPipe pPipe, RfAddress pAddress) = 0;
 
-      virtual bool receivePipeEnabled(Pipe pPipe) = 0;
-      virtual void receivePipeEnabled(Pipe pPipe, bool pValue) = 0;
+      virtual bool receivePipeEnabled(RfPipe pPipe) = 0;
+      virtual void receivePipeEnabled(RfPipe pPipe, bool pValue) = 0;
 
-      virtual uint8_t receivePayloadSize(Pipe pPipe) = 0;
-      virtual void receivePayloadSize(Pipe pPipe, uint8_t pSize) = 0;
+      virtual uint8_t receivePayloadSize(RfPipe pPipe) = 0;
+      virtual void receivePayloadSize(RfPipe pPipe, uint8_t pSize) = 0;
 
-      virtual Address transmitAddress() = 0;
-      virtual void transmitAddress(Address pAddress) = 0;
+      virtual RfAddress transmitAddress() = 0;
+      virtual void transmitAddress(RfAddress pAddress) = 0;
 
       virtual bool isTransmitFifoEmpty() = 0;
       virtual bool isTransmitFifoFull() = 0;
@@ -130,13 +100,13 @@ class I_Rf24Device {
       virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize) = 0;
 
       virtual size_t availableReceivePayload() = 0;
-      virtual size_t readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) = 0;
+      virtual size_t readReceivePayload(RfPipe& pPipe, uint8_t* pData, size_t pSize) = 0;
 
       virtual bool dynamicPayloadFeatureEnabled() = 0;
       virtual void dynamicPayloadFeatureEnabled(bool pValue) = 0;
 
-      virtual bool dynamicPayloadEnabled(Pipe pPipe) = 0;
-      virtual void dynamicPayloadEnabled(Pipe pPipe, bool pValue) = 0;
+      virtual bool dynamicPayloadEnabled(RfPipe pPipe) = 0;
+      virtual void dynamicPayloadEnabled(RfPipe pPipe, bool pValue) = 0;
 
 };
 

@@ -143,22 +143,22 @@ class Rf24ControllerIntegrationTest : public Rf24ControllerIntegrationTestBase {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-class Rf24Controller$Pipe$Size$IntegrationTest
+class Rf24Controller$RfPipe$Size$IntegrationTest
          : public Rf24ControllerIntegrationTestBase
-         , public ::testing::WithParamInterface< ::std::tr1::tuple<I_Rf24Device::Pipe, size_t>>{
+         , public ::testing::WithParamInterface< ::std::tr1::tuple<RfPipe, size_t>>{
 
 };
 
 INSTANTIATE_TEST_CASE_P(AllPipes,
-                        Rf24Controller$Pipe$Size$IntegrationTest,
+                        Rf24Controller$RfPipe$Size$IntegrationTest,
                         ::testing::Combine(
                                  ::testing::Values(
-                                          I_Rf24Device::Pipe::PIPE_0,
-                                          I_Rf24Device::Pipe::PIPE_1,
-                                          I_Rf24Device::Pipe::PIPE_2,
-                                          I_Rf24Device::Pipe::PIPE_3,
-                                          I_Rf24Device::Pipe::PIPE_4,
-                                          I_Rf24Device::Pipe::PIPE_5
+                                          RfPipe::PIPE_0,
+                                          RfPipe::PIPE_1,
+                                          RfPipe::PIPE_2,
+                                          RfPipe::PIPE_3,
+                                          RfPipe::PIPE_4,
+                                          RfPipe::PIPE_5
                                  ),
                                  ::testing::Values(
                                           1u,
@@ -172,7 +172,7 @@ INSTANTIATE_TEST_CASE_P(AllPipes,
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendDevice1ToDevice2) {
+TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendDevice1ToDevice2) {
    size_t size = ::std::tr1::get<1>(GetParam());
    std::vector<uint8_t> data(size);
    std::iota(data.begin(), data.end(), 1);
@@ -182,7 +182,7 @@ TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendDevice1ToDevice2) {
 
    waitForDataAvailable(mController2);
 
-   I_Rf24Device::Pipe pipe;
+   RfPipe pipe;
    std::vector<uint8_t> buffer(size);
    size_t readSize = mController2.read(asArray(buffer), buffer.size(), pipe);
 
@@ -195,7 +195,7 @@ TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendDevice1ToDevice2) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendDevice2ToDevice1) {
+TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendDevice2ToDevice1) {
    size_t size = ::std::tr1::get<1>(GetParam());
    std::vector<uint8_t> data(size);
    std::iota(data.begin(), data.end(), 1);
@@ -205,7 +205,7 @@ TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendDevice2ToDevice1) {
 
    waitForDataAvailable(mController1);
 
-   I_Rf24Device::Pipe pipe;
+   RfPipe pipe;
    std::vector<uint8_t> buffer(size);
    size_t readSize = mController1.read(asArray(buffer), buffer.size(), pipe);
 
@@ -216,7 +216,7 @@ TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendDevice2ToDevice1) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendAndReveive) {
+TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendAndReveive) {
    size_t size = ::std::tr1::get<1>(GetParam());
    std::vector<uint8_t> data(size);
    std::iota(data.begin(), data.end(), 1);
@@ -244,7 +244,7 @@ TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendAndReveive) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24Controller$Pipe$Size$IntegrationTest, sendAndReveiveInALoop) {
+TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendAndReveiveInALoop) {
    size_t size = ::std::tr1::get<1>(GetParam());
    std::vector<uint8_t> data(size);
    std::iota(data.begin(), data.end(), 1);

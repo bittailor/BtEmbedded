@@ -290,24 +290,24 @@ void Rf24Device::channel(uint8_t pChannel) {
 
 //-------------------------------------------------------------------------------------------------
 
-Rf24Device::Address Rf24Device::receiveAddress(Pipe pPipe) {
+RfAddress Rf24Device::receiveAddress(RfPipe pPipe) {
    switch (pPipe) {
-      case Pipe::PIPE_0:
+      case RfPipe::PIPE_0:
          return readRegister(*mSpi, REGISTER_RX_ADDR_P0);
-      case Pipe::PIPE_1:
+      case RfPipe::PIPE_1:
          return readRegister(*mSpi, REGISTER_RX_ADDR_P1);
       default:
          break;
    }
 
-   Address base = readRegister(*mSpi, REGISTER_RX_ADDR_P1);
+   RfAddress base = readRegister(*mSpi, REGISTER_RX_ADDR_P1);
 
    OneByteRegister oneByteRegister = REGISTER_RX_ADDR_P2;
    switch (pPipe) {
-      case Pipe::PIPE_2 : oneByteRegister = REGISTER_RX_ADDR_P2; break;
-      case Pipe::PIPE_3 : oneByteRegister = REGISTER_RX_ADDR_P3; break;
-      case Pipe::PIPE_4 : oneByteRegister = REGISTER_RX_ADDR_P4; break;
-      case Pipe::PIPE_5 : oneByteRegister = REGISTER_RX_ADDR_P5; break;
+      case RfPipe::PIPE_2 : oneByteRegister = REGISTER_RX_ADDR_P2; break;
+      case RfPipe::PIPE_3 : oneByteRegister = REGISTER_RX_ADDR_P3; break;
+      case RfPipe::PIPE_4 : oneByteRegister = REGISTER_RX_ADDR_P4; break;
+      case RfPipe::PIPE_5 : oneByteRegister = REGISTER_RX_ADDR_P5; break;
       default     : oneByteRegister = REGISTER_RX_ADDR_P2; break;
    }
 
@@ -318,12 +318,12 @@ Rf24Device::Address Rf24Device::receiveAddress(Pipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::receiveAddress(Pipe pPipe, Address pAddress) {
+void Rf24Device::receiveAddress(RfPipe pPipe, RfAddress pAddress) {
    switch (pPipe) {
-      case Pipe::PIPE_0:
+      case RfPipe::PIPE_0:
          writeRegister(*mSpi, REGISTER_RX_ADDR_P0, pAddress.raw());
          return;
-      case Pipe::PIPE_1:
+      case RfPipe::PIPE_1:
          writeRegister(*mSpi, REGISTER_RX_ADDR_P1, pAddress.raw());
          return;
       default:
@@ -332,10 +332,10 @@ void Rf24Device::receiveAddress(Pipe pPipe, Address pAddress) {
 
    OneByteRegister oneByteRegister = REGISTER_RX_ADDR_P2;
    switch (pPipe) {
-      case Pipe::PIPE_2 : oneByteRegister = REGISTER_RX_ADDR_P2; break;
-      case Pipe::PIPE_3 : oneByteRegister = REGISTER_RX_ADDR_P3; break;
-      case Pipe::PIPE_4 : oneByteRegister = REGISTER_RX_ADDR_P4; break;
-      case Pipe::PIPE_5 : oneByteRegister = REGISTER_RX_ADDR_P5; break;
+      case RfPipe::PIPE_2 : oneByteRegister = REGISTER_RX_ADDR_P2; break;
+      case RfPipe::PIPE_3 : oneByteRegister = REGISTER_RX_ADDR_P3; break;
+      case RfPipe::PIPE_4 : oneByteRegister = REGISTER_RX_ADDR_P4; break;
+      case RfPipe::PIPE_5 : oneByteRegister = REGISTER_RX_ADDR_P5; break;
       default     : oneByteRegister = REGISTER_RX_ADDR_P2; break;
    }
 
@@ -344,16 +344,16 @@ void Rf24Device::receiveAddress(Pipe pPipe, Address pAddress) {
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Device::receivePipeEnabled(Pipe pPipe) {
+bool Rf24Device::receivePipeEnabled(RfPipe pPipe) {
    uint8_t offset = 0;
 
    switch (pPipe) {
-      case Pipe::PIPE_0 : offset = 0; break;
-      case Pipe::PIPE_1 : offset = 1; break;
-      case Pipe::PIPE_2 : offset = 2; break;
-      case Pipe::PIPE_3 : offset = 3; break;
-      case Pipe::PIPE_4 : offset = 4; break;
-      case Pipe::PIPE_5 : offset = 5; break;
+      case RfPipe::PIPE_0 : offset = 0; break;
+      case RfPipe::PIPE_1 : offset = 1; break;
+      case RfPipe::PIPE_2 : offset = 2; break;
+      case RfPipe::PIPE_3 : offset = 3; break;
+      case RfPipe::PIPE_4 : offset = 4; break;
+      case RfPipe::PIPE_5 : offset = 5; break;
       default     : offset = 0; break;
    }
 
@@ -362,16 +362,16 @@ bool Rf24Device::receivePipeEnabled(Pipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::receivePipeEnabled(Pipe pPipe, bool pValue) {
+void Rf24Device::receivePipeEnabled(RfPipe pPipe, bool pValue) {
    uint8_t offset = 0;
 
    switch (pPipe) {
-      case Pipe::PIPE_0 : offset = 0; break;
-      case Pipe::PIPE_1 : offset = 1; break;
-      case Pipe::PIPE_2 : offset = 2; break;
-      case Pipe::PIPE_3 : offset = 3; break;
-      case Pipe::PIPE_4 : offset = 4; break;
-      case Pipe::PIPE_5 : offset = 5; break;
+      case RfPipe::PIPE_0 : offset = 0; break;
+      case RfPipe::PIPE_1 : offset = 1; break;
+      case RfPipe::PIPE_2 : offset = 2; break;
+      case RfPipe::PIPE_3 : offset = 3; break;
+      case RfPipe::PIPE_4 : offset = 4; break;
+      case RfPipe::PIPE_5 : offset = 5; break;
       default     : offset = 0; break;
    }
 
@@ -380,15 +380,15 @@ void Rf24Device::receivePipeEnabled(Pipe pPipe, bool pValue) {
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t Rf24Device::receivePayloadSize(Pipe pPipe) {
+uint8_t Rf24Device::receivePayloadSize(RfPipe pPipe) {
    OneByteRegister oneByteRegister;
    switch (pPipe) {
-      case Pipe::PIPE_0 : oneByteRegister = REGISTER_RX_PW_P0; break;
-      case Pipe::PIPE_1 : oneByteRegister = REGISTER_RX_PW_P1; break;
-      case Pipe::PIPE_2 : oneByteRegister = REGISTER_RX_PW_P2; break;
-      case Pipe::PIPE_3 : oneByteRegister = REGISTER_RX_PW_P3; break;
-      case Pipe::PIPE_4 : oneByteRegister = REGISTER_RX_PW_P4; break;
-      case Pipe::PIPE_5 : oneByteRegister = REGISTER_RX_PW_P5; break;
+      case RfPipe::PIPE_0 : oneByteRegister = REGISTER_RX_PW_P0; break;
+      case RfPipe::PIPE_1 : oneByteRegister = REGISTER_RX_PW_P1; break;
+      case RfPipe::PIPE_2 : oneByteRegister = REGISTER_RX_PW_P2; break;
+      case RfPipe::PIPE_3 : oneByteRegister = REGISTER_RX_PW_P3; break;
+      case RfPipe::PIPE_4 : oneByteRegister = REGISTER_RX_PW_P4; break;
+      case RfPipe::PIPE_5 : oneByteRegister = REGISTER_RX_PW_P5; break;
       default     : oneByteRegister = REGISTER_RX_PW_P0; break;
    }
 
@@ -397,15 +397,15 @@ uint8_t Rf24Device::receivePayloadSize(Pipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::receivePayloadSize(Pipe pPipe, uint8_t pSize) {
+void Rf24Device::receivePayloadSize(RfPipe pPipe, uint8_t pSize) {
    OneByteRegister oneByteRegister;
    switch (pPipe) {
-      case Pipe::PIPE_0 : oneByteRegister = REGISTER_RX_PW_P0; break;
-      case Pipe::PIPE_1 : oneByteRegister = REGISTER_RX_PW_P1; break;
-      case Pipe::PIPE_2 : oneByteRegister = REGISTER_RX_PW_P2; break;
-      case Pipe::PIPE_3 : oneByteRegister = REGISTER_RX_PW_P3; break;
-      case Pipe::PIPE_4 : oneByteRegister = REGISTER_RX_PW_P4; break;
-      case Pipe::PIPE_5 : oneByteRegister = REGISTER_RX_PW_P5; break;
+      case RfPipe::PIPE_0 : oneByteRegister = REGISTER_RX_PW_P0; break;
+      case RfPipe::PIPE_1 : oneByteRegister = REGISTER_RX_PW_P1; break;
+      case RfPipe::PIPE_2 : oneByteRegister = REGISTER_RX_PW_P2; break;
+      case RfPipe::PIPE_3 : oneByteRegister = REGISTER_RX_PW_P3; break;
+      case RfPipe::PIPE_4 : oneByteRegister = REGISTER_RX_PW_P4; break;
+      case RfPipe::PIPE_5 : oneByteRegister = REGISTER_RX_PW_P5; break;
       default     : oneByteRegister = REGISTER_RX_PW_P0; break;
    }
    writeSubRegister(*mSpi,oneByteRegister,pSize,6,0);
@@ -413,14 +413,14 @@ void Rf24Device::receivePayloadSize(Pipe pPipe, uint8_t pSize) {
 
 //-------------------------------------------------------------------------------------------------
 
-Rf24Device::Address Rf24Device::transmitAddress() {
+RfAddress Rf24Device::transmitAddress() {
    return readRegister(*mSpi, REGISTER_TX_ADDR);
 }
 
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::transmitAddress(Address pAddress) {
+void Rf24Device::transmitAddress(RfAddress pAddress) {
    writeRegister(*mSpi, REGISTER_TX_ADDR, pAddress.raw());
 }
 
@@ -490,16 +490,16 @@ size_t Rf24Device::availableReceivePayload() {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24Device::readReceivePayload(Pipe& pPipe, uint8_t* pData, size_t pSize) {
+size_t Rf24Device::readReceivePayload(RfPipe& pPipe, uint8_t* pData, size_t pSize) {
 
    switch(readSubRegister(*mSpi,REGISTER_STATUS,3,1))
    {
-      case 0 : pPipe = Pipe::PIPE_0 ; break;
-      case 1 : pPipe = Pipe::PIPE_1 ; break;
-      case 2 : pPipe = Pipe::PIPE_2 ; break;
-      case 3 : pPipe = Pipe::PIPE_3 ; break;
-      case 4 : pPipe = Pipe::PIPE_4 ; break;
-      case 5 : pPipe = Pipe::PIPE_5 ; break;
+      case 0 : pPipe = RfPipe::PIPE_0 ; break;
+      case 1 : pPipe = RfPipe::PIPE_1 ; break;
+      case 2 : pPipe = RfPipe::PIPE_2 ; break;
+      case 3 : pPipe = RfPipe::PIPE_3 ; break;
+      case 4 : pPipe = RfPipe::PIPE_4 ; break;
+      case 5 : pPipe = RfPipe::PIPE_5 ; break;
    }
 
    size_t availableSize = availableReceivePayload();
@@ -540,16 +540,16 @@ void Rf24Device::dynamicPayloadFeatureEnabled(bool pValue) {
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Device::dynamicPayloadEnabled(Pipe pPipe) {
+bool Rf24Device::dynamicPayloadEnabled(RfPipe pPipe) {
    uint8_t offset = 0;
 
    switch (pPipe) {
-      case Pipe::PIPE_0 : offset = 0; break;
-      case Pipe::PIPE_1 : offset = 1; break;
-      case Pipe::PIPE_2 : offset = 2; break;
-      case Pipe::PIPE_3 : offset = 3; break;
-      case Pipe::PIPE_4 : offset = 4; break;
-      case Pipe::PIPE_5 : offset = 5; break;
+      case RfPipe::PIPE_0 : offset = 0; break;
+      case RfPipe::PIPE_1 : offset = 1; break;
+      case RfPipe::PIPE_2 : offset = 2; break;
+      case RfPipe::PIPE_3 : offset = 3; break;
+      case RfPipe::PIPE_4 : offset = 4; break;
+      case RfPipe::PIPE_5 : offset = 5; break;
       default     : offset = 0; break;
    }
 
@@ -558,16 +558,16 @@ bool Rf24Device::dynamicPayloadEnabled(Pipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::dynamicPayloadEnabled(Pipe pPipe, bool pValue) {
+void Rf24Device::dynamicPayloadEnabled(RfPipe pPipe, bool pValue) {
    uint8_t offset = 0;
 
    switch (pPipe) {
-      case Pipe::PIPE_0 : offset = 0; break;
-      case Pipe::PIPE_1 : offset = 1; break;
-      case Pipe::PIPE_2 : offset = 2; break;
-      case Pipe::PIPE_3 : offset = 3; break;
-      case Pipe::PIPE_4 : offset = 4; break;
-      case Pipe::PIPE_5 : offset = 5; break;
+      case RfPipe::PIPE_0 : offset = 0; break;
+      case RfPipe::PIPE_1 : offset = 1; break;
+      case RfPipe::PIPE_2 : offset = 2; break;
+      case RfPipe::PIPE_3 : offset = 3; break;
+      case RfPipe::PIPE_4 : offset = 4; break;
+      case RfPipe::PIPE_5 : offset = 5; break;
       default     : offset = 0; break;
    }
 

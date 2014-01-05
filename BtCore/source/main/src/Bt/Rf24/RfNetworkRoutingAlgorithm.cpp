@@ -15,9 +15,9 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-Rf24::I_Rf24Controller::Pipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode pSelf, RfNode pDestination) {
+RfPipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode pSelf, RfNode pDestination) {
    if (pSelf.level() >= pDestination.level()){
-      return Rf24::I_Rf24Controller::Pipe::PIPE_0;
+      return RfPipe::PIPE_0;
    }
 
    uint8_t idAtLevel[4] = {0};
@@ -27,34 +27,34 @@ Rf24::I_Rf24Controller::Pipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfN
    }
 
    if (idAtLevel[pSelf.level()] != pSelf.id()) {
-      return Rf24::I_Rf24Controller::Pipe::PIPE_0;
+      return RfPipe::PIPE_0;
    }
 
    switch (idAtLevel[pSelf.level() + 1] % 5) {
-      case 1 : return Rf24::I_Rf24Controller::Pipe::PIPE_1;
-      case 2 : return Rf24::I_Rf24Controller::Pipe::PIPE_2;
-      case 3 : return Rf24::I_Rf24Controller::Pipe::PIPE_3;
-      case 4 : return Rf24::I_Rf24Controller::Pipe::PIPE_4;
-      case 0 : return Rf24::I_Rf24Controller::Pipe::PIPE_5;
+      case 1 : return RfPipe::PIPE_1;
+      case 2 : return RfPipe::PIPE_2;
+      case 3 : return RfPipe::PIPE_3;
+      case 4 : return RfPipe::PIPE_4;
+      case 0 : return RfPipe::PIPE_5;
 
-      default: return Rf24::I_Rf24Controller::Pipe::PIPE_0;
+      default: return RfPipe::PIPE_0;
    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Rf24::I_Rf24Controller::Address RfNetworkRoutingAlgorithm::calculatePipeAddress(RfNode pSelf, Rf24::I_Rf24Controller::Pipe pPipe) {
+RfAddress RfNetworkRoutingAlgorithm::calculatePipeAddress(RfNode pSelf, RfPipe pPipe) {
    uint8_t byte0;
    uint8_t child = pSelf.id() * 5;
    switch(pPipe) {
-      case Rf24::I_Rf24Controller::Pipe::PIPE_0 : byte0 = pSelf.id(); break;
-      case Rf24::I_Rf24Controller::Pipe::PIPE_1 : byte0 = child + 1; break;
-      case Rf24::I_Rf24Controller::Pipe::PIPE_2 : byte0 = child + 2; break;
-      case Rf24::I_Rf24Controller::Pipe::PIPE_3 : byte0 = child + 3; break;
-      case Rf24::I_Rf24Controller::Pipe::PIPE_4 : byte0 = child + 4; break;
-      case Rf24::I_Rf24Controller::Pipe::PIPE_5 : byte0 = child + 5; break;
+      case RfPipe::PIPE_0 : byte0 = pSelf.id(); break;
+      case RfPipe::PIPE_1 : byte0 = child + 1; break;
+      case RfPipe::PIPE_2 : byte0 = child + 2; break;
+      case RfPipe::PIPE_3 : byte0 = child + 3; break;
+      case RfPipe::PIPE_4 : byte0 = child + 4; break;
+      case RfPipe::PIPE_5 : byte0 = child + 5; break;
    }
-   return Rf24::I_Rf24Controller::Address(0xC2,0xC2,0xC2,0xC2,byte0);
+   return RfAddress(0xC2,0xC2,0xC2,0xC2,byte0);
 }
 
 //-------------------------------------------------------------------------------------------------

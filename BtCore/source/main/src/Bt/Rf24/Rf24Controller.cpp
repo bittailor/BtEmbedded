@@ -24,17 +24,6 @@ namespace Rf24 {
 
 namespace{
 
-I_Rf24Controller::Pipe sAllPipes [] =
-{
-         I_Rf24Controller::Pipe::PIPE_0,
-         I_Rf24Controller::Pipe::PIPE_1,
-         I_Rf24Controller::Pipe::PIPE_2,
-         I_Rf24Controller::Pipe::PIPE_3,
-         I_Rf24Controller::Pipe::PIPE_4,
-         I_Rf24Controller::Pipe::PIPE_5
-};
-
-
 template<typename T>
 void printArray(const T& pArray)
 {
@@ -74,22 +63,22 @@ void Rf24Controller::configure(const Configuration& pConfiguration) {
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Controller::write(Pipe pPipe, Packet pPacket) {
+bool Rf24Controller::write(RfPipe pPipe, Packet pPacket) {
    size_t size = write(pPipe, pPacket.buffer(), pPacket.size());
    return size != 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* pData, size_t pSize) {
+size_t Rf24Controller::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    StateBase* originalState = mCurrentState;
    mCurrentState->ToStandbyI();
 
-   I_Rf24Device::Address backupPipe0 = mDevice->receiveAddress(I_Rf24Device::Pipe::PIPE_0);
-   I_Rf24Device::Address transmitPipeAddress = mDevice->receiveAddress(pPipe);
+   RfAddress backupPipe0 = mDevice->receiveAddress(RfPipe::PIPE_0);
+   RfAddress transmitPipeAddress = mDevice->receiveAddress(pPipe);
    mDevice->transmitAddress(transmitPipeAddress);
-   mDevice->receiveAddress(I_Rf24Device::Pipe::PIPE_0, transmitPipeAddress);
+   mDevice->receiveAddress(RfPipe::PIPE_0, transmitPipeAddress);
 
    mDevice->writeTransmitPayload(pData, pSize);
 
@@ -123,7 +112,7 @@ size_t Rf24Controller::write(I_Rf24Device::Pipe pPipe, uint8_t* pData, size_t pS
       mDevice->clearDataSent();
    }
 
-   mDevice->receiveAddress(I_Rf24Device::Pipe::PIPE_0, backupPipe0);
+   mDevice->receiveAddress(RfPipe::PIPE_0, backupPipe0);
 
    mCurrentState->ToStandbyI();
    originalState->ApplyTo(*mCurrentState);
@@ -152,13 +141,13 @@ bool Rf24Controller::isDataAvailable() {
 //-------------------------------------------------------------------------------------------------
 
 bool Rf24Controller::read(Packet pPacket) {
-   I_Rf24Device::Pipe pipe;
+   RfPipe pipe;
    return read(pPacket, pipe);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Controller::read(Packet pPacket, Pipe& pPipe) {
+bool Rf24Controller::read(Packet pPacket, RfPipe& pPipe) {
    if (mDevice->isReceiveFifoEmpty())
    {
       return false;
@@ -172,13 +161,13 @@ bool Rf24Controller::read(Packet pPacket, Pipe& pPipe) {
 
 size_t Rf24Controller::read(uint8_t* pBuffer, size_t pSize)
 {
-   I_Rf24Device::Pipe pipe;
+   RfPipe pipe;
    return read(pBuffer, pSize, pipe);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24Controller::read(uint8_t* pData, size_t pSize, I_Rf24Device::Pipe& pPipe) {
+size_t Rf24Controller::read(uint8_t* pData, size_t pSize, RfPipe& pPipe) {
    if (mDevice->isReceiveFifoEmpty())
    {
       return 0;
@@ -196,7 +185,7 @@ void Rf24Controller::configureDevice() {
    
    
    
-   for (auto pipe : sAllPipes) {
+   for (auto pipe : RfPipes::ALL_PIPES) {
          mDevice->receivePayloadSize(pipe, I_Rf24Device::MAX_PAYLOAD_SIZE);
          mDevice->receivePipeEnabled(pipe, true);
          mDevice->dynamicPayloadEnabled(pipe, true);

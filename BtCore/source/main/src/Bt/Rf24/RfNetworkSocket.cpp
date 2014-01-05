@@ -17,25 +17,25 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, Rf24::I_Rf24Controller& pController)
+RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24Controller& pController)
 : mNodeId(pNodeId), mController(&pController), mListener(0)  {
 
-   Rf24::I_Rf24Controller::Configuration configuration;
+   I_Rf24Controller::Configuration configuration;
 
 
 /*
-   mController->enablePipe(Device::I_RfController::Pipe::PIPE_0, mRouting.calculatePipeAddress(mNodeId, Device::I_RfController::Pipe::PIPE_0));
+   mController->enablePipe(RfPipe::PIPE_0, mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_0));
    if(!mRouting.isLeafNode(mNodeId)) {
-      mController->enablePipe(Device::I_RfController::Pipe::PIPE_1,
-                                  mRouting.calculatePipeAddress(mNodeId, Device::I_RfController::Pipe::PIPE_1));
-      mController->enablePipe(Device::I_RfController::Pipe::PIPE_2,
-                                  mRouting.calculatePipeAddress(mNodeId, Device::I_RfController::Pipe::PIPE_2));
-      mController->enablePipe(Device::I_RfController::Pipe::PIPE_3,
-                                  mRouting.calculatePipeAddress(mNodeId, Device::I_RfController::Pipe::PIPE_3));
-      mController->enablePipe(Device::I_RfController::Pipe::PIPE_4,
-                                  mRouting.calculatePipeAddress(mNodeId, Device::I_RfController::Pipe::PIPE_4));
-      mController->enablePipe(Device::I_RfController::Pipe::PIPE_5,
-                                  mRouting.calculatePipeAddress(mNodeId, Device::I_RfController::Pipe::PIPE_5));
+      mController->enablePipe(RfPipe::PIPE_1,
+                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_1));
+      mController->enablePipe(RfPipe::PIPE_2,
+                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_2));
+      mController->enablePipe(RfPipe::PIPE_3,
+                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_3));
+      mController->enablePipe(RfPipe::PIPE_4,
+                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_4));
+      mController->enablePipe(RfPipe::PIPE_5,
+                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_5));
    }
 */
 
@@ -101,7 +101,7 @@ void RfNetworkSocket::workcycle() {
 //-------------------------------------------------------------------------------------------------
 
 bool RfNetworkSocket::sendInternal(Packet& pPacket) {
-   Rf24::I_Rf24Controller::Pipe pipe = mRouting.calculateRoutingPipe(mNodeId, pPacket.destination());
+   RfPipe pipe = mRouting.calculateRoutingPipe(mNodeId, pPacket.destination());
    return mController->write(pipe, pPacket.mControllerPackage);
 }
 

@@ -20,8 +20,8 @@ namespace Rf24 {
 class RfNetworkRoutingAlgorithm 
 {
    public:
-      Rf24::I_Rf24Controller::Pipe calculateRoutingPipe(RfNode pSelf, RfNode pDestination);
-      Rf24::I_Rf24Controller::Address calculatePipeAddress(RfNode pSelf, Rf24::I_Rf24Controller::Pipe pPipe);
+      RfPipe calculateRoutingPipe(RfNode pSelf, RfNode pDestination);
+      RfAddress calculatePipeAddress(RfNode pSelf, RfPipe pPipe);
       bool isLeafNode(RfNode pSelf);
 };
 
