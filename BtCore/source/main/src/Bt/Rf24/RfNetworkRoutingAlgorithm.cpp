@@ -44,7 +44,7 @@ RfPipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode pSelf, RfNode pDes
 //-------------------------------------------------------------------------------------------------
 
 RfAddress RfNetworkRoutingAlgorithm::calculatePipeAddress(RfNode pSelf, RfPipe pPipe) {
-   uint8_t byte0;
+   uint8_t byte0 = pSelf.id();
    uint8_t child = pSelf.id() * 5;
    switch(pPipe) {
       case RfPipe::PIPE_0 : byte0 = pSelf.id(); break;

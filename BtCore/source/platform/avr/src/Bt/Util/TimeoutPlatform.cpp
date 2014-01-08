@@ -4,11 +4,11 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::Timeout
+//  Bt::Util::TimeoutPlatform
 //  
 //*************************************************************************************************
 
-#include "Bt/Util/Timeout.hpp"
+#include "Bt/Util/TimeoutPlatform.hpp"
 
 namespace Bt {
 namespace Util {
@@ -16,21 +16,21 @@ namespace Util {
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::Timeout(unsigned int pMilliseconds) : TimeoutPlatform(pMilliseconds){
-
-
-}
-
-//-------------------------------------------------------------------------------------------------
-
-Timeout::~Timeout() {
+TimeoutPlatform::TimeoutPlatform(unsigned int pMilliseconds) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::operator bool() const {
-   return check();
+TimeoutPlatform::~TimeoutPlatform() {
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool TimeoutPlatform::check() const {
+   //TODO (BT) implement for avr
+   return true;
 }
 
 //-------------------------------------------------------------------------------------------------
