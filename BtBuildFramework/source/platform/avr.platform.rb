@@ -10,8 +10,8 @@ class PiBuilder < Builder
         
     # @cxxflags = "-Wall -Werror=return-type -std=c++11 -Os -finline-functions -Wno-inline -Wall -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -Werror=return-type -mmcu=atmega328p -DF_CPU=16000000UL -DARDUINO=100 -DNDEBUG"
     @includes = "-I../3rdParty/source/include"
-    @ldflags = "-pthread -L../3rdParty/target/#{@configuration.name} -L$builddir"
-    @libraries = ["gmock", "bcm2835"]
+    @ldflags = "-L../3rdParty/target/#{@configuration.name} -L$builddir"
+    @libraries = ["arduino"]
   end  
 end
 

@@ -4,30 +4,28 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::Delay
+//  PingServer
 //  
 //*************************************************************************************************
 
-#include "Bt/Util/Delay.hpp"
 #include <arduino/Arduino.h>
-
-namespace Bt {
-namespace Util {
-
+#include <Bt/Util/Delay.hpp>
 
 //-------------------------------------------------------------------------------------------------
 
-void delayInMilliseconds(unsigned int milliseconds) {
-   delay(milliseconds);
+int main() {
+
+   //init();
+
+   //setup();
+   Serial.println("loop");
+   unsigned int counter = 0;
+   while(true) {
+      counter++;
+      Bt::Util::delayInMilliseconds(1000);
+   }
+   return 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void delayInMicroseconds(unsigned int microseconds) {
-   delayMicroseconds(microseconds);
-}
-
-//-------------------------------------------------------------------------------------------------
-
-} // namespace Util
-} // namespace Bt

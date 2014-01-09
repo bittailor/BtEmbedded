@@ -71,8 +71,14 @@ def library()
   BuildFramework.instance.builder.library_project();
 end
 
-def static_library(name,sources, includes)
+def static_library(name, sources, includes)
   BuildFramework.instance.builder.static_library(name,sources,includes);
+end
+
+def executable(name)
+  configuration = Hash.new { |hash, key| hash[key] = FileList.new }
+  yield configuration
+  BuildFramework.instance.builder.executable(name,configuration);
 end
 
 BuildFramework.instance.load()

@@ -12,10 +12,7 @@ if BuildFramework.instance.platform.name != "avr"
   task "3rdParty" => "gmock"
 end
 
-if BuildFramework.instance.platform.name == "avr"
-  
-  puts FileList['source/lib/arduino/*.cpp'].inspect
-   
+if BuildFramework.instance.platform.name == "avr" 
   static_library("arduino", 
     FileList['source/lib/arduino/*.cpp'],
     ["source/include/arduino", "source/lib/ardunio/src"])  

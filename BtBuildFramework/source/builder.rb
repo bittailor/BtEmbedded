@@ -43,6 +43,36 @@ class Builder
     
   end
   
+  def executable(name, configuration)
+    
+    project_name = BuildFramework.instance.current_project
+        
+    puts "executable name is #{name}" 
+    puts "configuration name is #{configuration.inspect}" 
+       
+    
+    compile = :"#{name}@compile"
+    CLEAN.include File.expand_path(OutputRootFolder) 
+    target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name)
+    output_folder =  File.expand_path(target_folder) 
+    directory output_folder
+    ninja = "build_#{name}.ninja"
+    
+    sources = configuration[:sources]
+    includes = configuration[:includes]
+    
+    bttask compile => [ output_folder ] do
+      File.open("#{target_folder}/#{ninja}", "w+") do |file|
+        file.write(ERB.new(IO.read(File.join(@erb_folder,'configuartion.erb'))).result(binding))
+        file.write(ERB.new(IO.read(File.join(@erb_folder,'rules.erb'))).result(binding))
+        file.write(ERB.new(IO.read(File.join(@erb_folder,'executable.erb'))).result(binding))
+      end
+      run_sh "ninja -v -j8 -f #{target_folder}/#{ninja}" 
+    end
+    
+    task project_name => compile 
+    
+  end
   
   def library_project()
     
