@@ -2,4 +2,3 @@
 build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= source %>
    includes = <%= includes.collect{|i| "-I"+i}.join(" ")  %> $includes	
 <% end %>
-

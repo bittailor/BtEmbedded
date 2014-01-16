@@ -5,6 +5,7 @@ require 'erb'
 require 'rake/clean'
 
 class Builder
+  include Rake::DSL
   
   OutputRootFolder = "target"
   
@@ -13,33 +14,76 @@ class Builder
     @configuration = configuration
     setUp()
   end
+
+  def target_folder()
+    File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
+  end
   
-  def static_library(name,sources, includes)
-        
-    compile = :"#{name}@compile"
+  def generate_project(project, artefacts)
+    puts "tasks for  #{project}" if Rake.application.options.trace
+         
+    generate_ninja_task = :"#{project}@GenerateNinja"
+    compile_ninja = :"#{project}@CompileNinja"
+    
+    output_folder = File.expand_path(File.join(project, target_folder))
+    directory output_folder  
+    
+    ninja_file = "#{target_folder}/build.ninja"
+         
+    bttask generate_ninja_task => [ output_folder ]  do       
+      File.open(ninja_file, "w+") do |file|   
+        artefacts.each do |artefact|
+          artefact.generate(self, file)
+          puts "artefact for #{artefact.name} @ #{Dir.pwd}" if Rake.application.options.trace
+          file.puts "artefact for #{artefact.name}"
+        end
+      end
+    end
+    
+    bttask compile_ninja => [ generate_ninja_task ] do
+      run_sh "ninja -v -j8 -f #{ninja_file}" 
+    end 
+    
+    task project => [ compile_ninja ]
+  end
+  
+  def cpp_project(&block)
+    
+    project_name = BuildFramework.instance.current_project
     
     CLEAN.include File.expand_path(OutputRootFolder) 
-        
-    target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
-       
-    puts "target_folder is #{target_folder}" 
-    output_folder =  File.expand_path(target_folder)
+    
+    compile = :"#{project_name}@compile"
+    
+    target_folder = 
+    output_folder = File.expand_path(target_folder)
+    ninja = "build.ninja"
     
     directory output_folder
     
-    ninja = "build_#{name}.ninja"
-    
-    bttask compile => [ output_folder ] do
-      File.open("#{target_folder}/#{ninja}", "w+") do |file|
-        file.write(ERB.new(IO.read(File.join(@erb_folder,'configuartion.erb'))).result(binding))
-        file.write(ERB.new(IO.read(File.join(@erb_folder,'rules.erb'))).result(binding))
-          
-        file.write(ERB.new(IO.read(File.join(@erb_folder,'static_library.erb'))).result(binding))
-      end
-      run_sh "ninja -v -j8 -f #{target_folder}/#{ninja}" 
+    File.open("#{target_folder}/#{ninja}", "w+") do |file|
+      @ninja_file = file
+      @ninja_file.write(ERB.new(@tool.template("configuration")).result(binding))
+      @ninja_file.write(ERB.new(@tool.template("rules")).result(binding))
+              
+      block.call()
+      
     end
     
-    task name => compile
+    bttask compile => [ output_folder ] do
+      run_sh "ninja -v -j8 -f #{target_folder}/#{ninja}"
+    end
+    
+    
+    
+  end
+  
+  def static_library(file, name, sources, includes)
+            
+    target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
+       
+    file.write(ERB.new(@tool.template("compile")).result(binding))
+    file.write(ERB.new(@tool.template("archive")).result(binding))
     
   end
   
@@ -63,9 +107,10 @@ class Builder
     
     bttask compile => [ output_folder ] do
       File.open("#{target_folder}/#{ninja}", "w+") do |file|
-        file.write(ERB.new(IO.read(File.join(@erb_folder,'configuartion.erb'))).result(binding))
-        file.write(ERB.new(IO.read(File.join(@erb_folder,'rules.erb'))).result(binding))
-        file.write(ERB.new(IO.read(File.join(@erb_folder,'executable.erb'))).result(binding))
+        file.write(ERB.new(@tool.template("configuration")).result(binding))
+        file.write(ERB.new(@tool.template("rules")).result(binding))
+        file.write(ERB.new(@tool.template("compile")).result(binding))
+        file.write(ERB.new(@tool.template("link")).result(binding))
       end
       run_sh "ninja -v -j8 -f #{target_folder}/#{ninja}" 
     end
@@ -206,3 +251,5 @@ class Builder
   end
   
 end
+
+

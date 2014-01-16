@@ -1,0 +1,4 @@
+build <%= "#{target_folder}/#{name}.elf" %>  : link <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> 
+   libs = <%= @libraries.collect{|l| "-l"+l}.join(" ") %>
+
+build <%= "#{target_folder}/#{name}.hex" %> : hex "#{target_folder}/#{name}.elf" 

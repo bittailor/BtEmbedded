@@ -1,0 +1,2 @@
+build <%= "#{target_folder}/#{name}" %>  : link <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> 
+   libs = <%= @libraries.collect{|l| "-l"+l}.join(" ") %>

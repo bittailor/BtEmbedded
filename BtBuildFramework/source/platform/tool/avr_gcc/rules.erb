@@ -1,0 +1,33 @@
+
+cxxflags = <%= @cxxflags %>
+includes = <%= @includes %>
+ldflags = <%= @ldflags %>
+
+
+rule cxx
+  command = <%= @cxx %> -MMD -MT $out -MF $out.d $cxxflags $includes -c $in -o $out
+  description = CXX $out
+  depfile = $out.d
+  
+rule ar
+  command = rm -f $out && <%= @ar %> crs $out $in
+  description = AR $out
+  
+rule link
+  command = <%= @cxx %> $ldflags -o $out $in $libs
+  description = LINK $out
+
+rule hex
+  command = <%= @objcopy %> $ -R .eeprom -O ihex $in $out
+  description = LINK $out
+
+rule eep
+  command = <%= @objcopy %> -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex $in $out
+  description = LINK $out
+
+rule size
+  command = <%= @size %> --format=avr --mcu=$mcu ihex $in $out
+  description = LINK $out
+
+
+
