@@ -4,30 +4,27 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  PingServer
+//  Bt::CoreInitializer
 //  
 //*************************************************************************************************
 
-#include <stdio.h>
+#include "Bt/CoreInitializer.hpp"
 
-#include <Bt/Util/Delay.hpp>
-#include <Bt/CoreInitializer.hpp>
+namespace Bt {
+
 
 //-------------------------------------------------------------------------------------------------
 
-int main() {
+CoreInitializer::CoreInitializer() {
 
-   Bt::CoreInitializer coreInitializer;
-
-   printf("loop\n");
-   unsigned int counter = 0;
-   while(true) {
-      counter++;
-      printf("%d\n",counter);
-      Bt::Util::delayInMilliseconds(1000);
-   }
-   return 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 
+CoreInitializer::~CoreInitializer() {
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+} // namespace Bt

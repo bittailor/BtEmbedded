@@ -19,9 +19,7 @@ class Builder
     File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
   end
   
-  def generate_project(project, artefacts)
-    puts "tasks for  #{project}" if Rake.application.options.trace
-         
+  def generate_project(project, artefacts)     
     generate_ninja_task = :"#{project}@GenerateNinja"
     compile_ninja = :"#{project}@CompileNinja"
     

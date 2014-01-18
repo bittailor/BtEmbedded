@@ -218,7 +218,6 @@ class StaticLibrary < Artefact
   end
   
   def generate(builder, file)
-    puts "#{name} imported_includes are #{imported_includes.inspect}"  
     includes = @includes.storage + imported_includes  
     builder.static_library(file, name, @sources.storage, includes)
   end 
@@ -231,7 +230,6 @@ class Executable < Artefact
   end 
   
   def generate(builder, file)
-    puts "#{name} imported_includes are #{imported_includes.inspect}"  
     includes = @includes.storage + imported_includes 
     
     libraries = @libraries.resolve + imported_libraries 

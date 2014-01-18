@@ -15,7 +15,7 @@ def bt_library_project (name)
                          "source/platform/#{BuildFramework.instance.platform.name}/src" 
     
 
-    builder.exported_includes.add "source/include",
+    builder.exported_includes.add "source/main/inc",
                                   "source/platform/#{BuildFramework.instance.platform.name}/inc"
 
 
@@ -46,7 +46,7 @@ def bt_library_project (name)
                            "source/platform/#{BuildFramework.instance.platform.name}/inc",  
                            "source/mock/inc"
       
-      builder.libraries.add name    
+      builder.libraries.add name, "3rdParty/gmock"   
     end
   end
   
