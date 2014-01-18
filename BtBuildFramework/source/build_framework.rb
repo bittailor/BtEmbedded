@@ -30,11 +30,8 @@ class BuildFramework
   end
   
   def run()
-    namespace @configuration.name do
-      load()
-      define_tasks()
-    end
-    task :default => "#{@configuration.name}:default" 
+    load()
+    define_tasks()
   end
   
   def load()

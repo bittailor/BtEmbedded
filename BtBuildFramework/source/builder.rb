@@ -23,18 +23,12 @@ class Builder
     generate_ninja_task = :"#{project}@GenerateNinja"
     compile_ninja = :"#{project}@CompileNinja"
     
-    puts "CLEAN.include #{File.expand_path(File.join(project,OutputRootFolder))}"
+    # puts "CLEAN.include #{File.expand_path(File.join(project,OutputRootFolder))}"
     CLEAN.include File.expand_path(File.join(project,OutputRootFolder))
         
-    
-    output_folder = File.expand_path(File.join(project, target_folder))
-    
+    output_folder = File.expand_path(File.join(project, target_folder)) 
     directory output_folder
-    
-    
-    # puts "CLEAN.include #{output_folder}"
-    # CLEAN.include output_folder  
-    
+   
     ninja_file = "#{target_folder}/build.ninja"
          
     bttask generate_ninja_task => [ output_folder ]  do       
