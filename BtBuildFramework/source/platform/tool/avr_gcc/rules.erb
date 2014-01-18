@@ -1,8 +1,7 @@
 
 cxxflags = <%= @cxxflags %>
-includes = <%= @includes %>
-ldflags = <%= @ldflags %>
-
+linkflags = <%= @linkflags %>
+mcu = <%= @mcu %>
 
 rule cxx
   command = <%= @cxx %> -MMD -MT $out -MF $out.d $cxxflags $includes -c $in -o $out
@@ -14,7 +13,7 @@ rule ar
   description = AR $out
   
 rule link
-  command = <%= @cxx %> $ldflags -o $out $in $libs
+  command = <%= @cxx %> -Os -o $out $in $libs -lm -Wl,-Map,$out.map,--cref -s  -Wl,--gc-sections -mmcu=$mcu
   description = LINK $out
 
 rule hex
@@ -26,7 +25,7 @@ rule eep
   description = LINK $out
 
 rule size
-  command = <%= @size %> --format=avr --mcu=$mcu ihex $in $out
+  command = <%= @size %> --format=berkeley $in | tee $out
   description = LINK $out
 
 

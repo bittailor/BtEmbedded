@@ -14,7 +14,7 @@ class BuildFramework
   def initialize()
     @variables = ENV.to_hash 
     @projects = Dir["*/build.rb"]; 
-    @artefacts = Hash.new { |hash, key| hash[key] = [] }
+    @artefacts = Hash.new { |hash, key| hash[key] = Hash.new }
     set_defaults()
     puts "configuration is #{@variables['configuration']}" if Rake.application.options.trace
     @configuration = Configuration.new(@variables['configuration'])
@@ -41,18 +41,20 @@ class BuildFramework
       original_location = Dir.pwd
       Dir.chdir(File.dirname(project))     
       Kernel.load File.basename(project)
+      @artefacts[@current_project].values.each do |artefact|
+        artefact.resolve_path_storages
+      end
       Dir.chdir(original_location) 
     end
-    # puts @artefacts.inspect
-    # @artefacts.each { |artefact| puts artefact.inspect }
-    task :default => @variables['project']
+    puts "project to build #{@variables['project'].split(',').inspect} " 
+    task :default => @variables['project'].split(',')
  
   end
        
   def define_tasks()
     @artefacts.each do |project, artefacts|
       @current_project = project
-      @builder.generate_project(project, artefacts)
+      @builder.generate_project(project, artefacts.values)
     end
   end
   
@@ -61,7 +63,7 @@ class BuildFramework
   end
   
   def add_artefact(artefact)
-    @artefacts[artefact.project] << artefact
+    @artefacts[artefact.project][artefact.name] = artefact
   end
   
   def default_for_variable(name,value)
@@ -75,6 +77,10 @@ class BuildFramework
   
   def project_name(project)
     File.basename(File.dirname(project))
+  end
+  
+  def resolve(reference)
+    @artefacts[reference.project][reference.artefact]
   end
 
 end
@@ -99,25 +105,21 @@ class PathStorage
   attr_reader :storage
   
   def initialize()
-      @storage = []
+      @storage = FileList.new
   end
              
   def add(*paths)
-    paths.each do |path|    
-      if path.is_a? Array 
-        @storage = @storage + path
-      elsif path.is_a? FileList
-        @storage = @storage + path.to_a
-      else
-        @storage << path
-      end
-    end
+    @storage.include(paths)
     return self
   end
   
   def add_pattern(*patterns)
-    file_list = FileList.new(patterns).to_a 
-    return add(file_list)
+    @storage.include(patterns)
+    return self
+  end
+  
+  def resolve()
+    @storage.resolve
   end
 
 end
@@ -130,9 +132,14 @@ class Reference
       @artefact = artefact
   end
   
+  def resolve
+    BuildFramework.instance.resolve(self)
+  end
+  
 end
 
 class ReferenceStorage
+  
   
   def initialize(project)
     @storage = []
@@ -154,6 +161,10 @@ class ReferenceStorage
       @storage << Reference.new(@project,reference)
     end
   end
+  
+  def resolve
+    @storage.collect {|reference| reference.resolve }
+  end
 
 end
 
@@ -167,7 +178,24 @@ class Artefact
     @includes = PathStorage.new()
     @libraries = ReferenceStorage.new(project)
   end
+  
+  def imported_includes
+    @libraries.resolve.collect {|library| library.usage_includes }.flatten.uniq
+  end
+  
+  def imported_libraries
+    @libraries.resolve.collect {|library| library.usage_librarys }.flatten.uniq
+  end
    
+  def resolve_path_storages
+    self.instance_variables.each do |variable|
+      object = self.instance_variable_get(variable)
+      if object.instance_of?(PathStorage)
+        object.resolve 
+      end
+    end
+  end
+  
 end
 
 
@@ -181,8 +209,18 @@ class StaticLibrary < Artefact
     @exported_libraries = ReferenceStorage.new(project)
   end 
   
+  def usage_includes 
+    return @exported_includes.storage.collect { |include| "../#{@project}/#{include}" } + @exported_libraries.resolve.collect {|library| library.usage_includes }.flatten.uniq 
+  end
+  
+  def usage_librarys
+    return @exported_libraries.resolve
+  end
+  
   def generate(builder, file)
-    builder.static_library(file, name, @sources.storage, @includes.storage)
+    puts "#{name} imported_includes are #{imported_includes.inspect}"  
+    includes = @includes.storage + imported_includes  
+    builder.static_library(file, name, @sources.storage, includes)
   end 
   
 end
@@ -190,7 +228,17 @@ end
 class Executable < Artefact
   def initialize(name, project)
     super
-  end   
+  end 
+  
+  def generate(builder, file)
+    puts "#{name} imported_includes are #{imported_includes.inspect}"  
+    includes = @includes.storage + imported_includes 
+    
+    libraries = @libraries.resolve + imported_libraries 
+        
+    builder.executable(file, name, @sources.storage, includes, libraries)
+  end 
+    
 end
 
 def library()

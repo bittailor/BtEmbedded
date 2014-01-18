@@ -18,7 +18,7 @@ end
 
 if BuildFramework.instance.platform.name == "avr"
   static_library "arduino" do |builder| 
-    builder.sources.add_pattern 'source/lib/arduino/*.cpp'
+    builder.sources.add_pattern 'source/lib/arduino/*.cpp', 'source/lib/arduino/*.c'
     builder.includes.add "source/include/arduino", "source/lib/ardunio/src"  
     builder.exported_includes.add "source/include/arduino"
   end

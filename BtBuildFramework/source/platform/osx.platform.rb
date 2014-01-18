@@ -10,6 +10,9 @@ class OsXBuilder < Builder
     @includes = "-I../3rdParty/source/include"
     @ldflags = "-L../3rdParty/target/#{@configuration.name} -L$builddir"
     @libraries = ["gmock"]
+      
+    @tool = Tools::GCC  
+      
   end  
 end
 

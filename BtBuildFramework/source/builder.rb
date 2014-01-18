@@ -26,16 +26,19 @@ class Builder
     compile_ninja = :"#{project}@CompileNinja"
     
     output_folder = File.expand_path(File.join(project, target_folder))
-    directory output_folder  
+    directory output_folder
+    
+    CLEAN.include output_folder  
     
     ninja_file = "#{target_folder}/build.ninja"
          
     bttask generate_ninja_task => [ output_folder ]  do       
-      File.open(ninja_file, "w+") do |file|   
+      File.open(ninja_file, "w+") do |file| 
+        file.write(ERB.new(@tool.template("configuration")).result(binding))
+        file.write(ERB.new(@tool.template("rules")).result(binding))
         artefacts.each do |artefact|
           artefact.generate(self, file)
           puts "artefact for #{artefact.name} @ #{Dir.pwd}" if Rake.application.options.trace
-          file.puts "artefact for #{artefact.name}"
         end
       end
     end
@@ -78,8 +81,7 @@ class Builder
     
   end
   
-  def static_library(file, name, sources, includes)
-            
+  def static_library(file, name, sources, includes)           
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
        
     file.write(ERB.new(@tool.template("compile")).result(binding))
@@ -87,7 +89,14 @@ class Builder
     
   end
   
-  def executable(name, configuration)
+  def executable(file, name, sources, includes, libraries)
+    target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name)
+    
+    file.write(ERB.new(@tool.template("compile")).result(binding))
+    file.write(ERB.new(@tool.template("link")).result(binding))
+  end 
+  
+  def executable_old(name, configuration)
     
     project_name = BuildFramework.instance.current_project
         

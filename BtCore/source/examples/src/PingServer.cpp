@@ -8,20 +8,22 @@
 //  
 //*************************************************************************************************
 
-#include <arduino/Arduino.h>
+#include <Arduino.h>
 #include <Bt/Util/Delay.hpp>
 
 //-------------------------------------------------------------------------------------------------
 
 int main() {
 
-   //init();
+   init();
+   Serial.begin(9600);
 
    //setup();
    Serial.println("loop");
    unsigned int counter = 0;
    while(true) {
       counter++;
+      Serial.println(counter);
       Bt::Util::delayInMilliseconds(1000);
    }
    return 0;

@@ -1,7 +1,6 @@
 require 'builder'
 require 'platform/tool/tools'
 
-
 class AvrBuilder < Builder
   
   def setUp()
@@ -16,12 +15,12 @@ class AvrBuilder < Builder
     @mcu     = @configuration[:mcu]
       
     @cxxflags = "-std=c++11 -Os -finline-functions -Wall -Wno-strict-aliasing -Wno-inline -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -Werror=return-type -mmcu=#{@mcu} -DF_CPU=#{@configuration[:f_cpu]} -DARDUINO=100 -DNDEBUG"
+    @linkflags = ""    
     
     
-        
-    @includes = "-I../3rdParty/source/include"
-    @ldflags = "-L../3rdParty/target/#{@configuration.name} -L$builddir"
-    @libraries = ["arduino"]
+    @includes = ""
+    
+    @libraries = [""]
       
     @tool = Tools::AVR_GCC
          
