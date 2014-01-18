@@ -23,10 +23,17 @@ class Builder
     generate_ninja_task = :"#{project}@GenerateNinja"
     compile_ninja = :"#{project}@CompileNinja"
     
+    puts "CLEAN.include #{File.expand_path(File.join(project,OutputRootFolder))}"
+    CLEAN.include File.expand_path(File.join(project,OutputRootFolder))
+        
+    
     output_folder = File.expand_path(File.join(project, target_folder))
+    
     directory output_folder
     
-    CLEAN.include output_folder  
+    
+    # puts "CLEAN.include #{output_folder}"
+    # CLEAN.include output_folder  
     
     ninja_file = "#{target_folder}/build.ninja"
          
@@ -48,37 +55,6 @@ class Builder
     task project => [ compile_ninja ]
   end
   
-  def cpp_project(&block)
-    
-    project_name = BuildFramework.instance.current_project
-    
-    CLEAN.include File.expand_path(OutputRootFolder) 
-    
-    compile = :"#{project_name}@compile"
-    
-    target_folder = 
-    output_folder = File.expand_path(target_folder)
-    ninja = "build.ninja"
-    
-    directory output_folder
-    
-    File.open("#{target_folder}/#{ninja}", "w+") do |file|
-      @ninja_file = file
-      @ninja_file.write(ERB.new(@tool.template("configuration")).result(binding))
-      @ninja_file.write(ERB.new(@tool.template("rules")).result(binding))
-              
-      block.call()
-      
-    end
-    
-    bttask compile => [ output_folder ] do
-      run_sh "ninja -v -j8 -f #{target_folder}/#{ninja}"
-    end
-    
-    
-    
-  end
-  
   def static_library(file, name, sources, includes)           
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
        
@@ -87,44 +63,22 @@ class Builder
     
   end
   
-  def executable(file, name, sources, includes, libraries)
+  def executable(file, project, name, sources, includes, library_artefacts)
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name)
+      
+    
+    libraries = []
+    library_artefacts.each do |library|
+      if library.project == project
+        libraries << "#{target_folder}/lib#{library.name}.a"
+      else
+        libraries << "../#{library.project}/#{target_folder}/lib#{library.name}.a"
+      end
+    end 
     
     file.write(ERB.new(@tool.template("compile")).result(binding))
     file.write(ERB.new(@tool.template("link")).result(binding))
   end 
-  
-  def executable_old(name, configuration)
-    
-    project_name = BuildFramework.instance.current_project
-        
-    puts "executable name is #{name}" 
-    puts "configuration name is #{configuration.inspect}" 
-       
-    
-    compile = :"#{name}@compile"
-    CLEAN.include File.expand_path(OutputRootFolder) 
-    target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name)
-    output_folder =  File.expand_path(target_folder) 
-    directory output_folder
-    ninja = "build_#{name}.ninja"
-    
-    sources = configuration[:sources]
-    includes = configuration[:includes]
-    
-    bttask compile => [ output_folder ] do
-      File.open("#{target_folder}/#{ninja}", "w+") do |file|
-        file.write(ERB.new(@tool.template("configuration")).result(binding))
-        file.write(ERB.new(@tool.template("rules")).result(binding))
-        file.write(ERB.new(@tool.template("compile")).result(binding))
-        file.write(ERB.new(@tool.template("link")).result(binding))
-      end
-      run_sh "ninja -v -j8 -f #{target_folder}/#{ninja}" 
-    end
-    
-    task project_name => compile 
-    
-  end
   
   def library_project()
     

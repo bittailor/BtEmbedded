@@ -1,15 +1,19 @@
 require 'builder'
+require 'platform/tool/tools'
 
 class OsXBuilder < Builder
   
   def setUp()
     @platform = "osx"
-    @cxx_compiler = "g++";
-    @archiver = "ar";
+    
+    @cxx = "g++";
+    @ar = "ar";
+    
     @cxxflags = "-Wall -Werror=return-type -Wno-unused-local-typedefs -std=c++11 -g -D_GLIBCXX_USE_NANOSLEEP=1"
-    @includes = "-I../3rdParty/source/include"
-    @ldflags = "-L../3rdParty/target/#{@configuration.name} -L$builddir"
-    @libraries = ["gmock"]
+    @linkflags = ""
+          
+    @includes = ""
+    @libraries = ""
       
     @tool = Tools::GCC  
       

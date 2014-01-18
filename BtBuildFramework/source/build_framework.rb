@@ -72,7 +72,7 @@ class BuildFramework
   
   def set_defaults
     default_for_variable("configuration","host_debug")
-    default_for_variable("project", @projects.collect{|project| project_name(project)})
+    default_for_variable("project", @projects.collect{|project| project_name(project)}.join(','))
   end
   
   def project_name(project)
@@ -234,7 +234,7 @@ class Executable < Artefact
     
     libraries = @libraries.resolve + imported_libraries 
         
-    builder.executable(file, name, @sources.storage, includes, libraries)
+    builder.executable(file, project, name, @sources.storage, includes, libraries)
   end 
     
 end
