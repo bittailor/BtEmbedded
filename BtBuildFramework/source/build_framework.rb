@@ -30,8 +30,11 @@ class BuildFramework
   end
   
   def run()
-    load()
-    define_tasks()
+    namespace @configuration.name do
+      load()
+      define_tasks()
+    end
+    task :default => "#{@configuration.name}:default" 
   end
   
   def load()
@@ -52,10 +55,10 @@ class BuildFramework
   end
        
   def define_tasks()
-    @artefacts.each do |project, artefacts|
-      @current_project = project
-      @builder.generate_project(project, artefacts.values)
-    end
+      @artefacts.each do |project, artefacts|
+        @current_project = project
+        @builder.generate_project(project, artefacts.values)
+      end
   end
   
   def [](name)
