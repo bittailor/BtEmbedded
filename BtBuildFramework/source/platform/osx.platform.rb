@@ -1,5 +1,6 @@
 require 'builder'
 require 'platform/tool/tools'
+require 'platform/testing/runners'
 
 class OsXBuilder < Builder
   
@@ -15,7 +16,8 @@ class OsXBuilder < Builder
     @includes = ""
     @libraries = ""
       
-    @tool = Tools::GCC  
+    @tool = Tools::GCC
+    @runner = HostRunner.new  
       
   end  
 end

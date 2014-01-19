@@ -3,6 +3,7 @@ $LOAD_PATH << File.dirname(__FILE__)
 require 'singleton'
 require 'configuration/configuration.rb'
 require 'platform/platform.rb'
+require 'artefacts.rb'
 require 'rake'
 
 class BuildFramework
@@ -63,6 +64,8 @@ class BuildFramework
   end
   
   def add_artefact(artefact)
+    puts "warning override #{artefact.project} #{artefact.name}" if @artefacts[artefact.project].has_key? artefact.name 
+    puts "add artefact #{artefact.project} #{artefact.name}"
     @artefacts[artefact.project][artefact.name] = artefact
   end
   
@@ -100,144 +103,7 @@ end
 # ----------------------------------------
 # ----------------------------------------
 
-class PathStorage
-  
-  attr_reader :storage
-  
-  def initialize()
-      @storage = FileList.new
-  end
-             
-  def add(*paths)
-    @storage.include(paths)
-    return self
-  end
-  
-  def add_pattern(*patterns)
-    @storage.include(patterns)
-    return self
-  end
-  
-  def resolve()
-    @storage.resolve
-  end
 
-end
-
-class Reference 
-  attr_reader :project, :artefact
-  
-  def initialize(project, artefact)
-      @project = project
-      @artefact = artefact
-  end
-  
-  def resolve
-    BuildFramework.instance.resolve(self)
-  end
-  
-end
-
-class ReferenceStorage
-  
-  
-  def initialize(project)
-    @storage = []
-    @project = project
-  end
-    
-  def add(*references)
-    references.each do |reference| 
-      add_reference(reference)   
-    end
-    return self
-  end
-  
-  def add_reference reference
-    match = /(\S*)\/(\S*)/.match(reference)
-    if(match)
-      @storage << Reference.new(match[1],match[2])
-    else
-      @storage << Reference.new(@project,reference)
-    end
-  end
-  
-  def resolve
-    @storage.collect {|reference| reference.resolve }
-  end
-
-end
-
-class Artefact
-  attr_reader :name, :project, :sources, :includes, :libraries
-   
-  def initialize(name, project)
-    @name = name
-    @project = project
-    @sources = PathStorage.new()
-    @includes = PathStorage.new()
-    @libraries = ReferenceStorage.new(project)
-  end
-  
-  def imported_includes
-    @libraries.resolve.collect {|library| library.usage_includes }.flatten.uniq
-  end
-  
-  def imported_libraries
-    @libraries.resolve.collect {|library| library.usage_librarys }.flatten.uniq
-  end
-   
-  def resolve_path_storages
-    self.instance_variables.each do |variable|
-      object = self.instance_variable_get(variable)
-      if object.instance_of?(PathStorage)
-        object.resolve 
-      end
-    end
-  end
-  
-end
-
-
-class StaticLibrary < Artefact
-
-  attr_reader :exported_includes, :exported_libraries
-    
-  def initialize(name, project)
-    super
-    @exported_includes = PathStorage.new()
-    @exported_libraries = ReferenceStorage.new(project)
-  end 
-  
-  def usage_includes 
-    return @exported_includes.storage.collect { |include| "../#{@project}/#{include}" } + @exported_libraries.resolve.collect {|library| library.usage_includes }.flatten.uniq 
-  end
-  
-  def usage_librarys
-    return @exported_libraries.resolve
-  end
-  
-  def generate(builder, file)
-    includes = @includes.storage + imported_includes  
-    builder.static_library(file, name, @sources.storage, includes)
-  end 
-  
-end
-
-class Executable < Artefact
-  def initialize(name, project)
-    super
-  end 
-  
-  def generate(builder, file)
-    includes = @includes.storage + imported_includes 
-    
-    libraries = @libraries.resolve + imported_libraries 
-        
-    builder.executable(file, project, name, @sources.storage, includes, libraries)
-  end 
-    
-end
 
 def library()
   BuildFramework.instance.builder.library_project();
@@ -255,6 +121,13 @@ def executable(name)
   executable = Executable.new(name, build_framework.current_project)
   yield executable
   build_framework.add_artefact(executable)
+end
+
+def test_run(executable_name) 
+  build_framework = BuildFramework.instance
+  test_run = TestRun.new("#{executable_name}.Run", build_framework.current_project, executable_name)
+  yield test_run
+  build_framework.add_artefact(test_run)
 end
 
 BuildFramework.instance.run()

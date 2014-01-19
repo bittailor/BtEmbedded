@@ -1,5 +1,6 @@
 require 'builder'
 require 'platform/tool/tools'
+require 'platform/testing/runners'
 
 class PiBuilder < Builder
   
@@ -15,7 +16,8 @@ class PiBuilder < Builder
     @includes = ""
     @libraries = ""
       
-    @tool = Tools::GCC  
+    @tool = Tools::GCC 
+    @runner = SSHRunner.new  
       
   end  
 end

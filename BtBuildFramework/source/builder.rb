@@ -36,10 +36,14 @@ class Builder
         file.write(ERB.new(@tool.template("configuration")).result(binding))
         file.write(ERB.new(@tool.template("rules")).result(binding))
         artefacts.each do |artefact|
-          artefact.generate(self, file)
-          puts "artefact for #{artefact.name} @ #{Dir.pwd}" if Rake.application.options.trace
+          artefact.generate_ninja(self, file)
+          puts "artefact for #{artefact.name} @ #{Dir.pwd}" # if Rake.application.options.trace
         end
       end
+    end
+    
+    artefacts.each do |artefact|
+      artefact.create_tasks(self)
     end
     
     bttask compile_ninja => [ generate_ninja_task ] do
@@ -56,7 +60,7 @@ class Builder
     file.write(ERB.new(@tool.template("archive")).result(binding))
     
   end
-  
+ 
   def executable(file, project, name, sources, includes, library_artefacts)
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name)
       
@@ -73,6 +77,23 @@ class Builder
     file.write(ERB.new(@tool.template("compile")).result(binding))
     file.write(ERB.new(@tool.template("link")).result(binding))
   end 
+  
+  def test_run(project, name, executable_name)
+     test_run_task = :"#{project}@RunTest@#{name}"
+     compile_ninja = :"#{project}@CompileNinja"
+     
+     test_filter = BuildFramework.instance.configuration[:test_filter] 
+     test_filter = "--gtest_filter=#{test_filter}" unless test_filter.nil? 
+     
+     test_executable = "#{target_folder}/#{executable_name}"  
+       
+     bttask test_run_task => [ compile_ninja ] do
+       @runner.run_test(test_executable, test_filter)
+     end
+     
+     task project => [ test_run_task ]
+      
+  end
   
   def library_project()
     
