@@ -8,42 +8,49 @@
 //  
 //*************************************************************************************************
 
+#include <Arduino.h>
+
 #include "Bt/Mcu/PinPlatform.hpp"
-
 #include "Bt/Mcu/I_Pin.hpp"
-
-using Bt::Mcu::I_Pin;
-
 
 
 namespace Bt {
 namespace Mcu {
 
+namespace {
+
+uint8_t translateMode(I_Pin::Mode pMode) {
+   switch (pMode) {
+      case I_Pin::MODE_INPUT : return INPUT;
+      case I_Pin::MODE_OUTPUT : return OUTPUT;
+      default : return OUTPUT;
+   }
+}
+
+}
 
 //-------------------------------------------------------------------------------------------------
 
 PinPlatform::PinPlatform(uint8_t pPinId, I_Pin::Mode pInitialMode) : mPinId(pPinId) {
    mode(pInitialMode);
-   //TODO (BT) implement for avr
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void PinPlatform::mode(I_Pin::Mode pMode) {
-   //TODO (BT) implement for avr
+   pinMode(mPinId, translateMode(pMode));
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void PinPlatform::write(bool gHigh) {
-   //TODO (BT) implement for avr
+   digitalWrite(mPinId, gHigh ? HIGH : LOW);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 bool PinPlatform::read() {
-   //TODO (BT) implement for avr
-   return false;
+   return digitalRead(mPinId);
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -29,6 +29,7 @@
 								<option id="gnu.c.compiler.option.include.paths.1487843526" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2060911428" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -36,6 +37,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1618048740" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.746822915" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -51,6 +53,7 @@
 								<option id="gnu.both.asm.option.include.paths.793695870" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.690314003" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -96,6 +99,7 @@
 								<option id="gnu.both.asm.option.include.paths.2058378431" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1889378370" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -104,6 +108,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1891537317" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1186203419" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -111,6 +116,7 @@
 								<option id="gnu.c.compiler.option.include.paths.1384716199" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2128716365" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -151,6 +157,7 @@
 								<option id="gnu.c.compiler.option.include.paths.863586809" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2143682953" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -158,6 +165,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.973028207" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.877663505" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -173,6 +181,7 @@
 								<option id="gnu.both.asm.option.include.paths.556567281" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.471326675" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -197,16 +206,19 @@
 		<configuration configurationName="HostDebug">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
+		<configuration configurationName="arduino_uno">
+			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
+		</configuration>
 		<configuration configurationName="pi_cross_debug">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
 		<configuration configurationName="MacOSX GCC">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
-		<configuration configurationName="Cross GCC">
+		<configuration configurationName="PiCrossDebug">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
-		<configuration configurationName="PiCrossDebug">
+		<configuration configurationName="Cross GCC">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
 	</storageModule>
