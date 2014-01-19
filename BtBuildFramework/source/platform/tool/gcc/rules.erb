@@ -1,0 +1,16 @@
+cxxflags = <%= @cxxflags %>
+linkflags = <%= @linkflags %>
+
+rule cxx
+  command = <%= @cxx %> -MMD -MT $out -MF $out.d $cxxflags $includes -c $in -o $out
+  description = CXX $out
+  depfile = $out.d
+  
+rule ar
+  command = rm -f $out && <%= @ar %> crs $out $in
+  description = AR $out
+  
+rule link
+  command = <%= @cxx %> $linkflags -o $out $in $libs
+  description = LINK $out
+

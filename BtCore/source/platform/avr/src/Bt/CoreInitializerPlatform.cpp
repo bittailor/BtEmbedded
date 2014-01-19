@@ -4,30 +4,40 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  PingServer
+//  Bt::CoreInitializerPlatform
 //  
 //*************************************************************************************************
 
-#include <stdio.h>
+#include "Bt/CoreInitializerPlatform.hpp"
+#include <Arduino.h>
 
-#include <Bt/Util/Delay.hpp>
-#include <Bt/CoreInitializer.hpp>
+namespace Bt {
 
-//-------------------------------------------------------------------------------------------------
+namespace {
 
-int main() {
+int serial_putc( char c, FILE * )
+{
+  Serial.write( c );
 
-   Bt::CoreInitializer coreInitializer;
+  return c;
+}
 
-   printf("loop\n");
-   unsigned int counter = 0;
-   while(true) {
-      counter++;
-      printf("%d\n",counter);
-      Bt::Util::delayInMilliseconds(1000);
-   }
-   return 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 
+CoreInitializerPlatform::CoreInitializerPlatform() {
+   init();
+   Serial.begin(9600);
+   fdevopen( &serial_putc, 0 );
+}
+
+//-------------------------------------------------------------------------------------------------
+
+CoreInitializerPlatform::~CoreInitializerPlatform() {
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+} // namespace Bt

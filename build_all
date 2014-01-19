@@ -1,0 +1,26 @@
+#!/usr/bin/ruby
+
+require 'rake'
+
+def run_sh(cmd)
+    sh cmd do |ok, status|
+      ok or fail "Command failed with status (#{status.exitstatus}): [#{cmd}]"
+	end
+end
+
+
+["host_debug","pi_cross_debug","arduino_uno"].each do |configuration|
+
+	cmd =  "rake configuration=#{configuration} project=3rdParty,BtCore "
+
+	puts
+	puts "*******************************"
+	puts "  #{configuration}"
+	puts "*******************************"
+	puts
+
+	sh cmd do |ok, status|
+      ok or fail "Build of configuration #{configuration} failed with status (#{status.exitstatus}): [#{cmd}]"
+	end
+
+end

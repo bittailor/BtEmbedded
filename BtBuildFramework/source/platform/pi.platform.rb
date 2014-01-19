@@ -1,15 +1,24 @@
 require 'builder'
+require 'platform/tool/tools'
+require 'platform/testing/runners'
 
 class PiBuilder < Builder
   
   def setUp()
     @platform = "pi"
-    @cxx_compiler = "/Volumes/Crosstool/arm-pi-linux-gnueabi/bin/arm-pi-linux-gnueabi-g++";
-    @archiver = "/Volumes/Crosstool/arm-pi-linux-gnueabi/bin/arm-pi-linux-gnueabi-ar";
+    
+    @cxx = "/Volumes/Crosstool/arm-pi-linux-gnueabi/bin/arm-pi-linux-gnueabi-g++";
+    @ar = "/Volumes/Crosstool/arm-pi-linux-gnueabi/bin/arm-pi-linux-gnueabi-ar";
+    
     @cxxflags = "-Wall -Werror=return-type -std=c++11 -D_GLIBCXX_USE_NANOSLEEP=1 -g -pthread"
-    @includes = "-I../3rdParty/source/include"
-    @ldflags = "-pthread -L../3rdParty/target/#{@configuration.name} -L$builddir"
-    @libraries = ["gmock", "bcm2835"]
+    @linkflags = "-pthread"
+    
+    @includes = ""
+    @libraries = ""
+      
+    @tool = Tools::GCC 
+    @runner = SSHRunner.new  
+      
   end  
 end
 

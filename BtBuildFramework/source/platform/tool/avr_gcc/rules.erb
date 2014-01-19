@@ -1,0 +1,33 @@
+
+cxxflags = <%= @cxxflags %>
+linkflags = <%= @linkflags %>
+sizeflags = <%= @sizeflags %>
+mcu = <%= @mcu %>
+
+rule cxx
+  command = <%= @cxx %> -MMD -MT $out -MF $out.d $cxxflags $includes -c $in -o $out
+  description = CXX $out
+  depfile = $out.d
+  
+rule ar
+  command = rm -f $out && <%= @ar %> crs $out $in
+  description = AR $out
+  
+rule link
+  command = <%= @cxx %> -Os -o $out $in $libs -lm -Wl,-Map,$out.map,--cref -s  -Wl,--gc-sections -mmcu=$mcu
+  description = LINK $out
+
+rule hex
+  command = <%= @objcopy %> $ -R .eeprom -O ihex $in $out
+  description = LINK $out
+
+rule eep
+  command = <%= @objcopy %> -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex $in $out
+  description = LINK $out
+
+rule size
+  command = <%= @size %> $sizeflags $in | tee $out
+  description = LINK $out
+
+
+

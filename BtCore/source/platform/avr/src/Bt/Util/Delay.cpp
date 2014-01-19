@@ -9,7 +9,7 @@
 //*************************************************************************************************
 
 #include "Bt/Util/Delay.hpp"
-#include <arduino/Arduino.h>
+#include <Arduino.h>
 
 namespace Bt {
 namespace Util {

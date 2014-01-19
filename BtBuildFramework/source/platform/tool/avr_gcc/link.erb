@@ -1,0 +1,7 @@
+build <%= "#{target_folder}/#{name}.elf" %>  : link <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> <%= libraries.join(' ') %>  
+
+build <%= "#{target_folder}/#{name}.hex" %> : hex <%= "#{target_folder}/#{name}.elf" %> 
+
+build <%= "#{target_folder}/#{name}.eep" %> : eep <%= "#{target_folder}/#{name}.hex" %> 
+
+build <%= "#{target_folder}/#{name}.size" %> : size <%= "#{target_folder}/#{name}.elf" %> 

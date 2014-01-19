@@ -10,13 +10,16 @@
 
 #include "Bt/Util/TimeoutPlatform.hpp"
 
+#include <Arduino.h>
+
 namespace Bt {
 namespace Util {
 
 
 //-------------------------------------------------------------------------------------------------
 
-TimeoutPlatform::TimeoutPlatform(unsigned int pMilliseconds) {
+TimeoutPlatform::TimeoutPlatform(unsigned int pMilliseconds)
+:mDuration(pMilliseconds), mStart(millis()) {
 
 }
 
@@ -29,8 +32,7 @@ TimeoutPlatform::~TimeoutPlatform() {
 //-------------------------------------------------------------------------------------------------
 
 bool TimeoutPlatform::check() const {
-   //TODO (BT) implement for avr
-   return true;
+   return (millis() - mStart) > mDuration;
 }
 
 //-------------------------------------------------------------------------------------------------

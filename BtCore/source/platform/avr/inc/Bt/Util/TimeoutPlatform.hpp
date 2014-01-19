@@ -24,6 +24,8 @@ class TimeoutPlatform
       bool check() const;
 
    private:
+      unsigned int mDuration;
+      unsigned long mStart;
 
 };
 
