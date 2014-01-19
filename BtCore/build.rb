@@ -49,8 +49,7 @@ def bt_library_project (name)
       builder.libraries.add name, "3rdParty/gmock"   
     end
     
-    test_run("#{name}.Test") do |builder| 
-      puts "test_run __> #{builder.name} #{builder.project} "   
+    test_run("#{name}.Test") do |builder|    
     end
     
   end

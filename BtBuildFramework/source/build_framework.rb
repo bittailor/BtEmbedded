@@ -65,7 +65,6 @@ class BuildFramework
   
   def add_artefact(artefact)
     puts "warning override #{artefact.project} #{artefact.name}" if @artefacts[artefact.project].has_key? artefact.name 
-    puts "add artefact #{artefact.project} #{artefact.name}"
     @artefacts[artefact.project][artefact.name] = artefact
   end
   
