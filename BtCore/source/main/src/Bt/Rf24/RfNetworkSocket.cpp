@@ -22,23 +22,12 @@ RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24Controller& pController)
 
    I_Rf24Controller::Configuration configuration;
 
-
-/*
-   mController->enablePipe(RfPipe::PIPE_0, mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_0));
-   if(!mRouting.isLeafNode(mNodeId)) {
-      mController->enablePipe(RfPipe::PIPE_1,
-                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_1));
-      mController->enablePipe(RfPipe::PIPE_2,
-                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_2));
-      mController->enablePipe(RfPipe::PIPE_3,
-                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_3));
-      mController->enablePipe(RfPipe::PIPE_4,
-                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_4));
-      mController->enablePipe(RfPipe::PIPE_5,
-                                  mRouting.calculatePipeAddress(mNodeId, RfPipe::PIPE_5));
+   for(RfPipe pipe : RfPipes::ALL_PIPES) {
+      mRouting.configurePipe(mNodeId, pipe, configuration[pipe]);
    }
-*/
 
+
+   mController->configure(configuration);
 
 }
 

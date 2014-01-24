@@ -63,7 +63,7 @@ void Rf24Controller::configure(const Configuration& pConfiguration) {
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Controller::write(RfPipe pPipe, Packet pPacket) {
+bool Rf24Controller::write(RfPipe pPipe, Packet& pPacket) {
    size_t size = write(pPipe, pPacket.buffer(), pPacket.size());
    return size != 0;
 }
@@ -140,14 +140,14 @@ bool Rf24Controller::isDataAvailable() {
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Controller::read(Packet pPacket) {
+bool Rf24Controller::read(Packet& pPacket) {
    RfPipe pipe;
    return read(pPacket, pipe);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Controller::read(Packet pPacket, RfPipe& pPipe) {
+bool Rf24Controller::read(Packet& pPacket, RfPipe& pPipe) {
    if (mDevice->isReceiveFifoEmpty())
    {
       return false;

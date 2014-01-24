@@ -16,7 +16,7 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfTransportSocket::RfTransportSocket() {
+RfTransportSocket::RfTransportSocket(I_RfNetworkSocket& pNetworkSocket) : mNetworkSocket(&pNetworkSocket) {
 
 }
 

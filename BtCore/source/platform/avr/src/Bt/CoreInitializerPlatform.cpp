@@ -22,6 +22,11 @@ int serial_putc( char c, FILE * )
   return c;
 }
 
+int serial_getc( char c, FILE * )
+{
+  return Serial.read();
+}
+
 }
 
 //-------------------------------------------------------------------------------------------------

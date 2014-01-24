@@ -39,7 +39,7 @@ def bt_library_project (name)
   end  
   
   if compile_unittests
-    executable "#{name}.Test" do |builder|
+    executable "#{name}_Test" do |builder|
       builder.sources.add_pattern 'source/test/src/**/*.cpp'
          
       builder.includes.add "source/main/src",
@@ -49,7 +49,7 @@ def bt_library_project (name)
       builder.libraries.add name, "3rdParty/gmock"   
     end
     
-    test_run("#{name}.Test") do |builder|    
+    test_run("#{name}_Test") do |builder|    
     end
     
   end
@@ -70,4 +70,15 @@ examples.each do |example|
     builder.libraries.add "BtCore"
   end
 end  
+
+if BuildFramework.instance.platform.name == "pi"
+  FileList["source/examples/src/pi/*.cpp"].each do |example|
+    executable(example.pathmap("%n")) do |builder|
+      builder.sources.add example
+      builder.includes.add "source/main/inc" 
+      builder.libraries.add "BtCore"
+    end
+  end  
+end
+
   

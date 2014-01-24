@@ -20,6 +20,9 @@ end
 
 class SSHRunner
   def run_test(test_executable, arguments)
+    return unless BuildFramework.instance.configuration[:run_ssh] 
+    
+    
     hostname = BuildFramework.instance.configuration[:hostname] 
     username = BuildFramework.instance.configuration[:username] 
     password = BuildFramework.instance.configuration[:password] 

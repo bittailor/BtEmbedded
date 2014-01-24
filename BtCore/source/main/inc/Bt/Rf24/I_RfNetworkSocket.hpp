@@ -12,6 +12,9 @@
 #define INC__Bt_Rf24_I_RfNetworkSocket__hpp
 
 #include <stdint.h>
+#include <string.h>
+
+#include "Bt/Rf24/I_Rf24Controller.hpp"
 
 namespace Bt {
 namespace Rf24 {
@@ -37,6 +40,9 @@ class I_RfNetworkSocket::Packet {
       enum { HEADER_SIZE = 2 };
       enum { PAYLOAD_CAPACITY = I_Rf24Controller::Packet::BUFFER_CAPACITY - HEADER_SIZE };
 
+      Packet() {
+         mControllerPackage.size(HEADER_SIZE);
+      }
 
       uint8_t source() {
          return mControllerPackage.buffer()[0];
@@ -50,15 +56,19 @@ class I_RfNetworkSocket::Packet {
          mControllerPackage.buffer()[1] = destination;
       }
 
-      uint8_t* payload() {
+      const void* payload() {
          return mControllerPackage.buffer()+2;
       }
 
-      size_t writePayload(uint8_t* pBuffer, size_t pSize) {
+      size_t size() {
+         return mControllerPackage.size() - HEADER_SIZE;
+      }
+
+      size_t writePayload(const void* pBuffer, size_t pSize) {
          if (pSize > PAYLOAD_CAPACITY ) {
             pSize = PAYLOAD_CAPACITY;
          }
-         memcpy(payload(), pBuffer, pSize);
+         memcpy(payloadBuffer(), pBuffer, pSize);
          mControllerPackage.size(pSize + HEADER_SIZE);
          return pSize;
       }
@@ -66,6 +76,10 @@ class I_RfNetworkSocket::Packet {
       friend class RfNetworkSocket;
 
    private:
+      void* payloadBuffer() {
+         return mControllerPackage.buffer()+2;
+      }
+
       void source(uint8_t source) {
          mControllerPackage.buffer()[0] = source;
       }

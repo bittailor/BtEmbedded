@@ -30,7 +30,7 @@ class I_Rf24Controller {
 
       virtual void configure(const Configuration& pConfiguration) = 0;
 
-      virtual bool write(RfPipe pPipe, Packet pPacket) = 0;
+      virtual bool write(RfPipe pPipe, Packet& pPacket) = 0;
 
       virtual size_t write(RfPipe pPipe, uint8_t* pData, size_t pSize) = 0;
 
@@ -38,8 +38,8 @@ class I_Rf24Controller {
       virtual void stopListening() = 0;
       virtual bool isDataAvailable() = 0;
 
-      virtual bool read(Packet pPacket) = 0;
-      virtual bool read(Packet pPacket, RfPipe& pPipe) = 0;
+      virtual bool read(Packet& pPacket) = 0;
+      virtual bool read(Packet& pPacket, RfPipe& pPipe) = 0;
 
       virtual size_t read(uint8_t* pBuffer, size_t pSize) = 0;
       virtual size_t read(uint8_t* pBuffer, size_t pSize, RfPipe& pPipe) = 0;
@@ -48,6 +48,10 @@ class I_Rf24Controller {
 class I_Rf24Controller::Packet {
    public:
       enum { BUFFER_CAPACITY = I_Rf24Device::MAX_PAYLOAD_SIZE };
+
+      Packet() : mBuffer(), mSize(0) {
+
+      }
 
       uint8_t* buffer() {
          return mBuffer;
@@ -62,6 +66,14 @@ class I_Rf24Controller::Packet {
       }
 
    private:
+      // Constructor to prohibit copy construction.
+      Packet(const Packet&);
+
+      // Operator= to prohibit copy assignment
+      Packet& operator=(const Packet&);
+
+
+
       uint8_t mBuffer[BUFFER_CAPACITY] ;
       size_t mSize;
 };
