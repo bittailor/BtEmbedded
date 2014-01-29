@@ -81,4 +81,14 @@ if BuildFramework.instance.platform.name == "pi"
   end  
 end
 
+if BuildFramework.instance.platform.name == "avr"
+  FileList["source/examples/src/avr/*.cpp"].each do |example|
+    executable(example.pathmap("%n")) do |builder|
+      builder.sources.add example
+      builder.includes.add "source/main/inc" 
+      builder.libraries.add "BtCore"
+    end
+  end  
+end
+
   

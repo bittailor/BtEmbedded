@@ -20,7 +20,7 @@
 #include "Bt/Rf24/Rf24Device.hpp"
 #include "Bt/Mcu/Pin.hpp"
 #include "Bt/Mcu/Spi.hpp"
-#include "Bt/Util/Delay.hpp"
+#include "Bt/Util/Timing.hpp"
 #include "Bt/Util/CollectionUtility.hpp"
 #include "Bt/Rf24/RfNetworkSocket.hpp"
 

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <Bt/Util/Delay.hpp>
+#include <Bt/Util/Timing.hpp>
 #include <Bt/CoreInitializer.hpp>
 
 #include "Bt/Mcu/Pin.hpp"
@@ -31,7 +31,7 @@ class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
       }
 
       virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& pPacket) {
-         printf("Packet from %i => %i \n [%i]", (int)pPacket.source(), (int)pPacket.destination(), (int) pPacket.size());
+         printf("Packet from %i => %i [%i]\n", (int)pPacket.source(), (int)pPacket.destination(), (int) pPacket.size());
          Bt::Rf24::I_RfNetworkSocket::Packet packet;
          packet.destination(pPacket.source());
          packet.writePayload(pPacket.payload(),pPacket.size());
@@ -47,11 +47,15 @@ class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
 
 #ifdef BT_PF_AVR
 
+#define CHIP_ENABLE 9
+#define CHIP_SELECT 10
 
 int main() {
    uint8_t nodeId = 2;
 
 #else
+#define CHIP_ENABLE 17
+#define CHIP_SELECT 8
 
 int main(int argc, const char* argv[]) {
    if (argc < 2) {
@@ -63,12 +67,10 @@ int main(int argc, const char* argv[]) {
 
 #endif
 
-
-
    Bt::CoreInitializer coreInitializer;
 
-   Bt::Mcu::Pin chipEnable(17, Bt::Mcu::I_Pin::MODE_OUTPUT);
-   Bt::Mcu::Pin chipSelect(8, Bt::Mcu::I_Pin::MODE_OUTPUT);
+   Bt::Mcu::Pin chipEnable(CHIP_ENABLE, Bt::Mcu::I_Pin::MODE_OUTPUT);
+   Bt::Mcu::Pin chipSelect(CHIP_SELECT, Bt::Mcu::I_Pin::MODE_OUTPUT);
    Bt::Mcu::Spi spi(Bt::Mcu::I_Spi::BIT_ORDER_MSBFIRST,
                     Bt::Mcu::I_Spi::MODE_0,
                     Bt::Mcu::I_Spi::SPEED_8_MHZ,

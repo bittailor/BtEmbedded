@@ -13,7 +13,7 @@
 
 #include "Bt/Rf24/Rf24Controller.hpp"
 
-#include "Bt/Util/Delay.hpp"
+#include "Bt/Util/Timing.hpp"
 #include "Bt/Util/Timeout.hpp"
 
 namespace Bt {
@@ -40,9 +40,6 @@ void printArray(const T& pArray)
 
 Rf24Controller::Rf24Controller(I_Rf24Device& pDevice)
 : mDevice(&pDevice), mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this), mCurrentState(&mPowerDown) {
-
-   mDevice->autoRetransmitDelay(0x5);
-   //mDevice->autoRetransmitCount(0xf);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -135,7 +132,7 @@ void Rf24Controller::stopListening() {
 //-------------------------------------------------------------------------------------------------
 
 bool Rf24Controller::isDataAvailable() {
-   return !mDevice->isReceiveFifoEmpty();
+   return mDevice->status().dataReady();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -154,6 +151,9 @@ bool Rf24Controller::read(Packet& pPacket, RfPipe& pPipe) {
    }
    size_t size = mDevice->readReceivePayload(pPipe, pPacket.buffer(), Packet::BUFFER_CAPACITY);
    pPacket.size(size);
+   if(mDevice->isReceiveFifoEmpty()) {
+      mDevice->clearDataReady();
+   }
    return true;
 }
 
@@ -180,6 +180,8 @@ size_t Rf24Controller::read(uint8_t* pData, size_t pSize, RfPipe& pPipe) {
 void Rf24Controller::configureDevice() {
 
    mDevice->dynamicPayloadFeatureEnabled(true);
+   mDevice->autoRetransmitDelay(0x5);
+   mDevice->autoRetransmitCount(0xf);
 
    for (auto pipe : RfPipes::ALL_PIPES) {
       auto pipeConfiguration = mConfiguration[pipe];

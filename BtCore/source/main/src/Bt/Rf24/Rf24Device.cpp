@@ -15,7 +15,7 @@
 #include <stdio.h>
 
 #include "Bt/Mcu/I_Spi.hpp"
-#include "Bt/Util/Delay.hpp"
+#include "Bt/Util/Timing.hpp"
 #include "Bt/Util/StaticArray.hpp"
 
 
