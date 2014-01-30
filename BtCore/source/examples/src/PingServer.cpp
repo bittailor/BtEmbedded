@@ -47,10 +47,32 @@ class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
 
 #ifdef BT_PF_AVR
 
+#include <EEPROM.h>
+#include <Arduino.h>
+
 #define CHIP_ENABLE 9
 #define CHIP_SELECT 10
 
+//void setNodeId() {
+//   printf("Enter node id \n");
+//   while(Serial.available() <= 0){}
+//   int size = Serial.available();
+//   char idString[size + 1];
+//   Serial.readBytes(idString,size);
+//   idString[size] = 0;
+//   uint8_t nodeId = atoi(idString);
+//   printf("Enter node id set to %i \n",(int)nodeId);
+//   EEPROM.write(0,nodeId);
+//}
+
+
 int main() {
+   Bt::CoreInitializer coreInitializer;
+
+//   if(EEPROM.read(0) == 255) {
+//      setNodeId();
+//   }
+
    uint8_t nodeId = 2;
 
 #else
@@ -58,6 +80,8 @@ int main() {
 #define CHIP_SELECT 8
 
 int main(int argc, const char* argv[]) {
+   Bt::CoreInitializer coreInitializer;
+
    if (argc < 2) {
       return printf("Usage %s NodeId \n", argv[0]);
    }
@@ -67,7 +91,7 @@ int main(int argc, const char* argv[]) {
 
 #endif
 
-   Bt::CoreInitializer coreInitializer;
+
 
    Bt::Mcu::Pin chipEnable(CHIP_ENABLE, Bt::Mcu::I_Pin::MODE_OUTPUT);
    Bt::Mcu::Pin chipSelect(CHIP_SELECT, Bt::Mcu::I_Pin::MODE_OUTPUT);

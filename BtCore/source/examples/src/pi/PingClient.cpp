@@ -30,15 +30,16 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
    public:
 
       PingClient(Bt::Rf24::I_RfNetworkSocket& pSocket, uint8_t pPingId, std::string pMessage)
-      : mSocket(&pSocket), mPingId(pPingId), mMessage(pMessage) {
+      : mSocket(&pSocket), mPingId(pPingId), mMessage(pMessage), mCounter(0) {
       }
 
       void start() {
          Bt::Rf24::I_RfNetworkSocket::Packet packet;
          packet.destination(mPingId);
-         packet.writePayload(mMessage.c_str(), mMessage.size() + 1);
-         printf("Send Packet => %i [%i] \n", (int)packet.destination(), (int)packet.size());
+         packet.writePayload(&mCounter, sizeof(mCounter));
+         printf("Send Packet %i => %i [%i] \n", mCounter , (int)packet.destination(), (int)packet.size());
          mStart = std::chrono::system_clock::now();
+         //mCounter++;
          mSocket->send(packet);
       }
 
@@ -46,7 +47,7 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
          std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
          std::cout << "Packet from " << (int)pPacket.source() << " => " << (int)pPacket.destination() << std::endl;
 
-         std::cout << "Message: " << std::string((char*)pPacket.payload()) << std::endl;
+         std::cout << "Id: " << *(int*)pPacket.payload() << std::endl;
 
          std::cout << "Ping took "
                    << std::chrono::duration_cast<std::chrono::milliseconds>(end - mStart).count()
@@ -61,6 +62,7 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
       Bt::Rf24::I_RfNetworkSocket* mSocket;
       uint8_t mPingId;
       std::string mMessage;
+      int mCounter;
       std::chrono::time_point<std::chrono::system_clock> mStart;
 };
 
@@ -84,10 +86,10 @@ int main(int argc, const char* argv[]) {
 
    std::cout << "Toggle power ...";
    power.write(false);
-   Bt::Util::delayInMilliseconds(1000);
+   Bt::Util::delayInMilliseconds(100);
    std::cout << "...";
    power.write(true);
-   Bt::Util::delayInMilliseconds(1000);
+   Bt::Util::delayInMilliseconds(10);
    std::cout << "...OK" << std::endl;
 
 

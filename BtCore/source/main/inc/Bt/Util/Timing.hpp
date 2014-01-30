@@ -11,14 +11,16 @@
 #ifndef INC__Bt_Util_Timing__hpp
 #define INC__Bt_Util_Timing__hpp
 
+#include <stdint.h>
+
 namespace Bt {
 namespace Util {
 
-void delayInMilliseconds(unsigned int milliseconds);
-void delayInMicroseconds(unsigned int microseconds);
+void delayInMilliseconds(uint32_t milliseconds);
+void delayInMicroseconds(uint32_t microseconds);
 
-unsigned int milliseconds();
-unsigned int microseconds();
+uint32_t milliseconds();
+uint32_t microseconds();
 
 
 } // namespace Util

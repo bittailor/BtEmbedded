@@ -10,6 +10,7 @@
 
 #include "Bt/Util/Timing.hpp"
 #include <Arduino.h>
+#include <stdint.h>
 
 namespace Bt {
 namespace Util {
@@ -17,28 +18,29 @@ namespace Util {
 
 //-------------------------------------------------------------------------------------------------
 
-void delayInMilliseconds(unsigned int milliseconds) {
+void delayInMilliseconds(uint32_t milliseconds) {
    delay(milliseconds);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void delayInMicroseconds(unsigned int microseconds) {
+void delayInMicroseconds(uint32_t microseconds) {
    delayMicroseconds(microseconds);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned int milliseconds() {
+uint32_t milliseconds() {
    return millis();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned int microseconds() {
+uint32_t microseconds() {
    return micros();
 }
 
 //-------------------------------------------------------------------------------------------------
+
 } // namespace Util
 } // namespace Bt

@@ -9,6 +9,7 @@
 //*************************************************************************************************
 
 #include "Bt/Util/Timeout.hpp"
+#include "Bt/Util/Timing.hpp"
 
 namespace Bt {
 namespace Util {
@@ -16,7 +17,7 @@ namespace Util {
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::Timeout(unsigned int pMilliseconds) : TimeoutPlatform(pMilliseconds){
+Timeout::Timeout(uint32_t pMilliseconds) : mTimedOut(false),  mMilliseconds(pMilliseconds), mStart(milliseconds()){
 
 
 }
@@ -29,11 +30,27 @@ Timeout::~Timeout() {
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::operator bool() const {
-   return check();
+bool Timeout::checkForTimeout() {
+   if (mTimedOut) {
+      return false;
+   }
+
+   if ((milliseconds() - mStart) > mMilliseconds) {
+      mTimedOut = true;
+      return false;
+   }
+
+   return true;
 }
 
 //-------------------------------------------------------------------------------------------------
+
+bool Timeout::isTimedOut() {
+   return mTimedOut;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 
 } // namespace Util
 } // namespace Bt

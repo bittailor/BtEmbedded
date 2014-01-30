@@ -37,7 +37,7 @@ class I_RfNetworkSocket {
 
 class I_RfNetworkSocket::Packet {
    public:
-      enum { HEADER_SIZE = 2 };
+      enum { HEADER_SIZE = 3 };
       enum { PAYLOAD_CAPACITY = I_Rf24Controller::Packet::BUFFER_CAPACITY - HEADER_SIZE };
 
       Packet() {
@@ -52,12 +52,16 @@ class I_RfNetworkSocket::Packet {
          return mControllerPackage.buffer()[1];
       }
 
+      uint8_t id() {
+         return mControllerPackage.buffer()[2];
+      }
+
       void destination(uint8_t destination) {
          mControllerPackage.buffer()[1] = destination;
       }
 
       const void* payload() {
-         return mControllerPackage.buffer()+2;
+         return payloadBuffer();
       }
 
       size_t size() {
@@ -77,11 +81,15 @@ class I_RfNetworkSocket::Packet {
 
    private:
       void* payloadBuffer() {
-         return mControllerPackage.buffer()+2;
+         return mControllerPackage.buffer() + HEADER_SIZE;
       }
 
-      void source(uint8_t source) {
-         mControllerPackage.buffer()[0] = source;
+      void source(uint8_t pSource) {
+         mControllerPackage.buffer()[0] = pSource;
+      }
+
+      void id(uint8_t pId) {
+         mControllerPackage.buffer()[2] = pId;
       }
 
       I_Rf24Controller::Packet mControllerPackage;

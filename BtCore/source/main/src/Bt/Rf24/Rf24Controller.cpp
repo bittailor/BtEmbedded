@@ -83,7 +83,7 @@ size_t Rf24Controller::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    I_Rf24Device::Status status = mDevice->status();
    Util::Timeout timeout(10000);
-   while(!(status.dataSent() || status.retransmitsExceeded() || timeout) ) {
+   while(!(status.dataSent() || status.retransmitsExceeded() || !timeout.checkForTimeout() ) ) {
       status = mDevice->status();
       // printf("TxMode::ToStandbyI: autoRetransmitCounter = %u \n", (mDevice->autoRetransmitCounter()) );
       Util::delayInMicroseconds(10);
@@ -98,7 +98,7 @@ size_t Rf24Controller::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    }
 
 
-   if (timeout) {
+   if (timeout.isTimedOut()) {
       mDevice->clearRetransmitsExceeded();
       mDevice->flushTransmitFifo();
       printf("TxMode::ToStandbyI: send failed timeout ! \n");

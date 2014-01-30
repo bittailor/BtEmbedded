@@ -19,7 +19,7 @@ namespace Rf24 {
 //-------------------------------------------------------------------------------------------------
 
 RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24Controller& pController)
-: mNodeId(pNodeId), mController(&pController), mListener(0)  {
+: mNodeId(pNodeId), mController(&pController), mIdCounter(0), mListener(0)  {
 
    I_Rf24Controller::Configuration configuration;
 
@@ -60,6 +60,7 @@ bool RfNetworkSocket::stopListening() {
 
 bool RfNetworkSocket::send(Packet& pPacket) {
   pPacket.source(mNodeId.id());
+  pPacket.id(mIdCounter++);
   if (pPacket.destination() == mNodeId.id()) {
      receiveInternal(pPacket);
      return true;

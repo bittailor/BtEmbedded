@@ -11,22 +11,29 @@
 #ifndef INC__Bt_Util_Timeout__hpp
 #define INC__Bt_Util_Timeout__hpp
 
+#include <stdint.h>
 #include "Bt/Util/TimeoutPlatform.hpp"
 
 namespace Bt {
 namespace Util {
 
-class Timeout : private TimeoutPlatform
+class Timeout
 {
 
 
    public:
-      Timeout(unsigned int pMilliseconds);
+      Timeout(uint32_t pMilliseconds);
       ~Timeout();
 
-      operator bool() const; // TODO (BT) implement the safe bool idiom !
+      bool checkForTimeout();
+
+      bool isTimedOut();
+
    
    private:
+      bool mTimedOut;
+      uint32_t mMilliseconds;
+      uint32_t mStart;
 
 };
 

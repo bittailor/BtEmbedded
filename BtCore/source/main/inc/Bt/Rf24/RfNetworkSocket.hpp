@@ -51,6 +51,7 @@ class RfNetworkSocket : public I_RfNetworkSocket
       RfNode mNodeId;
       I_Rf24Controller* mController;
       RfNetworkRoutingAlgorithm mRouting;
+      uint8_t mIdCounter;
       I_Listener* mListener;
 
 };
