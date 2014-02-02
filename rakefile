@@ -1,7 +1,8 @@
 Rake.application.options.trace = true
 
+$LOAD_PATH << File.dirname(__FILE__)
 
-
+puts Dir.pwd;
 
 require 'BtBuildFramework/source/build_framework.rb'
 
