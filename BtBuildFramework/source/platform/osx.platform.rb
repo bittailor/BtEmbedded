@@ -11,7 +11,7 @@ class OsXBuilder < Builder
     @ar = "ar";
     
     @cxxflags = "-Wall -Werror=return-type -Wno-unused-local-typedefs -std=c++11 -g -DBT_PF_OSX -D_GLIBCXX_USE_NANOSLEEP=1"
-    @linkflags = ""
+    @linkflags = "-pthread"
           
     @includes = ""
     @libraries = ""

@@ -11,6 +11,6 @@ rule ar
   description = AR $out
   
 rule link
-  command = <%= @cxx %> $linkflags -o $out $in $libs
+  command = <%= @cxx %> -o $out $in $libs $linkflags
   description = LINK $out
 
