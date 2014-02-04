@@ -8,6 +8,8 @@
 //  
 //*************************************************************************************************
 
+#include <thread>
+#include <pthread.h>
 #include <gtest/gtest.h>
 
 #include "Bt/Util/Timing.hpp"
@@ -25,22 +27,21 @@ TEST(TimingTest, milliseconds) {
 
    uint32_t duration = stop - start;
 
-   ASSERT_NEAR(delay, duration, 1);
-
+   ASSERT_LE(delay, duration);
 }
 
-TEST(TimingTest, microseconds) {
-   uint32_t delay = 876;
 
+
+TEST(TimingTest, microseconds) {
+
+   uint32_t delay = 876;
    uint32_t start = Bt::Util::microseconds();
    Bt::Util::delayInMicroseconds(delay);
    uint32_t stop = Bt::Util::microseconds();
 
    uint32_t duration = stop - start;
 
-   // TODO (BT) microseconds delay is currently inaccurate ?
-   ASSERT_NEAR(delay, duration, 300);
-
+   ASSERT_LE(delay, duration);
 }
 
 
