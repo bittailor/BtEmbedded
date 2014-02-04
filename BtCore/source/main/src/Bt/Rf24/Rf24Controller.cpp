@@ -198,7 +198,6 @@ void Rf24Controller::configureDevice() {
       }
    }
 
-
 //   for (auto pipe : RfPipes::ALL_PIPES) {
 //         mDevice->receivePayloadSize(pipe, I_Rf24Device::MAX_PAYLOAD_SIZE);
 //         mDevice->receivePipeEnabled(pipe, true);
