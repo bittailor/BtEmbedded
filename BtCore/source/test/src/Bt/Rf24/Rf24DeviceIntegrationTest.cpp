@@ -154,6 +154,23 @@ TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackChannel) {
 
 //-------------------------------------------------------------------------------------------------
 
+TEST_P(Rf24DeviceIntegrationTest, readDefaultDataRate) {
+   EXPECT_EQ(I_Rf24Device::DR_2_MBPS, mDevice.dataRate());
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+TEST_P(Rf24DeviceIntegrationTest, writeAndReadBackDataRate) {
+   mDevice.dataRate(I_Rf24Device::DR_250_KBPS);
+   EXPECT_EQ(I_Rf24Device::DR_250_KBPS, mDevice.dataRate());
+
+   mDevice.dataRate(I_Rf24Device::DR_1_MBPS);
+   EXPECT_EQ(I_Rf24Device::DR_1_MBPS, mDevice.dataRate());
+}
+
+//-------------------------------------------------------------------------------------------------
+
 TEST_P(Rf24DeviceIntegrationTest, readDefaultAutoRetransmitCount) {
    EXPECT_EQ(0x03,(int)mDevice.autoRetransmitCount());
 }

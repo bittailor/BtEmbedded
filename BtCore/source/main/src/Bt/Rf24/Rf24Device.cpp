@@ -276,7 +276,6 @@ uint8_t Rf24Device::autoRetransmitCounter(){
 
 uint8_t Rf24Device::channel() {
    uint8_t value = readRegister(*mSpi, REGISTER_RF_CH) & MASK_RF_CH;
-   printf("RF_CH = %02x \n",value);
    return value & 0x7F;
 }
 
@@ -284,8 +283,31 @@ uint8_t Rf24Device::channel() {
 
 void Rf24Device::channel(uint8_t pChannel) {
    uint8_t value = pChannel & MASK_RF_CH;
-   uint8_t status = writeRegister(*mSpi, REGISTER_RF_CH, value);
-   printf("write RF_CH status = %02x \n",status);
+   writeRegister(*mSpi, REGISTER_RF_CH, value);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+I_Rf24Device::DataRate Rf24Device::dataRate() {
+   uint8_t low = readSubRegister(*mSpi, REGISTER_RF_SETUP, 1, 5);
+   uint8_t high = readSubRegister(*mSpi, REGISTER_RF_SETUP, 1, 3);
+   if(low) {
+      return I_Rf24Device::DR_250_KBPS;
+   }
+   if(high) {
+      return I_Rf24Device::DR_2_MBPS;
+   }
+   return I_Rf24Device::DR_1_MBPS;
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void Rf24Device::dataRate(DataRate pDataRate) {
+   uint8_t low = (pDataRate == I_Rf24Device::DR_250_KBPS);
+   uint8_t high = (pDataRate == I_Rf24Device::DR_2_MBPS);
+   writeSubRegister(*mSpi, REGISTER_RF_SETUP, low, 1, 5);
+   writeSubRegister(*mSpi, REGISTER_RF_SETUP, high, 1, 3);
 }
 
 //-------------------------------------------------------------------------------------------------

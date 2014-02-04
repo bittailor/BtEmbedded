@@ -56,6 +56,9 @@ class Rf24Device : public I_Rf24Device
       virtual uint8_t channel();
       virtual void channel(uint8_t pChannel);
 
+      virtual DataRate dataRate();
+      virtual void dataRate(DataRate pDataRate);
+
       virtual RfAddress receiveAddress(RfPipe pPipe);
       virtual void receiveAddress(RfPipe pPipe, RfAddress pAddress);
 

@@ -180,8 +180,11 @@ size_t Rf24Controller::read(uint8_t* pData, size_t pSize, RfPipe& pPipe) {
 void Rf24Controller::configureDevice() {
 
    mDevice->dynamicPayloadFeatureEnabled(true);
-   mDevice->autoRetransmitDelay(0x5);
+   mDevice->autoRetransmitDelay(0x6);
    mDevice->autoRetransmitCount(0xf);
+   mDevice->channel(80);
+   mDevice->dataRate(I_Rf24Device::DR_250_KBPS);
+
 
    for (auto pipe : RfPipes::ALL_PIPES) {
       auto pipeConfiguration = mConfiguration[pipe];

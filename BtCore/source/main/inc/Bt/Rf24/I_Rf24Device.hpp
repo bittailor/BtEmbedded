@@ -33,6 +33,12 @@ class I_Rf24Device {
          RX_MODE
       };
 
+      enum DataRate {
+         DR_250_KBPS,
+         DR_1_MBPS,
+         DR_2_MBPS
+      };
+
       class Status {
          public:
             Status(bool pDataReady, bool pDataSent, bool pRetransmitsExceeded)
@@ -77,6 +83,9 @@ class I_Rf24Device {
 
       virtual uint8_t channel() = 0;
       virtual void channel(uint8_t pChannel) = 0;
+
+      virtual DataRate dataRate() = 0;
+      virtual void dataRate(DataRate pDataRate) = 0;
 
       virtual RfAddress receiveAddress(RfPipe pPipe) = 0;
       virtual void receiveAddress(RfPipe pPipe, RfAddress pAddress) = 0;
