@@ -15,11 +15,12 @@
 #include "Bt/Rf24/RfNode.hpp"
 #include "Bt/Rf24/I_RfNetworkSocket.hpp"
 #include "Bt/Rf24/RfNetworkRoutingAlgorithm.hpp"
+#include "Bt/Workcycle/I_Runnable.hpp"
 
 namespace Bt {
 namespace Rf24 {
 
-class RfNetworkSocket : public I_RfNetworkSocket
+class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
 {
    private:
       enum { FRAME_BUFFER_SIZE = I_Rf24Controller::MAX_PAYLOAD_SIZE };

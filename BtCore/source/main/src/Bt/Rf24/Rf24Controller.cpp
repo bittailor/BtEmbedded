@@ -132,7 +132,16 @@ void Rf24Controller::stopListening() {
 //-------------------------------------------------------------------------------------------------
 
 bool Rf24Controller::isDataAvailable() {
-   return mDevice->status().dataReady();
+   if (mDevice->isReceiveFifoEmpty()) {
+      return false;
+   }
+
+   if (mDevice->availableReceivePayload() > MAX_PAYLOAD_SIZE) {
+      mDevice->flushReceiveFifo();
+      return false;
+   }
+
+   return true;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -204,11 +213,13 @@ void Rf24Controller::configureDevice() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24Controller::PowerDown::ToStandbyI() {
-   mController->mDevice->powerUp(true);
-   // Util::delayInMicroseconds(1500); // TODO (BT) can reduce ext oszi ?
-   Util::delayInMicroseconds(150); // TODO (BT) can reduce ext oszi ?
 
+   mController->mDevice->flushReceiveFifo();
+   mController->mDevice->flushTransmitFifo();
    mController->configureDevice();
+
+   mController->mDevice->powerUp(true);
+   Util::delayInMicroseconds(150);
 
    mController->mCurrentState = &mController->mStandbyI;
 }

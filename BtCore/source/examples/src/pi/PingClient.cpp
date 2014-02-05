@@ -11,18 +11,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <chrono>
-
+#include <iostream>
 
 #include <Bt/Util/Timing.hpp>
 #include <Bt/CoreInitializer.hpp>
-
 #include "Bt/Mcu/Pin.hpp"
 #include "Bt/Mcu/Spi.hpp"
 #include "Bt/Rf24/Rf24Device.hpp"
 #include "Bt/Rf24/Rf24Controller.hpp"
 #include "Bt/Rf24/RfNetworkSocket.hpp"
 #include "Bt/Rf24/I_RfNetworkSocket.hpp"
-#include <iostream>
+
+
+#include "Bt/Workcycle/MainWorkcycle.hpp"
+
+using Bt::Workcycle::MainWorkcycle;
 
 //-------------------------------------------------------------------------------------------------
 
@@ -39,7 +42,7 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
          packet.writePayload(&mCounter, sizeof(mCounter));
          printf("Send Packet %i => %i [%i] \n", mCounter , (int)packet.destination(), (int)packet.size());
          mStart = std::chrono::system_clock::now();
-         //mCounter++;
+         mCounter++;
          mSocket->send(packet);
       }
 
@@ -110,11 +113,12 @@ int main(int argc, const char* argv[]) {
 
    pingClient.start();
 
+   MainWorkcycle workcycle;
+   workcycle.add(socket);
+
    printf("Enter ping client workcycle for node %i => node %i\n",(int) nodeId, (int) pingId);
 
-   while(true) {
-      socket.workcycle();
-   }
+   workcycle.run();
 
    return 0;
 }

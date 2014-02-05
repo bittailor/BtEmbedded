@@ -21,6 +21,10 @@
 #include "Bt/Rf24/RfNetworkSocket.hpp"
 #include "Bt/Rf24/I_RfNetworkSocket.hpp"
 
+#include "Bt/Workcycle/MainWorkcycle.hpp"
+
+using Bt::Workcycle::MainWorkcycle;
+
 //-------------------------------------------------------------------------------------------------
 
 class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
@@ -73,7 +77,7 @@ int main() {
 //      setNodeId();
 //   }
 
-   uint8_t nodeId = 2;
+   uint8_t nodeId = 12;
 
 #else
 #define CHIP_ENABLE 17
@@ -108,10 +112,12 @@ int main(int argc, const char* argv[]) {
 
    socket.startListening(pingServer);
 
+   MainWorkcycle workcycle;
+   workcycle.add(socket);
+
+
    printf("Enter ping server workcycle for node %i\n",(int) nodeId);
-   while(true) {
-      socket.workcycle();
-   }
+   workcycle.run();
    return 0;
 }
 

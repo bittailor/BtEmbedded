@@ -77,6 +77,7 @@ class Rf24Device : public I_Rf24Device
 
       virtual bool isReceiveFifoEmpty();
       virtual bool isReceiveFifoFull();
+      virtual void flushReceiveFifo();
 
       virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize);
 

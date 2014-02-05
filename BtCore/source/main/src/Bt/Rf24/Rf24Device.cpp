@@ -37,6 +37,7 @@ enum Commands {
    CMD_R_RX_PAYLOAD  = 0x61,
    CMD_W_TX_PAYLOAD  = 0xA0,
    CMD_FLUSH_TX      = 0xE1,
+   CMD_FLUSH_RX      = 0xE2,
    CMD_R_RX_PL_WID   = 0x60,
    CMD_NOP = 0xFF
 };
@@ -476,6 +477,14 @@ bool Rf24Device::isReceiveFifoEmpty() {
 
 bool Rf24Device::isReceiveFifoFull() {
    return readSubRegister(*mSpi, REGISTER_FIFO_STATUS,1,1);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void Rf24Device::flushReceiveFifo() {
+   mSpi->chipSelect(true);
+   mSpi->transfer(CMD_FLUSH_RX);
+   mSpi->chipSelect(false);
 }
 
 //-------------------------------------------------------------------------------------------------
