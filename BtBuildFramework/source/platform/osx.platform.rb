@@ -7,9 +7,11 @@ class OsXBuilder < Builder
   def setUp()
     @platform = "osx"
     
+    @cc = "gcc";
     @cxx = "g++";
     @ar = "ar";
     
+    @ccflags = "-Wall -Werror=return-type -Wno-unused-local-typedefs -g -DBT_PF_OSX -D_GLIBCXX_USE_NANOSLEEP=1"
     @cxxflags = "-Wall -Werror=return-type -Wno-unused-local-typedefs -std=c++11 -g -DBT_PF_OSX -D_GLIBCXX_USE_NANOSLEEP=1"
     @linkflags = "-pthread"
           

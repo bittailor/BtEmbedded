@@ -134,7 +134,7 @@ class StaticLibrary < BuildArtefact
   end
   
   def usage_librarys
-    return @exported_libraries.resolve
+    return @libraries.resolve
   end
   
   def generate_ninja(builder, file)

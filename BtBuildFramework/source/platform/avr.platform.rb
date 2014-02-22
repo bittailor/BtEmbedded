@@ -7,6 +7,8 @@ class AvrBuilder < Builder
     @platform = "avr"
     @avr_root = "/opt/local/bin/avr"
     
+   
+    @cc      = "#{@avr_root}-gcc"
     @cxx     = "#{@avr_root}-g++"
     @ar      = "#{@avr_root}-ar"
     @objcopy = "#{@avr_root}-objcopy"
@@ -15,6 +17,7 @@ class AvrBuilder < Builder
     
     @mcu     = @configuration[:mcu]
       
+    @ccflags = "-Os -finline-functions -Wall -Wno-strict-aliasing -Wno-inline -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -Werror=return-type -mmcu=#{@mcu} -DF_CPU=#{@configuration[:f_cpu]} -DBT_PF_AVR -DARDUINO=100 -DNDEBUG"
     @cxxflags = "-std=c++11 -Os -finline-functions -Wall -Wno-strict-aliasing -Wno-inline -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -Werror=return-type -mmcu=#{@mcu} -DF_CPU=#{@configuration[:f_cpu]} -DBT_PF_AVR -DARDUINO=100 -DNDEBUG"
     @linkflags = "" 
     @sizeflags = "--format=avr --mcu=#{@mcu}"   

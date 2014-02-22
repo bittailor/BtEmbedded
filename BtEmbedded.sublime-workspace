@@ -8,61 +8,112 @@
 	"buffers":
 	[
 		{
+			"contents": "\n\n-MMD -MT target/arduino_uno/lib/arduino/CDC.obj -MF target/arduino_uno/lib/arduino/CDC.obj.d -Wall -Werror=return-type -std=c++11 -Os -finline-functions -Wno-inline -Wall -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -Werror=return-type -mmcu=atmega328p -DF_CPU=16000000UL -DARDUINO=100 -DNDEBUG -Isource/include/arduino -Isource/lib/ardunio/src -I../3rdParty/source/include	 -c source/lib/arduino/CDC.cpp -o target/arduino_uno/lib/arduino/CDC.obj\n\n\n\n\n\n-Os -finline-functions -Wno-inline -Wall -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -Werror=return-type -mmcu=atmega328p -DF_CPU=16000000UL -DARDUINO=100 -DNDEBUG  -I\"ArduinoLibrary/source/main/inc\" -I\"ArduinoLibrary/source/main/src\" -I\"ArduinoLibrary/source/main/src/utility\" -c -o \"ArduinoLibrary/target/source/main/ArduinoUno/EEPROM.o\" \"ArduinoLibrary/source/main/src/EEPROM.cpp\"\n\n\n\n\n	\"/usr/local/CrossPack-AVR/bin/avr-g++\" --cref -s -Os -o \"ArduinoPlayground/target/source/main/ArduinoUno/ArduinoPlayground.elf\" \"ArduinoPlayground/target/source/main/ArduinoUno/Main.o\" \"ArduinoPlayground/target/source/main/ArduinoUno/RF24.o\" \"ArduinoLibrary/target/source/main/ArduinoUno/libArduinoLibrary.a\" \"ArduinoCore/target/source/main/ArduinoUno/libArduinoCore.a\" \"ArduinoLibrary/target/source/main/ArduinoUno/libArduinoLibrary.a\"   -lm -Wl,-Map,ArduinoPlayground/target/source/main/ArduinoUno/ArduinoPlayground.map,--cref -s   -Wl,--gc-sections   -mmcu=atmega328p\n	\n\n\n	\"/usr/local/CrossPack-AVR-20100115/avr/bin/objcopy\" -R .eeprom -O ihex \"ArduinoPlayground/target/source/main/ArduinoUno/ArduinoPlayground.elf\"  \"ArduinoPlayground/target/source/main/ArduinoUno/ArduinoPlayground.hex\"\n	\"/usr/local/CrossPack-AVR-20100115/avr/bin/objcopy\" -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex \"ArduinoPlayground/target/source/main/ArduinoUno/ArduinoPlayground.elf\"  \"ArduinoPlayground/target/source/main/ArduinoUno/ArduinoPlayground.eep\"\n	\"/usr/local/CrossPack-AVR/bin/avr-size\" --format=avr --mcu=atmega328p \"ArduinoPlayground/target/source/main/ArduinoUno/ArduinoPlayground.elf\"\n\n\n\n\n\n	Launching /usr/local/CrossPack-AVR/bin/avrdude -pm328p -cstk500v1 -P/dev/tty.usbmodemfd121 -b115200 -F -v -Uflash:w:/Users/bittailor/Documents/code/BtArduino/NightLight/target/source/main/ArduinoUno/NightLight.hex:a \nOutput: \n\n\n\navr-g++ --cref -s -Os -o $out   -lm -Wl,-Map,ArduinoPlayground/target/source/main/ArduinoUno/ArduinoPlayground.map,--cref -s   -Wl,--gc-sections   -mmcu=atmega328p\navr-g++ --cref -s -Os -o $out   -lm -Wl,-Map,target/arduino_uno/PingServer.elf.map,--cref -s  -Wl,--gc-sections -mmcu=atmega328p\n\n\n\n/usr/local/CrossPack-AVR/bin/avrdude -pm328p -cstk500v1 -P/dev/tty.usbmodemfd121 -b115200 -F -v -Uflash:w:/Users/bittailor/Documents/code/BtEmbedded/BtCore/target/arduino_uno/PingServer.hex:a \n\n\n/Users/bittailor/Documents/code/BtEmbedded/BtCore/target/arduino_uno/PingServer.hex\n\n\nrake configuration=host_debug project=3rdParty,BtCore\n\n\n/usr/local/CrossPack-AVR/bin/avrdude -pm328p -cstk500v1 -P/dev/tty.usbmodemfd121 -b115200 -F -v -Uflash:w:/Users/bittailor/Documents/code/BtEmbedded/BtCore/target/arduino_uno/PingServer.hex:a \n\n\n/usr/local/CrossPack-AVR/bin/avrdude -pm328p -cstk500v1 -P/dev/tty.usbmodemfd121 -b115200 -F -v -Ueeprom:r:/Users/bittailor/Documents/code/BtEmbedded/BtCore/target/arduino_uno/PingServerOut.eep:i \n\n\n\nRfNetworkSocketIntegrationTest\n\n--gtest_filter=\"RfNetworkSocketIntegrationTest.*\"\n\n\n--gtest_filter=\"RfNetworkSocketIntegrationTest.*\"\n\nInvoke(c)\n\nsudo npm install ntwitter oauth sentiment wordpos xml2js firmata fs.notify serialport feedparser pushbullet irc simple-xmpp redis mongodb\n\nrake configuration=host_debug project=3rdParty,BtCore\n\n\nmosquitto_sub -h test.mosquitto.org -t /ch/bittailor/Pi/One/Ip -v\n\n\nmosquitto_pub -h test.mosquitto.org -t ch/bittailor/Pi/$PINAME/Status -r -m \"Started {$DATE}\"  \n\n\nmosquitto_pub -h test.mosquitto.org -t ch/bittailor/Pi/$PINAME/Status -r -m \"Started {$DATE}\" > /dev/null\n\nmosquitto_pub -h test.mosquitto.org -t ch/bittailor/Pi/$PINAME/Status -r -m \"Stopped {$DATE}\" > /dev/null\n\nsudo apt-get install make gcc gcc-avr gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf default-jdk ruby ninja-build \n\n\nhttp://download.jetbrains.com/teamcity/TeamCity-8.0.6.tar.gz\n\n\nsed -i '21d' ~/.ssh/known_hosts\n\n\nhttp://portalvhdscxb9jwsjtvgkm.blob.core.windows.net/vhds/BtLinux-BtLinux-2014-02-03.vhd\nCopy to clipboard\n\n\n\nArtikelbezeichnung	Menge	Einzelpreis	Summe\nWeller Lötspitze LT-Reihe LT-1S Rundform, lang Spitzen-Größe 0.2 mm\nWeller-Loetspitze-LT-Reihe-LT-1S-Rundform-lang-Spitzen-Groesse-02-mm »\nBest.-Nr.: 832090-62\n\nAuf die Wunschliste»\n\n  Stück\nentfernen\nCHF 7.95 *	CHF 7.95 *\nWeller Lötspitze LT-Reihe LT-AS Rundform Spitzen-Größe 1.6 mm\nWeller-Loetspitze-LT-Reihe-LT-AS-Rundform-Spitzen-Groesse-16-mm »\nBest.-Nr.: 832154-62\n\nAuf die Wunschliste»\n\n  Stück\nentfernen\nCHF 7.95 *	CHF 7.95 *\nTOOLCRAFT Trockenreiniger \nTOOLCRAFT-Trockenreiniger-Dry-Cleaner-AT-A900 »\nBest.-Nr.: 588819-62\n\nAuf die Wunschliste»\nEmpfohlenes Zubehör\n  Stück\nentfernen\nCHF 9.95 *	CHF 9.95 *\n\n\n",
+			"file": "/Users/bittailor/Documents/code/Notes.txt",
+			"file_size": 3295,
+			"file_write_time": 130351118780000000,
+			"settings":
+			{
+				"buffer_size": 5058,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/bittailor/.ssh/known_hosts",
+			"settings":
+			{
+				"buffer_size": 8356,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": ":200000000C9445010C946D010C946D010C946D010C946D010C946D010C946D010C946D0198\n:200020000C946D010C946D010C946D010C946D010C946D010C946D010C946D010C946D0150\n:200040000C94AC080C946D010C94260A0C94740A0C946D010C946D010C946D010C946D0118\n:200060000C946D010C946D010A0B0C0D0E0F111213141516000102030405CF01D501DB0113\n:20008000E301EC01F601FF0106020E0215021C022302504120506F77657209203D2025536A\n:2000A0000D0A00435243204C656E67746809203D2025530D0A004D6F64656C0909203D203A\n:2000C00025530D0A0044617461205261746509203D2025530D0A0044594E50442F464541DC\n:2000E0005455524500434F4E4649470052465F53455455500052465F434800454E5F525864\n:200100004144445200454E5F41410052585F50575F50302D360054585F414444520052588E\n:200120005F414444525F50322D350052585F414444525F50302D31000D0A0025303278008B\n:20014000203078002553092563203D000D0A0020307825303278002553092563203D004FDE\n:200160004253455256455F54583D253032783A20504F4C535F434E543D2578204152435F66\n:20018000434E543D25780D0A005354415455530909203D203078253032782052585F4452B0\n:2001A0003D25782054585F44533D2578204D41585F52543D25782052585F505F4E4F3D250D\n:2001C000782054585F46554C4C3D25780D0A00314D42505300324D425053003235304B426D\n:2001E0005053006E524632344C3031006E524632344C30312B0044697361626C65640038AF\n:20020000206269747300313620626974730050415F4D494E0050415F4C4F57004C415F4DE4\n:2002200045440050415F484947480000000000240027002A0000000000250028002B000038\n:200240000000002300260029000404040404040404020202020202030303030303010204E7\n:200260000810204080010204081020010204081020000000070002010000030406000000F1\n:20028000000000000000A504E00B11241FBECFEFD8E0DEBFCDBF11E0A0E0B1E0E6E3FEE16F\n:2002A00002C005900D92AE38B107D9F713E0AEE8B1E001C01D92A239B107E1F712E0CAE841\n:2002C000D2E004C02297FE010E94DE0EC638D107C9F70E94360C0C94190F0C940000DC01A3\n:2002E00001C06D9341505040E0F708950F931F93CF93DF938C01EB01009731F4611571055F\n:2003000019F420E030E038C081E090E06EE070E00E94E903FC019C01009771F180E88383CA\n:20032000209771F0D387C28781E8838380918C0390918D03892B21F4F0938D03E0938C0364\n:2003400001151105C9F01187008783818260838380918E0390918F03892B71F4F0938F032A\n:20036000E0938E038091900390919103892B21F4F0939103E0939003C901DF91CF911F91F0\n:200380000F910895A0E0B0E0E8ECF1E00C94F20EFE0135966191719180918E0390918F03B8\n:2003A000AF010E940C022096E2E00C940E0F0F931F93CF93DF938C01E0918E03F0918F03DE\n:2003C000838181FF21C0C0E0D0E00DC0E0918E03F0918F0320853185BF01F9010995892B1F\n:2003E00011F0CFEFDFEFF80181918F01882371F7E0918E03F0918F03208531858AE0BF0128\n:00000001FF\n",
+			"file": "BtCore/target/arduino_uno/PingServerOut.eep",
+			"file_size": 2444,
+			"file_write_time": 130358489260000000,
+			"settings":
+			{
+				"buffer_size": 2444,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/bittailor/bin/BtPiIp",
+			"settings":
+			{
+				"buffer_size": 377,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#!/bin/sh\n# ssh pi@raspberrypi.local\n\nPI_IP=`BtPiIp $@`\n\necho \"PIs IP is $PI_IP\"\n\nssh pi@$PI_IP\n\n",
+			"file": "/Users/bittailor/bin/pi",
+			"file_size": 99,
+			"file_write_time": 130362845180000000,
+			"settings":
+			{
+				"buffer_size": 97,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/bittailor/bin/mountPi",
+			"settings":
+			{
+				"buffer_size": 252,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/bittailor/bin/umountPi",
+			"settings":
+			{
+				"buffer_size": 116,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "rakefile",
 			"settings":
 			{
-				"buffer_size": 96,
+				"buffer_size": 146,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/bittailor/Documents/code/BtArduino/AvrBoostBuild/avr.jam",
+			"contents": "/**\n * Copyright 2013 IBM Corp.\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n **/\n\nvar RED = require(process.env.NODE_RED_HOME+\"/red/red\");\nvar util = require(\"util\");\nvar exec = require('child_process').exec;\nvar fs =  require('fs');\n\nif (!fs.existsSync(\"/usr/local/bin/gpio\")) {\n    exec(\"cat /proc/cpuinfo | grep BCM27\",function(err,stdout,stderr) {\n        if (stdout.indexOf('BCM27') > -1) {\n            util.log('[36-rpi-gpio.js] Error: Cannot find Wiring-Pi \"gpio\" command. http://wiringpi.com/download-and-install/');\n        }\n        // else not on a Pi so don't worry anyone with needless messages.\n    });\n    return;\n}\n\n// Map physical P1 pins to Gordon's Wiring-Pi Pins (as they should be V1/V2 tolerant)\nvar pintable = {\n// Physical : WiringPi\n        \"11\":\"0\",\n        \"12\":\"1\",\n        \"13\":\"2\",\n        \"15\":\"3\",\n        \"16\":\"4\",\n        \"18\":\"5\",\n        \"22\":\"6\",\n         \"7\":\"7\",\n         \"3\":\"8\",\n         \"5\":\"9\",\n        \"24\":\"10\",\n        \"26\":\"11\",\n        \"19\":\"12\",\n        \"21\":\"13\",\n        \"23\":\"14\",\n         \"8\":\"15\",\n        \"10\":\"16\"\n}\nvar tablepin = {\n// WiringPi : Physical\n        \"0\":\"11\",\n        \"1\":\"12\",\n        \"2\":\"13\",\n        \"3\":\"15\",\n        \"4\":\"16\",\n        \"5\":\"18\",\n        \"6\":\"22\",\n        \"7\":\"7\",\n        \"8\":\"3\",\n        \"9\":\"5\",\n       \"10\":\"24\",\n       \"11\":\"26\",\n       \"12\":\"19\",\n       \"13\":\"21\",\n       \"14\":\"23\",\n       \"15\":\"8\",\n       \"16\":\"10\"\n}\n\nfunction GPIOInNode(n) {\n    RED.nodes.createNode(this,n);\n    this.buttonState = -1;\n    this.pin = pintable[n.pin];\n    this.intype = n.intype;\n    var node = this;\n\n    if (this.pin) {\n        exec(\"gpio mode \"+node.pin+\" \"+node.intype, function(err,stdout,stderr) {\n            if (err) node.error(err);\n            else {\n                node._interval = setInterval( function() {\n                    exec(\"gpio read \"+node.pin, function(err,stdout,stderr) {\n                        if (err) node.error(err);\n                        else {\n                            if (node.buttonState !== Number(stdout)) {\n                                var previousState = node.buttonState;\n                                node.buttonState = Number(stdout);\n                                if (previousState !== -1) {\n                                    var msg = {topic:\"pi/\"+tablepin[node.pin], payload:node.buttonState};\n                                    node.send(msg);\n                                }\n                            }\n                        }\n                    });\n                }, 250);\n            }\n        });\n    }\n    else {\n        this.error(\"Invalid GPIO pin: \"+this.pin);\n    }\n}\n\nfunction GPIOOutNode(n) {\n    RED.nodes.createNode(this,n);\n    this.pin = pintable[n.pin];\n    var node = this;\n\n    if (this.pin) {\n        process.nextTick(function() {\n            exec(\"gpio mode \"+node.pin+\" out\", function(err,stdout,stderr) {\n                if (err) node.error(err);\n                else {\n                    node.on(\"input\", function(msg) {\n                        if (msg.payload === \"true\") msg.payload = true;\n                        if (msg.payload === \"false\") msg.payload = false;\n                        var out = Number(msg.payload);\n                        if ((out == 0)|(out == 1)) {\n                            exec(\"gpio write \"+node.pin+\" \"+out, function(err,stdout,stderr) {\n                                if (err) node.error(err);\n                            });\n                        }\n                        else node.warn(\"Invalid input - not 0 or 1\");\n                    });\n                }\n            });\n        });\n    }\n    else {\n        this.error(\"Invalid GPIO pin: \"+this.pin);\n    }\n}\n\nexec(\"gpio mode 0 in\",function(err,stdout,stderr) {\n    if (err) {\n        util.log('[36-rpi-gpio.js] Error: \"gpio\" command failed for some reason.');\n    }\n    exec(\"gpio mode 1 in\");\n    exec(\"gpio mode 2 in\");\n    exec(\"gpio mode 3 in\");\n    exec(\"gpio mode 4 in\");\n    exec(\"gpio mode 5 in\");\n    exec(\"gpio mode 6 in\");\n    exec(\"gpio mode 7 in\",function(err,stdout,stderr) {\n        RED.nodes.registerType(\"rpi-gpio in\",GPIOInNode);\n        RED.nodes.registerType(\"rpi-gpio out\",GPIOOutNode);\n\n        GPIOInNode.prototype.close = function() {\n            clearInterval(this._interval);\n        }\n\n        GPIOOutNode.prototype.close = function() {\n            exec(\"gpio mode \"+this.pin+\" in\");\n        }\n\n    });\n});\n",
+			"file": "/Volumes/pi-1/Code/node-red/nodes/core/hardware/36-rpi-gpio.js",
+			"file_size": -1,
+			"file_write_time": -1,
 			"settings":
 			{
-				"buffer_size": 11815,
+				"buffer_size": 4913,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/bittailor/Documents/code/BtArduino/AvrBoostBuild/user-config.jam",
+			"contents": "Package Control Messages\n========================\n\nSublimerge Pro:\n--------------\n\n  Sublimerge has just been upgraded to version 2.8.2\n  \n  It is highly recommended to restart Sublime Text before use.\n  ------------------------------------------------------------\n  \n  \n  What's new?\n  ===========\n  \n  1. Fixed commands `Compare to Other Branch...`, `Compare to Named Branch...`\n     These Custom Comparison commands were failing when branch name contained slash.\n  \n  2. Fixed displaying `CR` or `LF` in ST3</title>\n     Fixed issue in Sublime Text 3 that caused displaying `CR` or `LF` characters in some cases.\n     \n  3. Fixed 3-way auto-merge algorithm\n     There was a bug that caused a line, immediately following an empty block, to be gone in \n     pre-merged output. This happened only when empty block was selected to be a part of \n     pre-merged output and it was the last change block.\n  \n  \n  Licensing\n  =========\n  \n  If you like Sublimerge, please support development by buying a license. It doesn't cost much! :)\n\n  Sublimerge has just been upgraded to version 2.8.1\n  \n  It is highly recommended to restart Sublime Text before use.\n  ------------------------------------------------------------\n  \n  \n  What's new?\n  ===========\n  \n  1. 3-way diff for conflicts resolution\n     Sublimerge can be used as a merge tool for Git/SVN/Mercurial and others. Please visit\n     http://www.sublimerge.com/usage.html for more information about VCS-integration.\n  \n  2. Renamed commands\n     All occurences of 'Difference' have been replaced with 'Change', i.e. 'Go to Previous Change'\n  \n  3. New commands:\n     - `Go to Next Conflict`\n     - `Go to Previous Conflict`\n  \n  4. Directories comparison\n     This version introduces directories comparison where you can compare two selected\n     directories. A special view (something like a two-pane commander) will show up.\n     You can navigate through directories, diff and merge text files, copy different\n     or remove/copy files.\n  \n     To use this feature:\n  \n     1. Select (exactly) two directories in Side Bar\n     2. From context menu select: Sublimerge -> Compare Selected Directories\n  \n     Default key bindings works for navigation in this view:\n  \n     - [ctrl]+[alt]+[d] - enter subdirectory (if differs) or diff selected text file\n     - [ctrl]+[alt]+[+] - select next file/directory\n     - [ctrl]+[alt]+[-] - select previous file/directory or navigate one level up\n     - [ctrl]+[alt]+[.] - apply selected change from left to right\n     - [ctrl]+[alt]+[/]+[.] - apply all changes from left to right\n     - [ctrl]+[alt]+[,] - apply selected change from right to left\n     - [ctrl]+[alt]+[/]+[,] - apply all changes from right to left\n  \n     Please note that directories are marked as different if they (or their any descendant)\n     contains a change.\n  \n  5. Performance improvements\n     Diff blocks are now displayed a little bit faster.\n  \n  6. Improved scroll synchronization\n     Now the diff view's panels are synchronized almost immediately. However, depending on your\n     computer, they may lag sometimes.\n  \n  7. Handling multiple instances\n     Sublimerge can now run many parallel instances of diff windows.\n  \n  8. Added command `Show Unsaved Changes`\n     This command appears if view is saved to disk (has file name attached) and is in dirty state.\n     It is accessible from main Sublimerge menu (ctrl + alt + d), view's tab context menu, view's\n     context menu.\n  \n  9. Renamed settings `hide_*` to `toggle_*`\n     The new prefix describes better how these settings work. If you have them in your\n     `Settings - User` settings, please rename them. Otherwise they will use defaults.\n  \n     This is because, unfortunately, it is impossible to programmatically get initial state\n     of the elements they change, so i.e. when Side Bar was hidden and `hide_sidebar` was `true`,\n     it caused Side Bar to show instead to leave hidden.\n  \n  10. New settings:\n     - `diff_block_conflict`         - color used to draw conflicting regions\n  \n     - `three_way_navigate_all`      - defines how to navigate through changes in 3-way diff view. When\n                                       set to `false` navigation is performed on conflicts only (this is\n                                       the default). It can be changed for current diff session from\n                                       Context menu too.\n  \n     - `three_way_layout`            - defines layout type for three-way diff view\n  \n     - `three_way_merged_height`     - percentage height of merged pane when `three_way_layout` = 1\n  \n     - `go_to_next_after_merge`      - defines whether should view automatically go to the next change\n                                       after merging previous one.\n  \n     - `git_global_args`             - additional arguments used for all git commands except `git log`\n                                       and `git show`.\n  \n     - `svn_global_args`             - the same as above, but for `svn` command\n  \n     - `hg_global_args`              - the same as above, but for `hg` command\n  \n     - `scroll_sync_interval`        - previously `scroll_sync_defer`. Defines how often, in milliseconds,\n                                       diff panels should be synchronized. Defaults to 1, but change it to\n                                       a greater value if you experience performance/stability problems.\n  \n     - `toggle_minimap`              - if you normally use Mini Map, but don't want it to be displayed in\n                                       diff view, you can switch this to `true` to hide it.\n  \n     - `vcs_discovery_order`         - defines the order in which version control systems should be discovered\n                                       for VCS-related commands. This is helpful when your project is versioned\n                                       under multiple VCS setup. Set your primary on the first position so that\n                                       it will be always used no matter if another one is found.\n  \n     - `dir_compare_ignore_dirs`     - List of directories' names which should be ignored while doing comparison.\n                                       They will be also ignored while copying.\n  \n     - `dir_compare_ignore_files`    - List of files' names which should be ignored while doing comparison.\n                                       They will be also ignored while copying.\n  \n     - `dir_merge_remove_unmatched`  - Normally Sublimerge will copy all changed or added files from source to\n                                       target directory. When this setting is true, it will also delete all\n                                       files that exists in target, but not in source. Use with caution!\n  \n     - `dir_compare_date_format`     - Date and time format to be used to display last modification date of\n                                       file or directory.\n  \n     - `dir_compare_navigate_all`    - Whether to navigate through all items in directories diff view. If set to\n                                       false, navigation is possible on modified items only.\n  \n  \n  11. New Custom Comparisons variables:\n     - {git} - shorthand for `{config:git_executable_path} {config:git_global_args}`\n     - {svn} - shorthand for `{config:svn_executable_path} {config:svn_global_args}`\n     - {hg} - shorthand for `{config:hg_executable_path} {config:hg_global_args}`\n  \n  12. Custom Comparisons: ability to run more steps after `compare` step.\n     Now the `compare` step is not the final one. You can now define more steps which will be executed after\n     the diff view is closed.\n  \n  \n  Licensing\n  =========\n  \n  If you like Sublimerge, please support development by buying a license. It doesn't cost much! :)\n\n  Sublimerge has just been upgraded to version 2.8.0.4\n  \n  It is highly recommended to restart Sublime Text before use.\n  ------------------------------------------------------------\n  \n  \n  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n  !!                                                                                         !!\n  !!         NOTE: THIS IS A BETA VERSION. PLEASE REPORT ANY BUGS YOU MAY ENCOUNTER.         !!\n  !!                                                                                         !!\n  !!  Great amount of code have been rewritten to make it possible to implement 3-way diff.  !!\n  !!  If you found a bug in any new or previous features, please report it immediately       !!\n  !!  to support@sublimerge.com. Thanks! :)                                                  !!\n  !!                                                                                         !!\n  !!  If you're a licensed user, your license will work with this version automatically.     !!\n  !!                                                                                         !!\n  !!  For usage instructions or how to switch back to official release, please visit         !!\n  !!  http://www.sublimerge.com/beta.html                                                    !!\n  !!                                                                                         !!\n  !!  DON'T FORGET TO RESTART SUBLIME TEXT AFTER READING THIS MESSAGE :)                     !!\n  !!                                                                                         !!\n  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n  \n  \n  What's new?\n  ===========\n  \n  1. Restored support for comparing dirty views\n     2.7.x series is supporting dirty views, but this was removed in 2.8.x during code\n     refactoring. This release restores this feature.\n  \n  2. Fixed default settings for `dir_compare_ignore_files`\n     Since this setting is case-sensitive, `thumbs.db` has been renamed to `Thumbs.db`.\n  \n  3. Added command `Show Unsaved Changes`\n     This command appears if view is saved to disk (has file name attached) and is in dirty state.\n     It is accessible from main Sublimerge menu (ctrl + alt + d), view's tab context menu, view's\n     context menu.\n  \n  4. Fixed `Compare Selected Files` side bar command\n     During implementation `Compare Selected Directories` the command for files stopped working.\n  \n  5. Temporary workaround for `GitGutter`, `VcsGutter` and `Modific` plugins conflict.\n     In some cases these plugins could not be paused in diff view correctly. It was resulting\n     in displaying their own gutter icons when a versioned file was compared. The workaround is\n     to remove their icons from the gutter when comparison is done.\n  \n  6. Renamed settings `hide_*` to `toggle_*`\n     The new prefix describes better how these settings work. If you have them in your\n     `Settings - User` settings, please rename them. Otherwise they will use defaults.\n  \n     This is because, unfortunately, it is impossible to programmatically get initial state\n     of the elements they change, so i.e. when Side Bar was hidden and `hide_sidebar` was `true`,\n     it caused Side Bar to show instead to leave hidden.\n  \n  7. Added setting `toggle_minimap`\n     If you normally use Mini Map, but don't want it to be displayed in diff view, you can\n     switch this to `true` to hide it.\n  \n  8. Added `full_screen` parameter for `sublimerge_diff_views` command.\n     Now when running Sublimerge from command line, you may specify whether to run the window\n     in full screen mode. The following values are accepted:\n  \n     - false - run in normal window (the default)\n     - true - run in full screen mode\n     - null - apply default value from settings (`full_screen`)\n  \n     Command example:\n  \n     subl -n --wait \"<LEFT>\" \"<RIGHT>\" --command \"sublimerge_diff_views {\\\"full_screen\\\": true}\"\n  \n   9. Added `Modific` plugin to the list of paused in diff view\n  \n  \n  Licensing\n  =========\n  \n  If you like Sublimerge, please support development by buying a license. It doesn't cost much! :)\n\n  Sublimerge has just been upgraded to version 2.8.0.3\n  \n  It is highly recommended to restart Sublime Text before use.\n  ------------------------------------------------------------\n  \n  \n  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n  !!                                                                                         !!\n  !!         NOTE: THIS IS A BETA VERSION. PLEASE REPORT ANY BUGS YOU MAY ENCOUNTER.         !!\n  !!                                                                                         !!\n  !!  Great amount of code have been rewritten to make it possible to implement 3-way diff.  !!\n  !!  If you found a bug in any new or previous features, please report it immediately       !!\n  !!  to support@sublimerge.com. Thanks! :)                                                  !!\n  !!                                                                                         !!\n  !!  If you're a licensed user, your license will work with this version automatically.     !!\n  !!                                                                                         !!\n  !!  For usage instructions or how to switch back to official release, please visit         !!\n  !!  http://www.sublimerge.com/beta.html                                                    !!\n  !!                                                                                         !!\n  !!  DON'T FORGET TO RESTART SUBLIME TEXT AFTER READING THIS MESSAGE :)                     !!\n  !!                                                                                         !!\n  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n  \n  \n  What's new?\n  ===========\n  \n  1. Fix for bug when pre-merged file content was empty\n     In three-way diff, when pre-merged output was empty, Sublimerge was throwing errors in console\n     and crashing. Further operations in diff view were not possible.\n  \n  \n  Licensing\n  =========\n  \n  If you like Sublimerge, please support development by buying a license. It doesn't cost much! :)\n\n  Sublimerge has just been upgraded to version 2.8.0.2\n  \n  It is highly recommended to restart Sublime Text before use.\n  ------------------------------------------------------------\n  \n  \n  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n  !!                                                                                         !!\n  !!         NOTE: THIS IS A BETA VERSION. PLEASE REPORT ANY BUGS YOU MAY ENCOUNTER.         !!\n  !!                                                                                         !!\n  !!  Great amount of code have been rewritten to make it possible to implement 3-way diff.  !!\n  !!  If you found a bug in any new or previous features, please report it immediately       !!\n  !!  to support@sublimerge.com. Thanks! :)                                                  !!\n  !!                                                                                         !!\n  !!  If you're a licensed user, your license will work with this version automatically.     !!\n  !!                                                                                         !!\n  !!  For usage instructions or how to switch back to official release, please visit         !!\n  !!  http://www.sublimerge.com/beta.html                                                    !!\n  !!                                                                                         !!\n  !!  DON'T FORGET TO RESTART SUBLIME TEXT AFTER READING THIS MESSAGE :)                     !!\n  !!                                                                                         !!\n  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n  \n  \n  What's new?\n  ===========\n  \n  1. New setting: `vcs_discovery_order`, defaults to: [\"git\", \"hg\", \"svn\"]\n     Defines the order in which version control systems should be discovered for VCS-related\n     commands. This is helpful when your project is versioned under multiple VCS setup. Set\n     your primary on the first position so that it will be always used no matter if another\n     one is found.\n  \n  2. Directories comparison\n     This version introduces directories comparison where you can compare two selected\n     directories. A special view (something like a two-pane commander) will show up.\n     You can navigate through different folders, diff and merge text files, copy different\n     or remove/add files.\n  \n     To use this feature:\n  \n    1. Select (exactly) two directories in Side Bar\n    2. From context menu select: Sublimerge -> Compare Selected Directories\n  \n     Default key bindings works for navigation in this view:\n  \n     - [ctrl]+[alt]+[d] - enter subdirectory (if differs) or diff selected text file\n     - [ctrl]+[alt]+[+] - select next different file/directory\n     - [ctrl]+[alt]+[-] - select previous different file/directory or navigate one level up\n     - [ctrl]+[alt]+[.] - apply selected change from left to right\n     - [ctrl]+[alt]+[/]+[.] - apply all changes from left to right\n     - [ctrl]+[alt]+[,] - apply selected change from right to left\n     - [ctrl]+[alt]+[/]+[,] - apply all changes from right to left\n  \n     Please note that directories are marked as different if they (or their any descendant)\n     contains a change.\n  \n     Settings added:\n     - `dir_compare_ignore_dirs`    - List of directories' names which should be ignored while\n                                      doing comparison. They will be also ignored while copying.\n                                      Defaults to: [\"RCS\", \"CVS\", \"tags\", \".git\", \".svn\", \".hg\"]\n  \n     - `dir_compare_ignore_files`   - List of files' names which should be ignored while doing\n                                      comparison. They will be also ignored while copying. You\n                                      can specify wildcards here, i.e. *.tmp\n                                      Defaults to: [\".DS_Store\", \"thumbs.db\"]\n  \n     - `dir_merge_remove_unmatched` - Normally Sublimerge will copy all changed or added files\n                                      from source to target directory.\n                                      When this setting is true, it will also delete all files\n                                      that exists in target, but not in source.\n                                      Use with caution. Defaults to: false\n  \n     - `dir_compare_navigate_all`   - Whether to navigate through all items in directories\n                                      diff view. If set to false, navigation is possible on\n                                      modified items only. Defaults to: true\n  \n  \n  Licensing\n  =========\n  \n  If you like Sublimerge, please support development by buying a license. It doesn't cost much! :)\n\n  Sublimerge has just been upgraded to version 2.8.0.1\n  \n  It is highly recommended to restart Sublime Text before use.\n  ------------------------------------------------------------\n  \n  \n  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n  !!                                                                                         !!\n  !!         NOTE: THIS IS A BETA VERSION. PLEASE REPORT ANY BUGS YOU MAY ENCOUNTER.         !!\n  !!                                                                                         !!\n  !!  Great amount of code have been rewritten to make it possible to implement 3-way diff.  !!\n  !!  If you found a bug in any new or previous features, please report it immediately       !!\n  !!  to support@sublimerge.com. Thanks! :)                                                  !!\n  !!                                                                                         !!\n  !!  If you're a licensed user, your license will work with this version automatically.     !!\n  !!                                                                                         !!\n  !!  For usage instructions or how to switch back to official release, please visit         !!\n  !!  http://www.sublimerge.com/beta.html                                                    !!\n  !!                                                                                         !!\n  !!  DON'T FORGET TO RESTART SUBLIME TEXT AFTER READING THIS MESSAGE :)                     !!\n  !!                                                                                         !!\n  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n  \n  \n  What's new?\n  ===========\n  \n  1. 3-way diff for conflicts resolution\n     Sublimerge can be used as a merge tool for Git/SVN/Mercurial and others. THIS IS EXPERIMENTAL\n     FEATURE SO BE AWARE THAT IT MAY NOT WORK PERFECTLY.\n  \n  2. Renamed commands\n     All occurences of 'Difference' have been replaced with 'Change', i.e. 'Go to Previous Change'\n  \n  3. New commands:\n     - `Go to Next Conflict`\n     - `Go to Previous Conflict`\n  \n  4. Performance improvements\n     Diff blocks are now displayed a little bit faster.\n  \n  5. Improved scroll synchronization\n     Now the diff view's panels are synchronized almost immediately. However, depending on your\n     computer, they may lag sometimes.\n  \n  6. Handling multiple instances\n     Sublimerge can now run many parallel instances of diff windows.\n  \n  7. New settings:\n     - `diff_block_conflict`    - color used to draw conflicting regions\n  \n     - `three_way_navigate_all`      - defines how to navigate through changes in 3-way diff view. When\n                                       set to `false` navigation is performed on conflicts only (this is\n                                       the default). It can be changed for current diff session from\n                                       Context menu too.\n  \n     - `auto_merge_simple_conflicts` - Tries to automatically resolve simple conflicts in 3-way diff.\n                                       When set to `false` all conflicts will be reported and left to be\n                                       resolved by you.\n  \n     - `three_way_layout`            - defines layout type for three-way diff view\n  \n     - `three_way_merged_height`     - percentage height of merged pane when `three_way_layout` = 1\n  \n     - `go_to_next_after_merge`      - defines whether should view automatically go to the next change\n                                       after merging previous one.\n  \n     - `git_global_args`             - additional arguments used for all git commands except `git log`\n                                       and `git show`.\n  \n     - `svn_global_args`             - the same as above, but for `svn` command\n  \n     - `hg_global_args`              - the same as above, but for `hg` command\n  \n     - `scroll_sync_interval`        - previously `scroll_sync_defer`. Defines how often, in milliseconds,\n                                       diff panels should be synchronized. Defaults to 1, but change it to\n                                       a greater value if you experience performance/stability problems.\n  \n    8. New Custom Comparisons variables:\n       - {git} - shorthand for `{config:git_executable_path} {config:git_global_args}`\n       - {svn} - shorthand for `{config:svn_executable_path} {config:svn_global_args}`\n       - {hg} - shorthand for `{config:hg_executable_path} {config:hg_global_args}`\n  \n    9. Custom Comparisons: ability to run more steps after `compare` step.\n       Now the `compare` step is not the final one. You can now define more steps which will be executed\n       after the diff view is closed.\n  \n  \n  \n  Licensing\n  =========\n  \n  If you like Sublimerge, please support development by buying a license. It doesn't cost much! :)\n\n\nSublimerge Pro:\n--------------\n\n  Sublimerge has just been upgraded to version 2.8.4\n  \n  It is highly recommended to restart Sublime Text before use.\n  ------------------------------------------------------------\n  \n  \n  What's new?\n  ===========\n  \n  1. 3-way diff:\n     Enhancements:\n          - auto-resolving conflicts\n            Sublimerge can now automatically resolve some conflicts for you. Currently only one type is supported: \n            white-space-only change vs non-white-space-only change. This means that the following pair of conflicting \n            changes:\n                - a change with ONLY cr/lf, spaces and tabs\n                - a change with regular text\n            can be automatically merged using the one with regular text. Such conflict will be marked as regular\n            conflict, but it will be initially merged and the gutter icon will be changed from '!' to '?'.\n  \n            This feature is turned off by default. To turn it on, please edit the settings (read below).\n  \n      New settings group:\n          - three_way_auto_resolve\n            This group contains settings to control how to automatically resolve some types of conflicts.\n  \n      New settings:\n          - three_way_auto_resolve / white_space_vs_non_white_space: false\n            Turns on/off auto-merging for conflicting white-space-only change vs non-white-space-only change.\n  \n          - git_remove_orig_files_after_merge: false\n            Whether to automatically remove *.orig files created by Git after merge is completed.\n  \n      Bug fixes:\n          - fixed a bug that could break the flow of preparing pre-merged output. \n          - fixed a bug resulting in appending unnecessary empty line at the end of merged file (after save).\n  \n  \n  Licensing\n  =========\n  \n  If you like Sublimerge, please support development by buying a license. It doesn't cost much! :)\n\n  Sublimerge has just been upgraded to version 2.8.3\n  \n  It is highly recommended to restart Sublime Text before use.\n  ------------------------------------------------------------\n  \n  \n  What's new?\n  ===========\n  \n  1. Fixed 3-way auto-merge algorithm\n     There was a bug that could sometimes lead to duplicate lines in automatically\n     merged content.\n  \n  2. Nicer directories' diff view\n     The view has now dedicated syntax highlighting so that is much more colorful \n     and readable. It should automatically adjust to user's color scheme.\n  \n  \n  Licensing\n  =========\n  \n  If you like Sublimerge, please support development by buying a license. It doesn't cost much! :)\n",
 			"settings":
 			{
-				"buffer_size": 3473,
+				"buffer_size": 26426,
+				"line_ending": "Unix",
+				"name": "Package Control Messages",
+				"scratch": true
+			}
+		},
+		{
+			"file": "build_all",
+			"settings":
+			{
+				"buffer_size": 574,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "\n\n\nBt::Device::RfControllerNRf24L01PIntegrationTest\n\n\n\n\nintegrationtest\n\n\nsudo curl \"http://www.chiark.greenend.org.uk/ucgi/~cjwatson/cvsweb/openssh/contrib/ssh-copy-id?rev=1.8;content-type=text%2Fplain\" -o /usr/bin/ssh-copy-id\nsudo chmod +x /usr/bin/ssh-copy-id\n",
+			"file": "/Users/bittailor/bin/BtRenameC++",
 			"settings":
 			{
-				"buffer_size": 263,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/bittailor/.bittailor/filetemplates/gtest_integrationtest.cpp.ftl",
-			"settings":
-			{
-				"buffer_size": 1169,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "#!/bin/sh\n# ssh pi@raspberrypi.local\n\nPI_IP=`curl -s http://eclipse.mqttbridge.com/ch/bittailor/Pi/One/Ip`\n\necho \"PIs IP is $PI_IP\"\n\n\n\nssh pi@$PI_IP\n\n",
-			"file": "/Users/bittailor/bin/pi",
-			"file_size": 148,
-			"file_write_time": 130315283590000000,
-			"settings":
-			{
-				"buffer_size": 150,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/bittailor/.bittailor/filetemplates/filetemplates.xml",
-			"settings":
-			{
-				"buffer_size": 2423,
+				"buffer_size": 1777,
 				"line_ending": "Unix"
 			}
 		}
@@ -70,17 +121,38 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 0.0,
+		"height": 327.0,
 		"selected_items":
 		[
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Package Control: Install Package"
+			],
+			[
+				"Packa",
+				"Package Control: Install Package"
+			]
 		],
-		"width": 0.0
+		"width": 575.0
 	},
 	"console":
 	{
-		"height": 0.0,
+		"height": 126.0,
 		"history":
 		[
+			"import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())"
 		]
 	},
 	"distraction_free":
@@ -94,6 +166,33 @@
 	},
 	"file_history":
 	[
+		"/Users/bittailor/bin/BtOnMqtt",
+		"/Users/bittailor/Documents/code/BtEmbedded/build_all",
+		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/platform/tool/avr_gcc/rules.erb",
+		"/Users/bittailor/Documents/code/BtEmbedded/3rdParty/.cproject",
+		"/opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_release_tarballs_ports_cross_avr-gdb/avr-gdb/main.log",
+		"/Users/bittailor/bin/BtRenameC++",
+		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/platform/avr.platform.rb",
+		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/platform/gcc/executable.erb",
+		"/Users/bittailor/Documents/code/BtEmbedded/BtCore/target/arduino_uno/build_PingServer.ninja",
+		"/Users/bittailor/Documents/code/BtArduino/rakefile",
+		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/configuration/pi_cross_debug.config.rb",
+		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/platform/pi.platform.rb",
+		"/Users/bittailor/Documents/code/BtEmbedded.bak_1/.metadata/.plugins/org.eclipse.cdt.make.core/3rdParty.sc",
+		"/Users/bittailor/Documents/code/BtEmbedded/.metadata/.plugins/org.eclipse.dltk.core/3049657723.index",
+		"/Users/bittailor/Documents/code/BtEmbedded/.metadata/.plugins/org.eclipse.cdt.make.core/3rdParty.sc",
+		"/Users/bittailor/Documents/code/BtEmbedded/.gitignore",
+		"/Users/bittailor/Documents/code/BtEmbedded/3rdParty/.project",
+		"/Users/bittailor/Documents/code/BtEmbedded/BtCore/.cproject",
+		"/Volumes/pi/Code/Run/run.log",
+		"/Users/bittailor/Documents/code/BtEmbedded/3rdParty/.settings/org.eclipse.cdt.codan.core.prefs",
+		"/Users/bittailor/Documents/code/BtEmbedded/BtCore/.project",
+		"/Users/bittailor/Documents/code/BtEmbedded/rakefile",
+		"/Users/bittailor/Documents/code/BtArduino/AvrBoostBuild/avr.jam",
+		"/Users/bittailor/Documents/code/BtArduino/AvrBoostBuild/user-config.jam",
+		"/Users/bittailor/.bittailor/filetemplates/gtest_integrationtest.cpp.ftl",
+		"/Users/bittailor/bin/pi",
+		"/Users/bittailor/.bittailor/filetemplates/filetemplates.xml",
 		"/Users/bittailor/Documents/code/BtEmbedded/BtCore/source/test/src/Bt/Device/NRf24L01PTest.cpp",
 		"/Users/bittailor/Documents/code/BtEmbedded/BtCore/target/pi_cross_debug/main/src/Bt/Device/NRf24L01P.obj.d",
 		"/Users/bittailor/Documents/code/BtEmbedded/BtCore/source/main/src/Bt/Device/NRf24L01P.cpp",
@@ -102,25 +201,23 @@
 		"/Users/bittailor/Downloads/nRF24L01P-EK/Firmware/nRF24L01_Firmware/main.c",
 		"/Volumes/pi/bin/publish_pi_ip",
 		"/Users/bittailor/.profile",
-		"/Users/bittailor/Documents/code/BtEmbedded/rakefile",
 		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/build_framework.rb",
 		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/build/bootstrapper.rb",
 		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/build/bt_build_module.rb",
-		"/Users/bittailor/Documents/code/BtEmbedded/BtBuildFramework/source/configuration/pi_cross_debug.config.rb",
-		"/Users/bittailor/bin/pi",
 		"/Users/bittailor/bin/PiOnMqtt",
 		"/Volumes/pi/.profile",
 		"/Volumes/pi/.bashrc"
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 93.0,
 		"where_history":
 		[
+			""
 		]
 	},
 	"find_state":
@@ -128,6 +225,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"arm-pi-linux-gnueabi",
+			"command",
+			"pi_cross_debug",
 			"NRf24L01PTest"
 		],
 		"highlight": true,
@@ -146,29 +246,87 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 6,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "rakefile",
+					"file": "/Users/bittailor/Documents/code/Notes.txt",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 96,
+						"buffer_size": 5058,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								4814,
+								4805
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Ruby/Ruby.tmLanguage"
+							"auto_name": "",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 881.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Users/bittailor/.ssh/known_hosts",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8356,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7548,
+								7548
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 56.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "BtCore/target/arduino_uno/PingServerOut.eep",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2444,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7,
+								9
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -178,113 +336,54 @@
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "/Users/bittailor/Documents/code/BtArduino/AvrBoostBuild/avr.jam",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 11815,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/Users/bittailor/Documents/code/BtArduino/AvrBoostBuild/user-config.jam",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3473,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
 					"buffer": 3,
+					"file": "/Users/bittailor/bin/BtPiIp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 263,
+						"buffer_size": 377,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								202,
-								85
+								252,
+								252
 							]
 						],
 						"settings":
 						{
-							"auto_name": "",
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "/Users/bittailor/.bittailor/filetemplates/gtest_integrationtest.cpp.ftl",
+					"file": "/Users/bittailor/bin/pi",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1169,
+						"buffer_size": 97,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								999,
-								999
+								54,
+								52
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_size": 3,
-							"translate_tabs_to_spaces": true
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -295,19 +394,19 @@
 				},
 				{
 					"buffer": 5,
-					"file": "/Users/bittailor/bin/pi",
+					"file": "/Users/bittailor/bin/mountPi",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 150,
+						"buffer_size": 252,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								133,
-								133
+								51,
+								51
 							]
 						],
 						"settings":
@@ -323,31 +422,173 @@
 				},
 				{
 					"buffer": 6,
-					"file": "/Users/bittailor/.bittailor/filetemplates/filetemplates.xml",
+					"file": "/Users/bittailor/bin/umountPi",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2423,
+						"buffer_size": 116,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1670,
-								1685
+								70,
+								70
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/XML/XML.tmLanguage",
-							"word_wrap": false
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.tmLanguage"
 						},
-						"translation.x": 150.0,
+						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "rakefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 146,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								39,
+								39
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/Volumes/pi-1/Code/node-red/nodes/core/hardware/36-rpi-gpio.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4913,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 802.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 26426,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								26426,
+								26426
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3607.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "build_all",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 574,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								427,
+								427
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "/Users/bittailor/bin/BtRenameC++",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1777,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1453,
+								1453
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 172.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
 					"type": "text"
 				}
 			]
@@ -404,6 +645,10 @@
 		"selected_items":
 		[
 			[
+				"3rdpa",
+				"BtEmbedded/.metadata/.plugins/org.eclipse.cdt.make.core/3rdParty.sc"
+			],
+			[
 				"nrf24l01p",
 				"BtCore/source/test/src/Bt/Device/NRf24L01PTest.cpp"
 			],
@@ -437,7 +682,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 204.0,
+	"side_bar_width": 271.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

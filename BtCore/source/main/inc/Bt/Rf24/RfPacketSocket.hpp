@@ -4,32 +4,34 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Rf24::RfTransportSocket
+//  Bt::Rf24::RfPacketSocket
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Rf24_RfTransportSocket__hpp
-#define INC__Bt_Rf24_RfTransportSocket__hpp
+#ifndef INC__Bt_Rf24_RfPacketSocket__hpp
+#define INC__Bt_Rf24_RfPacketSocket__hpp
+
+#include <Bt/Rf24/I_RfPacketSocket.hpp>
 
 #include "Bt/Rf24/I_RfNetworkSocket.hpp"
 
 namespace Bt {
 namespace Rf24 {
 
-class RfTransportSocket 
+class RfPacketSocket : public I_RfPacketSocket
 {
    public:
-      RfTransportSocket(I_RfNetworkSocket& pNetworkSocket);
-      ~RfTransportSocket();
+      RfPacketSocket(I_RfNetworkSocket& pNetworkSocket);
+      ~RfPacketSocket();
 
-
+      virtual bool send(Packet& pPacket);
    
    private:
    	  // Constructor to prohibit copy construction.
-      RfTransportSocket(const RfTransportSocket&);
+      RfPacketSocket(const RfPacketSocket&);
 
       // Operator= to prohibit copy assignment
-      RfTransportSocket& operator=(const RfTransportSocket&);
+      RfPacketSocket& operator=(const RfPacketSocket&);
 
       I_RfNetworkSocket* mNetworkSocket;
 };
@@ -37,4 +39,4 @@ class RfTransportSocket
 } // namespace Rf24
 } // namespace Bt
 
-#endif // INC__Bt_Rf24_RfTransportSocket__hpp
+#endif // INC__Bt_Rf24_RfPacketSocket__hpp

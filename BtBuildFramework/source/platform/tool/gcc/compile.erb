@@ -1,4 +1,9 @@
- <% for source in sources %>
+<% for source in sources %>
+<% if source.pathmap("%x") == ".c" %>
+build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cc <%= source %>
+   includes = <%= includes.collect{|i| "-I"+i}.join(" ")  %> $include
+<% else %>
 build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= source %>
    includes = <%= includes.collect{|i| "-I"+i}.join(" ")  %> $includes	
+<% end %>
 <% end %>

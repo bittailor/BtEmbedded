@@ -1,5 +1,11 @@
+ccflags = <%= @ccflags %>
 cxxflags = <%= @cxxflags %>
 linkflags = <%= @linkflags %>
+
+rule cc
+  command = <%= @cc %> -MMD -MT $out -MF $out.d $ccflags $includes -c $in -o $out
+  description = CC $out
+  depfile = $out.d
 
 rule cxx
   command = <%= @cxx %> -MMD -MT $out -MF $out.d $cxxflags $includes -c $in -o $out
