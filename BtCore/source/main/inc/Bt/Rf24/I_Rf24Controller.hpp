@@ -57,6 +57,10 @@ class I_Rf24Controller::Packet {
          return mBuffer;
       }
 
+      void* rawBuffer() {
+         return mBuffer;
+      }
+
       size_t size() {
          return mSize;
       }
