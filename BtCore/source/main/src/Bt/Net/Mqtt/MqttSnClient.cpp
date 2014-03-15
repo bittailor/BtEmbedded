@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include <Bt/Util/Endianness.hpp>
+#include <Bt/Util/Logging.hpp>
 
 namespace Bt {
 namespace Net {
@@ -200,7 +201,14 @@ bool MqttSnClient::connect() {
    connect->setClientId(mClientId);
 
    connectPacket.size(connect->header.length);
-   mSocket->send(connectPacket);
+   if (!mSocket->send(connectPacket))
+   {
+      BT_UTIL_LOG_ERROR("send failed");
+      return false;
+   }
+
+
+
 
 
    return true;
