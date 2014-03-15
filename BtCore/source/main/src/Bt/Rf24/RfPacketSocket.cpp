@@ -28,8 +28,24 @@ RfPacketSocket::~RfPacketSocket() {
 
 //-------------------------------------------------------------------------------------------------
 
-bool RfPacketSocket::send(Packet& pPacket) {
-   return false;
+bool RfPacketSocket::send(uint8_t* iPayload, size_t iSize ){
+
+   //TODO (BT) to implement
+   return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+int32_t RfPacketSocket::receive(uint8_t* oPayload, size_t iMaxSize ){
+   //TODO (BT) to implement
+   return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool RfPacketSocket::available(){
+   //TODO (BT) to implement
+   return true;
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -22,71 +22,18 @@ namespace Rf24 {
 class I_RfPacketSocket {
    public:
 
-      class Packet;
-      class I_Listener;
+      enum { PAYLOAD_CAPACITY = I_RfNetworkSocket::Packet::PAYLOAD_CAPACITY };
 
       virtual ~I_RfPacketSocket() {}
       
-      virtual bool send(Packet& pPacket) = 0;
-};
+      virtual bool send(uint8_t* iPayload, size_t iSize) = 0;
+      virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize) = 0;
+      virtual bool available() = 0;
 
-//-------------------------------------------------------------------------------------------------
-
-class I_RfPacketSocket::Packet {
-   public:
-      enum { HEADER_SIZE = 1 };
-      enum { MAX_TRANSMISSION_UNIT = I_RfNetworkSocket::Packet::PAYLOAD_CAPACITY - HEADER_SIZE };
-      enum { PAYLOAD_CAPACITY = MAX_TRANSMISSION_UNIT * 3 };
-
-      Packet() : mSource(), mDestination(), mBuffer(), mSize() {
-
-      }
-
-      uint8_t source() {
-         return mSource;
-      }
-
-      uint8_t destination() {
-         return mDestination;
-      }
-
-      void destination(uint8_t pDestination) {
-         mDestination = pDestination;
-      }
-
-      void* payload() {
-         return mBuffer;
-      }
-
-      size_t size() {
-         return mSize;
-      }
-
-      void size(size_t pSize) {
-         mSize = pSize;
-      }
-
-   private:
-      uint8_t mSource;
-      uint8_t mDestination;
-      uint8_t mBuffer[PAYLOAD_CAPACITY];
-      size_t mSize;
-};
-
-//-------------------------------------------------------------------------------------------------
-
-class I_RfPacketSocket::I_Listener {
-   public:
-      virtual ~I_Listener() {}
-
-      virtual void packetReceived(Packet& pPacket) = 0;
 
 };
 
 //-------------------------------------------------------------------------------------------------
-
-
-
 
 } // namespace Rf24
 } // namespace Bt

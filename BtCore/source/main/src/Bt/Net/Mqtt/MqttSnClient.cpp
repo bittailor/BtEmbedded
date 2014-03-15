@@ -54,6 +54,18 @@ enum class MsgType : uint8_t {
       WILLMSGRESP
 };
 
+enum class ReturnCode : uint8_t {
+   ACCEPTED = 0x00,
+   REJECTED_CONGESTION,
+   REJECTED_INVALID_TOPIC_ID,
+   REJECTED_NOT_SUPPORTED,
+};
+
+log::I_Logger& operator<<(log::I_Logger& iLogger, ReturnCode iReturnCode) {
+   iLogger << static_cast<uint8_t>(iReturnCode);
+   return iLogger;
+}
+
 union Flags {
       uint8_t byte;
       struct
@@ -63,7 +75,7 @@ union Flags {
             bool retain          : 1;
             bool will            : 1;
             bool cleanSession    : 1;
-            uint8_t TopicIdType  : 2;
+            uint8_t topicIdType  : 2;
       } bits;
 };
 
@@ -82,13 +94,19 @@ struct Connect {
       void initialize() {
          header.length = sizeof(Connect);
          header.msgType = MsgType::CONNECT;
+         flags.bits.dup = false;
+         flags.bits.qos = 0;
+         flags.bits.retain = false;
+         flags.bits.will = false; //TODO (BT) implement support for will topic!
+         flags.bits.cleanSession = true;
+         flags.bits.topicIdType = 0;
          protocolId = PROTOCOL_ID_1_2;
-         duration = 0xFFFF;
+         duration = 0xFFFF; //TODO (BT) implement support duration of Keep Alive timer
       }
 
       void setClientId(const char* pClientId) {
          strncpy(clientId, pClientId, I_MqttSnClient::MAX_LENGTH_CLIENT_ID);
-         header.length = sizeof(Connect) + strlen(pClientId) - 1;
+         header.length = sizeof(Connect) + strlen(pClientId);
       }
 
       void setDuration(uint16_t pDuration) {
@@ -101,77 +119,10 @@ struct Connect {
 
 };
 
-
-
-/*
-class Message {
-   public:
-      Message(void* pBuffer) : mBuffer((uint8_t*)pBuffer) {
-      }
-
-      void length(uint8_t pLength) {
-         mBuffer[0] = pLength;
-      }
-
-      uint8_t lenght() {
-         return mBuffer[0];
-      }
-
-      void msgType(MsgType pMsgType) {
-         mBuffer[1] = static_cast<uint8_t>(pMsgType);
-      }
-
-      MsgType msgType() {
-         return static_cast<MsgType>(mBuffer[1]);
-      }
-   protected:
-      void* bufferAt(size_t nIndex) {
-         return &mBuffer[nIndex];
-      }
-
-      template<typename T>
-      T* bufferAt(size_t nIndex) {
-         return static_cast<T*>(bufferAt(nIndex));
-      }
-
-      uint8_t* mBuffer;
-
+struct Connack {
+      Header      header;
+      ReturnCode  returnCode;
 };
-
-class Connect : public Message {
-
-   public:
-      Connect(void* pBuffer) : Message(pBuffer) {
-         msgType(MsgType::CONNECT);
-         mBuffer[3] = PROTOCOL_ID_1_2;
-      }
-
-      void flags(uint8_t pFlags) {
-         mBuffer[2] = pFlags;
-      }
-
-      uint8_t flags() {
-         return mBuffer[2];
-      }
-
-      void duration(uint16_t pDuration) {
-         *bufferAt<uint16_t>(4) = Util::Endianness::hostToNetwork(pDuration);
-      }
-
-      uint16_t duration() {
-         return Util::Endianness::networkToHost(*bufferAt<uint16_t>(4));
-      }
-
-      void clientId(const char* pClientId) {
-         strncpy(bufferAt<char>(6), pClientId, I_MqttSnClient::MAX_LENGTH_CLIENT_ID);
-      }
-
-      const char* clientId() {
-         return bufferAt<char>(6);
-      }
-
-};
-*/
 
 } // namespace
 
@@ -195,23 +146,33 @@ MqttSnClient::~MqttSnClient() {
 //-------------------------------------------------------------------------------------------------
 
 bool MqttSnClient::connect() {
-   Rf24::I_RfPacketSocket::Packet connectPacket;
-   Connect* connect = static_cast<Connect*>(connectPacket.payload());
+   uint8_t buffer[Rf24::I_RfPacketSocket::PAYLOAD_CAPACITY] = {0};
+
+   Connect* connect = reinterpret_cast<Connect*>(buffer);
    connect->initialize();
    connect->setClientId(mClientId);
-
-   connectPacket.size(connect->header.length);
-   if (!mSocket->send(connectPacket))
+   if (!mSocket->send(buffer, connect->header.length))
    {
-      BT_UTIL_LOG_ERROR("send failed");
+      BT_UTIL_LOG_ERROR("send CONNECT failed");
       return false;
    }
 
+   int32_t size = mSocket->receive(buffer, Rf24::I_RfPacketSocket::PAYLOAD_CAPACITY);
+   if (size < 0) {
+      BT_UTIL_LOG_ERROR("send CONNACK failed");
+      return false;
+   }
+   Connack* connack = reinterpret_cast<Connack*>(buffer);
+   if (size != connack->header.length) {
+      BT_UTIL_LOG_ERROR("CONNACK packet invalid size " << size << "!=" << connack->header.length);
+   }
+   if (connack->returnCode == ReturnCode::ACCEPTED) {
+      return true;
+   }
 
+   BT_UTIL_LOG_ERROR("connect failed with ReturnCode " << connack->returnCode );
 
-
-
-   return true;
+   return false;
 }
 
 //-------------------------------------------------------------------------------------------------

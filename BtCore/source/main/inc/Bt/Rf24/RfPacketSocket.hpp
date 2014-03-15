@@ -24,8 +24,10 @@ class RfPacketSocket : public I_RfPacketSocket
       RfPacketSocket(I_RfNetworkSocket& pNetworkSocket);
       ~RfPacketSocket();
 
-      virtual bool send(Packet& pPacket);
-   
+      virtual bool send(uint8_t* iPayload, size_t iSize );
+      virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize );
+      virtual bool available();
+
    private:
    	  // Constructor to prohibit copy construction.
       RfPacketSocket(const RfPacketSocket&);
