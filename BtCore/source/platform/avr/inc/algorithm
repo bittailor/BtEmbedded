@@ -1,0 +1,37 @@
+//*************************************************************************************************
+//
+//  BITTAILOR.CH - BtCore
+//
+//-------------------------------------------------------------------------------------------------
+//
+//  algorithm
+//  
+//*************************************************************************************************
+
+#ifndef INC__algorithm
+#define INC__algorithm
+
+namespace std {
+
+template<typename T>
+inline const T& min(const T& a, const T& b)
+{
+
+   if (b < a) {
+      return b;
+   }
+   return a;
+}
+
+template<typename T>
+inline const T& max(const T& a, const T& b)
+{
+   if (a < b) {
+      return b;
+   }
+   return a;
+}
+
+} // namespace std
+
+#endif // INC__algorithm

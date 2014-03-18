@@ -61,7 +61,7 @@ enum class ReturnCode : uint8_t {
    REJECTED_NOT_SUPPORTED,
 };
 
-log::I_Logger& operator<<(log::I_Logger& iLogger, ReturnCode iReturnCode) {
+Log::I_Logger& operator<<(Log::I_Logger& iLogger, ReturnCode iReturnCode) {
    iLogger << static_cast<uint8_t>(iReturnCode);
    return iLogger;
 }
@@ -151,17 +151,24 @@ bool MqttSnClient::connect() {
    Connect* connect = reinterpret_cast<Connect*>(buffer);
    connect->initialize();
    connect->setClientId(mClientId);
-   if (!mSocket->send(buffer, connect->header.length))
+   if (!mSocket->send(buffer, connect->header.length, mGatewayNodeId))
    {
       BT_UTIL_LOG_ERROR("send CONNECT failed");
       return false;
    }
 
-   int32_t size = mSocket->receive(buffer, Rf24::I_RfPacketSocket::PAYLOAD_CAPACITY);
+   uint8_t receiveNodeId;
+   int32_t size;
+
+   do {
+      size = mSocket->receive(buffer, Rf24::I_RfPacketSocket::PAYLOAD_CAPACITY, &receiveNodeId);
+   } while(receiveNodeId == mGatewayNodeId);
+
    if (size < 0) {
       BT_UTIL_LOG_ERROR("send CONNACK failed");
       return false;
    }
+
    Connack* connack = reinterpret_cast<Connack*>(buffer);
    if (size != connack->header.length) {
       BT_UTIL_LOG_ERROR("CONNACK packet invalid size " << size << "!=" << connack->header.length);

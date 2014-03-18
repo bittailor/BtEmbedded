@@ -12,6 +12,7 @@
 #define INC__Bt_Device_I_RfController__hpp
 
 #include <stddef.h>
+#include <string.h>
 
 #include "Bt/Rf24/I_Rf24Device.hpp"
 
@@ -67,6 +68,11 @@ class I_Rf24Controller::Packet {
 
       void size(size_t pSize) {
          mSize = pSize;
+      }
+
+      void copy(I_Rf24Controller::Packet& iPacket) const {
+         memcpy(iPacket.mBuffer, mBuffer, BUFFER_CAPACITY);
+         iPacket.mSize = mSize;
       }
 
    private:

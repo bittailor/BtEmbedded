@@ -70,6 +70,10 @@ class IntrusiveListBase {
          return 0;
       }
 
+      bool empty() const {
+         return mHead == 0;
+      }
+
       void pushBack(ElementBase* iElement);
       void remove(ElementBase* iElement);
 
@@ -145,6 +149,9 @@ class IntrusiveList : private IntrusiveListBase  {
          IntrusiveListBase::remove(&iElement);
       }
 
+      bool empty() const {
+         return IntrusiveListBase::empty();
+      }
 
    private:
    	  // Constructor to prohibit copy construction.
@@ -152,8 +159,6 @@ class IntrusiveList : private IntrusiveListBase  {
 
       // Operator= to prohibit copy assignment
       IntrusiveList& operator=(const IntrusiveList&);
-
-
 
 };
 

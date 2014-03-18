@@ -84,7 +84,7 @@ int main(int argc, const char* argv[]) {
 
    PingServer pingServer(socket);
 
-   socket.startListening(pingServer);
+   socket.setListener(pingServer);
 
    printf("Enter ping server workcycle for node %i\n",(int) nodeId);
    while(true) {

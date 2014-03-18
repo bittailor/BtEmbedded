@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "Bt/Rf24/RfNetworkSocket.hpp"
+#include "Bt/Util/Logging.hpp"
 
 namespace Bt {
 namespace Rf24 {
@@ -19,7 +20,11 @@ namespace Rf24 {
 //-------------------------------------------------------------------------------------------------
 
 RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24Controller& pController)
-: mNodeId(pNodeId), mController(&pController), mIdCounter(0), mListener(0)  {
+: mNodeId(pNodeId), mController(&pController), mIdCounter(0), mListener(nullptr)  {
+
+   for(StoredPackage& package : mPackages) {
+      mFree.pushBack(package);
+   }
 
    I_Rf24Controller::Configuration configuration;
 
@@ -27,34 +32,11 @@ RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24Controller& pController)
       mRouting.configurePipe(mNodeId, pipe, configuration[pipe]);
    }
 
-
    mController->configure(configuration);
-
-}
-
-//-------------------------------------------------------------------------------------------------
-
-bool RfNetworkSocket::startListening(I_Listener& pListener) {
-   if(mListener != nullptr) {
-      return false;
-   }
-
-   mListener = &pListener;
    mController->startListening();
-   return true;
 
 }
 
-//-------------------------------------------------------------------------------------------------
-
-bool RfNetworkSocket::stopListening() {
-   if (mListener == nullptr) {
-      return false;
-   }
-   mListener = nullptr;
-   mController->stopListening();
-   return true;
-}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -68,13 +50,35 @@ bool RfNetworkSocket::send(Packet& pPacket) {
   return sendInternal(pPacket);
 
 }
+
+//-------------------------------------------------------------------------------------------------
+
+bool RfNetworkSocket::receive(Packet& pPacket) {
+   while(mReceived.empty()) {
+      workcycle();
+   }
+
+   StoredPackage& received = *mReceived.begin();
+   mReceived.remove(received);
+
+   received.copy(pPacket);
+
+   mFree.pushBack(received);
+   return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool RfNetworkSocket::available() {
+   if(mReceived.empty()) {
+      workcycle();
+   }
+   return !mReceived.empty();
+}
+
 //-------------------------------------------------------------------------------------------------
 
 void RfNetworkSocket::workcycle() {
-   if (mListener == nullptr) {
-      return;
-   }
-
    size_t limiter = 0;
    while (mController->isDataAvailable() && limiter < 3) {
       limiter++;
@@ -90,6 +94,35 @@ void RfNetworkSocket::workcycle() {
       }
    }
 }
+//-------------------------------------------------------------------------------------------------
+
+bool RfNetworkSocket::setListener(I_Listener& iListener) {
+   if(mListener != nullptr) {
+      return false;
+   }
+
+   mListener = &iListener;
+
+   while(!mReceived.empty()) {
+      StoredPackage& received = *mReceived.begin();
+      mReceived.remove(received);
+      mListener->packetReceived(received);
+      mFree.pushBack(received);
+   }
+
+   return true;
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool RfNetworkSocket::resetListener() {
+   if (mListener == nullptr) {
+      return false;
+   }
+   mListener = nullptr;
+   return true;
+}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -103,7 +136,19 @@ bool RfNetworkSocket::sendInternal(Packet& pPacket) {
 void RfNetworkSocket::receiveInternal(Packet& pPacket) {
    if(mListener != nullptr) {
       mListener->packetReceived(pPacket);
+      return;
    }
+
+   if (mFree.empty()) {
+      BT_UTIL_LOG_ERROR("drop packet");
+      return;
+   }
+
+   StoredPackage& storage = *mFree.begin();
+   mFree.remove(storage);
+   pPacket.copy(storage);
+   mReceived.pushBack(storage);
+
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -22,17 +22,46 @@ class I_Logger {
       virtual I_Logger& operator<<(const char* pCString) = 0;
       virtual I_Logger& operator<<(int pInteger) = 0;
 
-      virtual void flush();
+      virtual void flush() = 0;
+      virtual void endl() = 0;
+      virtual void hex() = 0;
+      virtual void dec() = 0;
 };
 
-I_Logger& flush(I_Logger& iLogger);
-I_Logger& endl(I_Logger& iLogger);
-I_Logger& hex(I_Logger& iLogger);
-I_Logger& dec(I_Logger& iLogger);
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
+I_Logger& flush(I_Logger& iLogger) {
+   iLogger.flush();
+   return iLogger;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+I_Logger& endl(I_Logger& iLogger){
+   iLogger.endl();
+   return iLogger;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+I_Logger& hex(I_Logger& iLogger){
+   iLogger.hex();
+   return iLogger;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+I_Logger& dec(I_Logger& iLogger){
+   iLogger.dec();
+   return iLogger;
+}
+
+//-------------------------------------------------------------------------------------------------
 
 } // namespace Util
 } // namespace Bt
 
-namespace log = Bt::Util;
+namespace Log = Bt::Util;
 
 #endif // INC__Bt_Util_I_Logger__hpp

@@ -25,18 +25,23 @@ class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
    private:
       enum { FRAME_BUFFER_SIZE = I_Rf24Controller::MAX_PAYLOAD_SIZE };
       enum { HEADER_SIZE = 2 };
+      enum { PACKAGE_STORAGE_SIZE = 6 };
 
    public:
       RfNetworkSocket(RfNode pNodeId, I_Rf24Controller& pController);
 
-      virtual bool startListening(I_Listener& pListener);
-      virtual bool stopListening();
-
       virtual bool send(Packet& pPacket);
+      virtual bool receive(Packet& pPacket);
+      virtual bool available();
+
+      virtual bool setListener(I_Listener& iListener);
+      virtual bool resetListener();
 
       virtual void workcycle();
 
    private:
+      class StoredPackage : public Packet, public Util::IntrusiveList<StoredPackage>::Element {
+      };
 
 
    	  // Constructor to prohibit copy construction.
@@ -54,6 +59,10 @@ class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
       RfNetworkRoutingAlgorithm mRouting;
       uint8_t mIdCounter;
       I_Listener* mListener;
+      StoredPackage mPackages[PACKAGE_STORAGE_SIZE];
+      Util::IntrusiveList<StoredPackage> mFree;
+      Util::IntrusiveList<StoredPackage> mReceived;
+
 
 };
 

@@ -26,8 +26,8 @@ class I_RfPacketSocket {
 
       virtual ~I_RfPacketSocket() {}
       
-      virtual bool send(uint8_t* iPayload, size_t iSize) = 0;
-      virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize) = 0;
+      virtual bool send(uint8_t* iPayload, size_t iSize, uint8_t iGatewayNodeId) = 0;
+      virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oGatewayNodeId) = 0;
       virtual bool available() = 0;
 
 

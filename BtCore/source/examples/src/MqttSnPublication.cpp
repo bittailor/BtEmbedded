@@ -110,7 +110,7 @@ int main(int argc, const char* argv[]) {
 
    PingServer pingServer(socket);
 
-   socket.startListening(pingServer);
+   socket.setListener(pingServer);
 
    MainWorkcycle workcycle;
    workcycle.add(socket);

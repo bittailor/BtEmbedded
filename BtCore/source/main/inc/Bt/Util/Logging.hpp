@@ -19,7 +19,9 @@ namespace Bt {
 namespace Util {
 
 #define BT_UTIL_LOG_ERROR( message ) \
-   (*::Bt::Util::Singleton<::Bt::Util::I_Logger>::instance()) << __FILE__ << __LINE__ << ":E:" << message << ::Bt::Util::endl ;
+   if(::Bt::Util::Singleton< ::Bt::Util::I_Logger>::valid()) { \
+      (*::Bt::Util::Singleton< ::Bt::Util::I_Logger>::instance()) << __FILE__ << __LINE__ << ":E:" << message << ::Bt::Util::endl; \
+   }
 
 } // namespace Util
 } // namespace Bt

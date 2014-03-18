@@ -109,7 +109,7 @@ int main(int argc, const char* argv[]) {
 
    PingClient pingClient(socket, pingId, message);
 
-   socket.startListening(pingClient);
+   socket.setListener(pingClient);
 
    pingClient.start();
 

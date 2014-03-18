@@ -120,7 +120,7 @@ TEST_F(RfNetworkSocketIntegrationTest, SendStringFromOneToTwo) {
          callback = true;
       }));
 
-   mNetworkSocket2.startListening(listenerMock);
+   mNetworkSocket2.setListener(listenerMock);
 
    I_RfNetworkSocket::Packet packet;
    packet.destination(1);

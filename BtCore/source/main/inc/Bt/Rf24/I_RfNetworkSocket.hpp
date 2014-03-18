@@ -24,13 +24,16 @@ class I_RfNetworkSocket {
 
       class Packet;
       class I_Listener;
-
       virtual ~I_RfNetworkSocket() {}
       
-      virtual bool startListening(I_Listener& pListener) = 0;
-      virtual bool stopListening() = 0;
+      virtual bool send(Packet& iPacket) = 0;
+      virtual bool receive(Packet& oPacket) = 0;
+      virtual bool available() = 0;
 
-      virtual bool send(Packet& pPacket) = 0;
+      virtual bool setListener(I_Listener& iListener) = 0;
+      virtual bool resetListener() = 0;
+
+
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -68,13 +71,26 @@ class I_RfNetworkSocket::Packet {
          return mControllerPackage.size() - HEADER_SIZE;
       }
 
-      size_t writePayload(const void* pBuffer, size_t pSize) {
-         if (pSize > PAYLOAD_CAPACITY ) {
-            pSize = PAYLOAD_CAPACITY;
+      size_t writePayload(const void* iBuffer, size_t iSize) {
+         if (iSize > PAYLOAD_CAPACITY ) {
+            iSize = PAYLOAD_CAPACITY;
          }
-         memcpy(payloadBuffer(), pBuffer, pSize);
-         mControllerPackage.size(pSize + HEADER_SIZE);
-         return pSize;
+         memcpy(payloadBuffer(), iBuffer, iSize);
+         mControllerPackage.size(iSize + HEADER_SIZE);
+         return iSize;
+      }
+
+      size_t readPayload(void* oBuffer, size_t iMaxSize) {
+         size_t readSize = size();
+         if (readSize > iMaxSize) {
+            readSize = iMaxSize;
+         }
+         memcpy(oBuffer, payload(), readSize);
+         return readSize;
+      }
+
+      void copy(I_RfNetworkSocket::Packet& iPacket) const {
+         mControllerPackage.copy(iPacket.mControllerPackage);
       }
 
       friend class RfNetworkSocket;
@@ -91,6 +107,8 @@ class I_RfNetworkSocket::Packet {
       void id(uint8_t pId) {
          mControllerPackage.buffer()[2] = pId;
       }
+
+
 
       I_Rf24Controller::Packet mControllerPackage;
 };
