@@ -77,7 +77,7 @@ int main() {
 //      setNodeId();
 //   }
 
-   uint8_t nodeId = 12;
+   uint8_t nodeId = 2;
 
 #else
 #define CHIP_ENABLE 17

@@ -10,10 +10,13 @@
 
 #include "Bt/Util/Endianness.hpp"
 
+#include <stdint.h>
+
+
 namespace Bt {
 namespace Util {
 namespace {
-   const int nPattern = 0x11223344;
+   const int32_t nPattern = 0x11223344;
 }
 
 //-------------------------------------------------------------------------------------------------
