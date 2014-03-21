@@ -83,6 +83,15 @@ class Artefact
       @project = project
   end
   
+  def resolve_path_storages
+    self.instance_variables.each do |variable|
+      object = self.instance_variable_get(variable)
+      if object.instance_of?(PathStorage)
+        object.resolve 
+      end
+    end
+  end
+  
 end
 
 # -------------------------------------------------------------------------------------------------
@@ -106,15 +115,6 @@ class BuildArtefact < Artefact
     @libraries.resolve.collect {|library| library.usage_librarys }.flatten.uniq
   end
    
-  def resolve_path_storages
-    self.instance_variables.each do |variable|
-      object = self.instance_variable_get(variable)
-      if object.instance_of?(PathStorage)
-        object.resolve 
-      end
-    end
-  end
-  
 end
 
 # -------------------------------------------------------------------------------------------------
@@ -142,6 +142,41 @@ class StaticLibrary < BuildArtefact
     builder.static_library(file, name, @sources.storage, includes)
   end 
   
+  def link?
+    true;
+  end
+  
+  def create_tasks(builder)
+  end
+  
+end
+
+# -------------------------------------------------------------------------------------------------
+
+class HeaderLibrary < Artefact
+
+  attr_reader :exported_includes
+    
+  def initialize(name, project)
+    super
+    @exported_includes = PathStorage.new()
+  end 
+  
+  def usage_includes 
+    return @exported_includes.storage.collect { |include| "../#{@project}/#{include}" }
+  end
+  
+  def usage_librarys
+    return []
+  end
+  
+  def generate_ninja(builder, file)
+  end 
+  
+  def link?
+      false;
+  end
+  
   def create_tasks(builder)
   end
   
@@ -158,7 +193,9 @@ class Executable < BuildArtefact
     includes = @includes.storage + imported_includes 
     
     libraries = @libraries.resolve + imported_libraries 
-        
+     
+    libraries = libraries.delete_if { |library| !library.link? }   
+    
     builder.executable(file, project, name, @sources.storage, includes, libraries)
   end 
   

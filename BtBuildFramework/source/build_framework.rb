@@ -115,6 +115,13 @@ def static_library(name)
   build_framework.add_artefact(static_library)
 end
 
+def header_library(name)
+  build_framework = BuildFramework.instance
+  header_library = HeaderLibrary.new(name, build_framework.current_project)
+  yield header_library
+  build_framework.add_artefact(header_library)
+end
+
 def executable(name)
   build_framework = BuildFramework.instance
   executable = Executable.new(name, build_framework.current_project)
