@@ -8,12 +8,12 @@ if BuildFramework.instance.platform.name != "avr"
   end
   
   
-  # static_library "mqtt" do |builder|
-  #   builder.sources.add_pattern 'source/lib/Mqtt.C/src/*c'
-  #   builder.sources.storage.exclude("**/MQTTAsync.c","**/MQTTVersion.c", "**/SSLSocket.c")
-  #   builder.includes.add 'source/lib/Mqtt.C/src'
-  #   builder.exported_includes.add 'source/lib/Mqtt.C/src'
-  # end
+  static_library "mqtt" do |builder|
+     builder.sources.add_pattern 'source/lib/Mqtt.C/src/*c'
+     builder.sources.storage.exclude("**/MQTTAsync.c","**/MQTTVersion.c", "**/SSLSocket.c")
+     builder.includes.add 'source/lib/Mqtt.C/src'
+     builder.exported_includes.add 'source/lib/Mqtt.C/src'
+  end
   
   
 end
