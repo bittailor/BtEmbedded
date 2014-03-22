@@ -17,7 +17,6 @@ def bt_library_project (name)
 
     builder.libraries.add "BtCore/BtCore"
     builder.libraries.add "3rdParty/mqtt"
-    builder.libraries.add "3rdParty/boost"
     builder.exported_libraries.add "BtCore/BtCore"                      
     # builder.exported_libraries.add "3rdParty/mqtt"                      
   end

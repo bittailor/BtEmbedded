@@ -14,6 +14,9 @@
 #include <atomic>
 #include <thread>
 
+#include <Bt/Concurrency/BlockingQueue.hpp>
+
+
 namespace Bt {
 namespace Mqtt {
 
@@ -37,6 +40,7 @@ class RfSendReceiveLoop
 
       std::atomic<bool> mRunning;
       std::thread mThread;
+      Concurrency::BlockingQueue<std::function<void()>> mQueue;
 
 };
 

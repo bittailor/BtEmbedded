@@ -50,6 +50,8 @@ void RfSendReceiveLoop::run() {
 //-------------------------------------------------------------------------------------------------
 
 void RfSendReceiveLoop::workcycle() {
+   std::function<void()> action;
+   //if (mQueue.pop())
 
 }
 
