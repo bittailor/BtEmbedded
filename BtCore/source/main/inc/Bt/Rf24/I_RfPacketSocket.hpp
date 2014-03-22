@@ -22,13 +22,15 @@ namespace Rf24 {
 class I_RfPacketSocket {
    public:
 
-      enum { PAYLOAD_CAPACITY = I_RfNetworkSocket::Packet::PAYLOAD_CAPACITY };
-
       virtual ~I_RfPacketSocket() {}
       
-      virtual bool send(uint8_t* iPayload, size_t iSize, uint8_t iGatewayNodeId) = 0;
+      virtual size_t payloadCapacity() const = 0;
+
+      virtual bool hasPendingPacket() const = 0;
+      virtual size_t pendingPacketSize() const = 0;
+
+      virtual int32_t send(uint8_t* iPayload, size_t iSize, uint8_t iGatewayNodeId) = 0;
       virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oGatewayNodeId) = 0;
-      virtual bool available() = 0;
 
 
 };

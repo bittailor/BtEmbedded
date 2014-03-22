@@ -43,7 +43,7 @@ RfPipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode pSelf, RfNode pDes
 
 //-------------------------------------------------------------------------------------------------
 
-void RfNetworkRoutingAlgorithm::configurePipe(RfNode pSelf, RfPipe pPipe, I_Rf24Controller::Configuration::PipeConfiguration& pPipeConfiguration) {
+void RfNetworkRoutingAlgorithm::configurePipe(RfNode pSelf, RfPipe pPipe, I_Rf24DeviceController::Configuration::PipeConfiguration& pPipeConfiguration) {
    if(isLeafNode(pSelf) && pPipe != RfPipe::PIPE_0) {
       pPipeConfiguration.mEnabled = false;
       return;

@@ -29,10 +29,10 @@ class BlockingQueue
          return mQueue.empty();
       }
 
-      void push(const T& iValue)
+      void push(T iValue)
       {
          std::lock_guard<std::mutex> lock(mMutex);
-         mQueue.push(iValue);
+         mQueue.push(std::move(iValue));
          mConditionVariable.notify_one();
       }
 
@@ -42,6 +42,17 @@ class BlockingQueue
          mConditionVariable.wait(lock, [this]{return !mQueue.empty();});
          oValue = std::move(mQueue.front());
          mQueue.pop();
+      }
+
+      bool tryPop(T& oValue)
+      {
+         std::lock_guard<std::mutex> lock(mMutex);
+         if (mQueue.empty()) {
+            return false;
+         }
+         oValue = std::move(mQueue.front());
+         mQueue.pop();
+         return true;
       }
 
       template< class Rep, class Period>
@@ -56,16 +67,25 @@ class BlockingQueue
          return true;
       }
 
-      bool tryPop(T& oValue)
+      T* peek()
       {
          std::lock_guard<std::mutex> lock(mMutex);
          if (mQueue.empty()) {
-            return false;
+            return nullptr;
          }
-         oValue = std::move(mQueue.front());
-         mQueue.pop();
-         return true;
+         return &mQueue.front();
       }
+
+      const T* peek() const
+      {
+         std::lock_guard<std::mutex> lock(mMutex);
+         if (mQueue.empty()) {
+            return nullptr;
+         }
+         return &mQueue.front();
+      }
+
+
 
    private:
       mutable std::mutex mMutex;

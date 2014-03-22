@@ -104,7 +104,7 @@ int main(int argc, const char* argv[]) {
                     chipSelect);
 
    Bt::Rf24::Rf24Device device(spi,chipEnable);
-   Bt::Rf24::Rf24Controller controller(device);
+   Bt::Rf24::Rf24DeviceController controller(device);
    Bt::Rf24::RfNetworkSocket socket(nodeId, controller);
 
    PingClient pingClient(socket, pingId, message);

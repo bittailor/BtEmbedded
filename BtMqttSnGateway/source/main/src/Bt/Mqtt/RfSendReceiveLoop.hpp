@@ -1,6 +1,6 @@
 //*************************************************************************************************
 //
-//  BITTAILOR.CH - BtMqttSnGateway
+ //  BITTAILOR.CH - BtMqttSnGateway
 //
 //-------------------------------------------------------------------------------------------------
 //
@@ -40,7 +40,6 @@ class RfSendReceiveLoop
 
       std::atomic<bool> mRunning;
       std::thread mThread;
-      Concurrency::BlockingQueue<std::function<void()>> mQueue;
 
 };
 

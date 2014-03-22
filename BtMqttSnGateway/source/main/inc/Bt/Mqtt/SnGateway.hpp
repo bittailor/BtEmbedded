@@ -11,6 +11,9 @@
 #ifndef INC__Bt_Mqtt_SnGateway__hpp
 #define INC__Bt_Mqtt_SnGateway__hpp
 
+#include <Bt/Rf24/RfPacketSocket.hpp>
+
+
 namespace Bt {
 namespace Mqtt {
 
@@ -28,6 +31,9 @@ class SnGateway
 
       // Operator= to prohibit copy assignment
       SnGateway& operator=(const SnGateway&);
+
+      //Rf24::RfPacketSocket mPacketSocket;
+
 };
 
 } // namespace Mqtt

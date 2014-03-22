@@ -17,7 +17,7 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfProxySocketSlave::RfProxySocketSlave(I_Rf24Controller& pController) : mController(&pController) {
+RfProxySocketSlave::RfProxySocketSlave(I_Rf24DeviceController& pController) : mController(&pController) {
 
 }
 

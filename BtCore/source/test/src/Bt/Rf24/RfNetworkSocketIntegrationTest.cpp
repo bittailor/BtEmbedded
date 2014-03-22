@@ -96,8 +96,8 @@ class RfNetworkSocketIntegrationTest : public ::testing::Test {
       Rf24Device mDevice1;
       Rf24Device mDevice2;
 
-      Rf24Controller mController1;
-      Rf24Controller mController2;
+      Rf24DeviceController mController1;
+      Rf24DeviceController mController2;
 
       RfNetworkSocket mNetworkSocket1;
       RfNetworkSocket mNetworkSocket2;

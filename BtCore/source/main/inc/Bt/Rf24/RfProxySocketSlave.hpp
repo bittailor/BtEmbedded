@@ -21,7 +21,7 @@ namespace Rf24 {
 class RfProxySocketSlave 
 {
    public:
-      RfProxySocketSlave(I_Rf24Controller& pController);
+      RfProxySocketSlave(I_Rf24DeviceController& pController);
       ~RfProxySocketSlave();
 
       virtual bool connect(char* pHost, int16_t pPort);
@@ -34,7 +34,7 @@ class RfProxySocketSlave
       // Operator= to prohibit copy assignment
       RfProxySocketSlave& operator=(const RfProxySocketSlave&);
 
-      I_Rf24Controller* mController;
+      I_Rf24DeviceController* mController;
 };
 
 } // namespace Rf24

@@ -19,7 +19,7 @@
 namespace Bt {
 namespace Rf24 {
 
-class I_Rf24Controller {
+class I_Rf24DeviceController {
    public:
 
       class Packet;
@@ -27,12 +27,11 @@ class I_Rf24Controller {
 
       enum { MAX_PAYLOAD_SIZE = I_Rf24Device::MAX_PAYLOAD_SIZE };
 
-      virtual ~I_Rf24Controller() {}
+      virtual ~I_Rf24DeviceController() {}
 
       virtual void configure(const Configuration& pConfiguration) = 0;
 
       virtual bool write(RfPipe pPipe, Packet& pPacket) = 0;
-
       virtual size_t write(RfPipe pPipe, uint8_t* pData, size_t pSize) = 0;
 
       virtual void startListening() = 0;
@@ -46,7 +45,7 @@ class I_Rf24Controller {
       virtual size_t read(uint8_t* pBuffer, size_t pSize, RfPipe& pPipe) = 0;
 };
 
-class I_Rf24Controller::Packet {
+class I_Rf24DeviceController::Packet {
    public:
       enum { BUFFER_CAPACITY = I_Rf24Device::MAX_PAYLOAD_SIZE };
 
@@ -70,7 +69,7 @@ class I_Rf24Controller::Packet {
          mSize = pSize;
       }
 
-      void copy(I_Rf24Controller::Packet& iPacket) const {
+      void copy(I_Rf24DeviceController::Packet& iPacket) const {
          memcpy(iPacket.mBuffer, mBuffer, BUFFER_CAPACITY);
          iPacket.mSize = mSize;
       }
@@ -88,7 +87,7 @@ class I_Rf24Controller::Packet {
       size_t mSize;
 };
 
-class I_Rf24Controller::Configuration {
+class I_Rf24DeviceController::Configuration {
    public:
 
       struct PipeConfiguration {

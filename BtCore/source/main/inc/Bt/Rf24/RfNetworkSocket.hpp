@@ -23,12 +23,12 @@ namespace Rf24 {
 class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
 {
    private:
-      enum { FRAME_BUFFER_SIZE = I_Rf24Controller::MAX_PAYLOAD_SIZE };
+      enum { FRAME_BUFFER_SIZE = I_Rf24DeviceController::MAX_PAYLOAD_SIZE };
       enum { HEADER_SIZE = 2 };
       enum { PACKAGE_STORAGE_SIZE = 6 };
 
    public:
-      RfNetworkSocket(RfNode pNodeId, I_Rf24Controller& pController);
+      RfNetworkSocket(RfNode pNodeId, I_Rf24DeviceController& pController);
 
       virtual bool send(Packet& pPacket);
       virtual bool receive(Packet& pPacket);
@@ -55,7 +55,7 @@ class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
 
 
       RfNode mNodeId;
-      I_Rf24Controller* mController;
+      I_Rf24DeviceController* mController;
       RfNetworkRoutingAlgorithm mRouting;
       uint8_t mIdCounter;
       I_Listener* mListener;

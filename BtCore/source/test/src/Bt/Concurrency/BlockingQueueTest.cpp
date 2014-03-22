@@ -32,7 +32,6 @@ class BlockingQueueTest : public ::testing::Test {
 
 };
 
-
 TEST_F(BlockingQueueTest, emptyOnEmptyReturnsTrue) {
    EXPECT_TRUE(mBlockingQueue.empty());
 }
@@ -101,9 +100,24 @@ TEST_F(BlockingQueueTest, tryPopWithTimeoutOnNonEmptyDoesNotWait) {
    mBlockingQueue.tryPop(value, std::chrono::seconds(10));
    std::chrono::milliseconds duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
    EXPECT_LE(duration,std::chrono::milliseconds(10));
-
 }
 
+TEST_F(BlockingQueueTest, moveOnlyType) {
+   BlockingQueue<std::unique_ptr<int>> queue;
+
+   std::unique_ptr<int> data1(new int(1));
+
+   queue.push(std::move(data1));
+   queue.push(std::unique_ptr<int>(new int(2)));
+
+   std::unique_ptr<int> out1;
+   std::unique_ptr<int> out2;
+   std::unique_ptr<int> out3;
+   queue.peek();
+   queue.pop(out1);
+   queue.tryPop(out2);
+   queue.tryPop(out3);
+}
 
 } // namespace Concurrency
 } // namespace Bt

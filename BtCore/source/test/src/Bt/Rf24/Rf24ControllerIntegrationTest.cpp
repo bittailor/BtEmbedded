@@ -64,7 +64,7 @@ template<typename T> T* asArray(std::vector<T>& pVector) {
    return &pVector[0];
 }
 
-void waitForDataAvailable(Rf24Controller& pController) {
+void waitForDataAvailable(Rf24DeviceController& pController) {
    int counter = 0;
    while(!pController.isDataAvailable() && counter < 200) {
       Util::delayInMilliseconds(5);
@@ -101,7 +101,7 @@ class Rf24ControllerIntegrationTestBase : public ::testing::Test {
       virtual void SetUp() {
 
 
-         I_Rf24Controller::Configuration configuration;
+         I_Rf24DeviceController::Configuration configuration;
          configuration[RfPipe::PIPE_0] = {true,RfAddress(0xE7,0xE7,0xE7,0xE7,0xE7)};
          configuration[RfPipe::PIPE_1] = {true,RfAddress(0xC2,0xC2,0xC2,0xC2,0xC2)};
          configuration[RfPipe::PIPE_2] = {true,RfAddress(0xC2,0xC2,0xC2,0xC2,0xC3)};
@@ -137,8 +137,8 @@ class Rf24ControllerIntegrationTestBase : public ::testing::Test {
       Rf24Device mDevice1;
       Rf24Device mDevice2;
 
-      Rf24Controller mController1;
-      Rf24Controller mController2;
+      Rf24DeviceController mController1;
+      Rf24DeviceController mController2;
 
 };
 
@@ -156,14 +156,14 @@ class Rf24ControllerIntegrationTest : public Rf24ControllerIntegrationTestBase {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-class Rf24Controller$RfPipe$Size$IntegrationTest
+class Rf24DeviceController$RfPipe$Size$IntegrationTest
          : public Rf24ControllerIntegrationTestBase
          , public ::testing::WithParamInterface< ::std::tr1::tuple<RfPipe, size_t>>{
 
 };
 
 INSTANTIATE_TEST_CASE_P(AllPipes,
-                        Rf24Controller$RfPipe$Size$IntegrationTest,
+                        Rf24DeviceController$RfPipe$Size$IntegrationTest,
                         ::testing::Combine(
                                  ::testing::Values(
                                           RfPipe::PIPE_0,
@@ -185,7 +185,7 @@ INSTANTIATE_TEST_CASE_P(AllPipes,
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendDevice1ToDevice2) {
+TEST_P(Rf24DeviceController$RfPipe$Size$IntegrationTest, sendDevice1ToDevice2) {
    size_t size = ::std::tr1::get<1>(GetParam());
    std::vector<uint8_t> data(size);
    std::iota(data.begin(), data.end(), 1);
@@ -208,7 +208,7 @@ TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendDevice1ToDevice2) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendDevice2ToDevice1) {
+TEST_P(Rf24DeviceController$RfPipe$Size$IntegrationTest, sendDevice2ToDevice1) {
    size_t size = ::std::tr1::get<1>(GetParam());
    std::vector<uint8_t> data(size);
    std::iota(data.begin(), data.end(), 1);
@@ -229,7 +229,7 @@ TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendDevice2ToDevice1) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendAndReveive) {
+TEST_P(Rf24DeviceController$RfPipe$Size$IntegrationTest, sendAndReveive) {
    size_t size = ::std::tr1::get<1>(GetParam());
    std::vector<uint8_t> data(size);
    std::iota(data.begin(), data.end(), 1);
@@ -257,7 +257,7 @@ TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendAndReveive) {
 
 //-------------------------------------------------------------------------------------------------
 
-TEST_P(Rf24Controller$RfPipe$Size$IntegrationTest, sendAndReveiveInALoop) {
+TEST_P(Rf24DeviceController$RfPipe$Size$IntegrationTest, sendAndReveiveInALoop) {
    size_t size = ::std::tr1::get<1>(GetParam());
    std::vector<uint8_t> data(size);
    std::iota(data.begin(), data.end(), 1);

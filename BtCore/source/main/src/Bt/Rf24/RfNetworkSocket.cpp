@@ -19,14 +19,14 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24Controller& pController)
+RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24DeviceController& pController)
 : mNodeId(pNodeId), mController(&pController), mIdCounter(0), mListener(nullptr)  {
 
    for(StoredPackage& package : mPackages) {
       mFree.pushBack(package);
    }
 
-   I_Rf24Controller::Configuration configuration;
+   I_Rf24DeviceController::Configuration configuration;
 
    for(RfPipe pipe : RfPipes::ALL_PIPES) {
       mRouting.configurePipe(mNodeId, pipe, configuration[pipe]);

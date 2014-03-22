@@ -21,7 +21,7 @@ class RfNetworkRoutingAlgorithm
 {
    public:
       RfPipe calculateRoutingPipe(RfNode pSelf, RfNode pDestination);
-      void configurePipe(RfNode pSelf, RfPipe pPipe, I_Rf24Controller::Configuration::PipeConfiguration& pPipeConfiguration);
+      void configurePipe(RfNode pSelf, RfPipe pPipe, I_Rf24DeviceController::Configuration::PipeConfiguration& pPipeConfiguration);
 
       RfAddress calculatePipeAddress(RfNode pSelf, RfPipe pPipe);
       bool isLeafNode(RfNode pSelf);
