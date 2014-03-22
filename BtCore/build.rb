@@ -22,13 +22,7 @@ def bt_library_project (name)
     if BuildFramework.instance.platform.name == "pi"
       builder.libraries.add "3rdParty/bcm2835"
       builder.exported_libraries.add "3rdParty/bcm2835"
-    end
-    
-    if BuildFramework.instance.platform.name == "avr"
-      builder.libraries.add "3rdParty/arduino"
-      builder.exported_libraries.add "3rdParty/arduino"
-    end
-           
+    end           
   end
   
   
@@ -59,10 +53,9 @@ end
 
 bt_library_project("BtCore")
 
+# --- examples ----
 
-
-examples = FileList["source/examples/src/*.cpp"]
-  
+examples = FileList["source/examples/src/*.cpp"]  
 examples.each do |example|
   executable(example.pathmap("%n")) do |builder|
     builder.sources.add example
@@ -71,24 +64,5 @@ examples.each do |example|
   end
 end  
 
-if BuildFramework.instance.platform.name == "pi"
-  FileList["source/examples/src/pi/*.cpp"].each do |example|
-    executable(example.pathmap("%n")) do |builder|
-      builder.sources.add example
-      builder.includes.add "source/main/inc" 
-      builder.libraries.add "BtCore"
-    end
-  end  
-end
-
-if BuildFramework.instance.platform.name == "avr"
-  FileList["source/examples/src/avr/*.cpp"].each do |example|
-    executable(example.pathmap("%n")) do |builder|
-      builder.sources.add example
-      builder.includes.add "source/main/inc" 
-      builder.libraries.add "BtCore"
-    end
-  end  
-end
 
   
