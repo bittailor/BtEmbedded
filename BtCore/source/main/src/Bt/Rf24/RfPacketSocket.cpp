@@ -11,6 +11,7 @@
 #include "Bt/Rf24/RfPacketSocket.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 #include "Bt/Util/Logging.hpp"
 
@@ -45,20 +46,24 @@ bool RfPacketSocket::hasPendingPacket() const {
 //-------------------------------------------------------------------------------------------------
 
 size_t RfPacketSocket::pendingPacketSize() const {
-   const std::vector<uint8_t>* packet = mReceivedQueue.peek();
+   const ReceiveMessage* packet = mReceivedQueue.peek();
    if (packet == nullptr) {
       return -1;
    }
-   return packet->size();
+   return (*packet)->size();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-int32_t RfPacketSocket::send(uint8_t* iPayload, size_t iSize, uint8_t iGatewayNodeId) {
+int32_t RfPacketSocket::send(const uint8_t* iPayload, size_t iSize, uint8_t iNodeId) {
    size_t sendSize = std::min(iSize,payloadCapacity());
    std::promise<bool> promise;
    auto future = promise.get_future();
-   mSendQueue.push(std::pair<std::promise<bool>,std::vector<uint8_t>>(std::move(promise),std::vector<uint8_t>(iPayload,iPayload+iSize)));
+   std::shared_ptr<I_RfNetworkSocket::Packet> packet(new I_RfNetworkSocket::Packet());
+   packet->writePayload(iPayload,sendSize);
+   packet->destination(iNodeId);
+
+   mSendQueue.push(SendMessage(std::move(promise),packet));
    if(future.get()) {
       return sendSize;
    }
@@ -67,11 +72,14 @@ int32_t RfPacketSocket::send(uint8_t* iPayload, size_t iSize, uint8_t iGatewayNo
 
 //-------------------------------------------------------------------------------------------------
 
-int32_t RfPacketSocket::receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oGatewayNodeId) {
-   std::vector<uint8_t> packet;
+int32_t RfPacketSocket::receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oNodeId) {
+   ReceiveMessage packet;
    mReceivedQueue.pop(packet);
-   size_t readSize = std::min(iMaxSize,packet.size());
-   memcpy(oPayload, packet.data(), packet.size());
+   size_t readSize = std::min(iMaxSize,packet->size());
+   memcpy(oPayload, packet->payload(), readSize);
+   if(oNodeId != nullptr) {
+      *oNodeId = packet->source();
+   }
    return readSize;
 }
 
@@ -80,17 +88,15 @@ int32_t RfPacketSocket::receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oGa
 void RfPacketSocket::workcycle() {
 
    if(mNetworkSocket.available()) {
-      I_RfNetworkSocket::Packet packet;
-      mNetworkSocket.receive(packet);
-      const uint8_t* buffer = static_cast<const uint8_t*>(packet.payload());
-      mReceivedQueue.push(std::vector<uint8_t>(buffer,buffer + packet.size()));
+      ReceiveMessage packet(new I_RfNetworkSocket::Packet);
+      mNetworkSocket.receive(*packet);
+      mReceivedQueue.push(packet);
    }
 
-   std::pair<std::promise<bool>,std::vector<uint8_t>> sendPacket;
+   SendMessage sendPacket;
    if(mSendQueue.tryPop(sendPacket)) {
-      I_RfNetworkSocket::Packet packet;
-      packet.writePayload(sendPacket.second.data(),sendPacket.second.size());
-      bool sendResult = mNetworkSocket.send(packet);
+      std::cout << "send a packet of size " << sendPacket.second->size() << std::endl;
+      bool sendResult = mNetworkSocket.send(*sendPacket.second);
       sendPacket.first.set_value(sendResult);
    }
 }

@@ -12,6 +12,7 @@
 #define INC__Bt_Rf24_RfPacketSocket__hpp
 
 #include <future>
+#include <memory>
 
 #include "Bt/Rf24/I_RfPacketSocket.hpp"
 #include "Bt/Rf24/I_RfNetworkSocket.hpp"
@@ -32,8 +33,8 @@ class RfPacketSocket : public I_RfPacketSocket
       virtual bool hasPendingPacket() const;
       virtual size_t pendingPacketSize() const;
 
-      virtual int32_t send(uint8_t* iPayload, size_t iSize, uint8_t iGatewayNodeId);
-      virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oGatewayNodeId);
+      virtual int32_t send(const uint8_t* iPayload, size_t iSize, uint8_t iNodeId);
+      virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oNodeId);
 
       virtual void workcycle();
 
@@ -44,9 +45,12 @@ class RfPacketSocket : public I_RfPacketSocket
       // Operator= to prohibit copy assignment
       RfPacketSocket& operator=(const RfPacketSocket&);
 
+      typedef std::pair<std::promise<bool>,std::shared_ptr<I_RfNetworkSocket::Packet>> SendMessage;
+      typedef std::shared_ptr<I_RfNetworkSocket::Packet> ReceiveMessage;
+
       I_RfNetworkSocket& mNetworkSocket;
-      Concurrency::BlockingQueue<std::vector<uint8_t>> mReceivedQueue;
-      Concurrency::BlockingQueue<std::pair<std::promise<bool>,std::vector<uint8_t>>> mSendQueue;
+      Concurrency::BlockingQueue<ReceiveMessage> mReceivedQueue;
+      Concurrency::BlockingQueue<SendMessage> mSendQueue;
 };
 
 } // namespace Rf24

@@ -24,6 +24,7 @@ class SnGateway
       ~SnGateway();
    
       int run();
+      void stop();
 
    private:
    	  // Constructor to prohibit copy construction.
@@ -32,7 +33,8 @@ class SnGateway
       // Operator= to prohibit copy assignment
       SnGateway& operator=(const SnGateway&);
 
-      //Rf24::RfPacketSocket mPacketSocket;
+      std::shared_ptr<Rf24::I_RfPacketSocket> mSocket;
+      volatile bool mRunning;
 
 };
 

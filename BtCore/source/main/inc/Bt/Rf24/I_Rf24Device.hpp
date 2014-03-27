@@ -11,6 +11,7 @@
 #ifndef INC__Bt_Device_I_Rf24Device__hpp
 #define INC__Bt_Device_I_Rf24Device__hpp
 
+#include <iostream>
 #include <stdint.h>
 
 #include "Bt/Util/StaticArray.hpp"
@@ -41,18 +42,20 @@ class I_Rf24Device {
 
       class Status {
          public:
-            Status(bool pDataReady, bool pDataSent, bool pRetransmitsExceeded)
-            : mDataReady(pDataReady), mDataSent(pDataSent), mRetransmitsExceeded(pRetransmitsExceeded)  {}
+            Status(uint8_t iStatus) : mStatus(iStatus) {
 
-            bool dataReady() {return mDataReady;}
-            bool dataSent() {return mDataSent;}
-            bool retransmitsExceeded() {return mRetransmitsExceeded;}
+            }
 
+            bool dataReady() {return mStatus & 0x40;}
+            bool dataSent() {return mStatus & 0x20;}
+            bool retransmitsExceeded() {return mStatus & 0x10;}
+
+            bool receiveFifoEmpty() {return (mStatus & 0x0e) == 0x0e;}
+
+            bool transmitFifoFull() {return mStatus & 0x01;}
 
          private:
-            bool mDataReady;
-            bool mDataSent;
-            bool mRetransmitsExceeded;
+            uint8_t mStatus;
       };
 
 
@@ -119,6 +122,14 @@ class I_Rf24Device {
       virtual void dynamicPayloadEnabled(RfPipe pPipe, bool pValue) = 0;
 
 };
+
+inline std::ostream& operator<<(std::ostream& iStream, I_Rf24Device::TransceiverMode iMode) {
+   switch (iMode) {
+      case I_Rf24Device::TX_MODE       : iStream << "TX_MODE"; break;
+      case I_Rf24Device::RX_MODE       : iStream << "RX_MODE"; break;
+   }
+   return iStream;
+}
 
 } // namespace Device
 } // namespace Bt

@@ -29,8 +29,8 @@ class I_RfPacketSocket {
       virtual bool hasPendingPacket() const = 0;
       virtual size_t pendingPacketSize() const = 0;
 
-      virtual int32_t send(uint8_t* iPayload, size_t iSize, uint8_t iGatewayNodeId) = 0;
-      virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oGatewayNodeId) = 0;
+      virtual int32_t send(const uint8_t* iPayload, size_t iSize, uint8_t iNodeId) = 0;
+      virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oNodeId) = 0;
 
 
 };

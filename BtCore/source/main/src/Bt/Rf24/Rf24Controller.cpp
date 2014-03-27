@@ -10,6 +10,8 @@
 //*************************************************************************************************
 
 #include <stdio.h>
+#include <iostream>
+#include <typeinfo>
 
 #include "Bt/Rf24/Rf24Controller.hpp"
 
@@ -39,7 +41,7 @@ void printArray(const T& pArray)
 //-------------------------------------------------------------------------------------------------
 
 Rf24DeviceController::Rf24DeviceController(I_Rf24Device& pDevice)
-: mDevice(&pDevice), mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this), mCurrentState(&mPowerDown) {
+: mDevice(&pDevice), mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this), mCurrentState(&mPowerDown), mLogTimer(Bt::Util::milliseconds() + 1000) {
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -70,6 +72,8 @@ bool Rf24DeviceController::write(RfPipe pPipe, Packet& pPacket) {
 size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    StateBase* originalState = mCurrentState;
+   std::cout << "transceiverMode " << mDevice->transceiverMode() << std::endl;
+   std::cout << "write current state is " << typeid(*mCurrentState).name() << std::endl;
    mCurrentState->ToStandbyI();
 
    RfAddress backupPipe0 = mDevice->receiveAddress(RfPipe::PIPE_0);
@@ -78,6 +82,12 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    mDevice->receiveAddress(RfPipe::PIPE_0, transmitPipeAddress);
 
    mDevice->writeTransmitPayload(pData, pSize);
+
+   while(mDevice->isTransmitFifoEmpty()) {
+      std::cout << "transmit FIFO empty after sending payload ==> try again " << std::endl;
+      mDevice->writeTransmitPayload(pData, pSize);
+   }
+
 
    mCurrentState->ToTxMode();
 
@@ -93,7 +103,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    if (status.retransmitsExceeded()) {
       mDevice->clearRetransmitsExceeded();
-      printf("TxMode::ToStandbyI: send failed retransmits exceeded ! \n");
+      printf("write: send failed retransmits exceeded ! \n");
       sentSize = 0;
    }
 
@@ -101,7 +111,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    if (timeout.isTimedOut()) {
       mDevice->clearRetransmitsExceeded();
       mDevice->flushTransmitFifo();
-      printf("TxMode::ToStandbyI: send failed timeout ! \n");
+      printf("write: send failed timeout ! \n");
       sentSize = 0;
    }
 
@@ -132,7 +142,14 @@ void Rf24DeviceController::stopListening() {
 //-------------------------------------------------------------------------------------------------
 
 bool Rf24DeviceController::isDataAvailable() {
-   if (mDevice->isReceiveFifoEmpty()) {
+   if (mLogTimer < Bt::Util::milliseconds()) {
+      std::cout << "isDataAvailable: transceiverMode " << mDevice->transceiverMode() << std::endl;
+      std::cout << "isDataAvailable: current state is " << typeid(*mCurrentState).name() << std::endl;
+      mLogTimer = Bt::Util::milliseconds() + 1000;
+   }
+
+
+   if (mDevice->status().receiveFifoEmpty()) {
       return false;
    }
 

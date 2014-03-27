@@ -15,8 +15,16 @@ def bt_library_project (name)
     builder.exported_includes.add "source/main/inc",
                                   "source/platform/#{BuildFramework.instance.platform.name}/inc"
 
+    
+    
     builder.libraries.add "BtCore/BtCore"
     builder.libraries.add "3rdParty/mqtt"
+    if BuildFramework.instance.platform.name == "pi"
+      builder.libraries.add "3rdParty/bcm2835"
+      builder.exported_libraries.add "3rdParty/bcm2835"
+    end 
+    
+    
     builder.exported_libraries.add "BtCore/BtCore"                      
     # builder.exported_libraries.add "3rdParty/mqtt"                      
   end

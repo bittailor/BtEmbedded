@@ -31,28 +31,28 @@ class I_Logger {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
-I_Logger& flush(I_Logger& iLogger) {
+inline I_Logger& flush(I_Logger& iLogger) {
    iLogger.flush();
    return iLogger;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-I_Logger& endl(I_Logger& iLogger){
+inline I_Logger& endl(I_Logger& iLogger){
    iLogger.endl();
    return iLogger;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-I_Logger& hex(I_Logger& iLogger){
+inline I_Logger& hex(I_Logger& iLogger){
    iLogger.hex();
    return iLogger;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-I_Logger& dec(I_Logger& iLogger){
+inline I_Logger& dec(I_Logger& iLogger){
    iLogger.dec();
    return iLogger;
 }

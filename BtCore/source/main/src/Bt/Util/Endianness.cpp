@@ -21,7 +21,7 @@ namespace {
 
 //-------------------------------------------------------------------------------------------------
 
-bool sIsBigEndian = *reinterpret_cast<const char*>(&nPattern)==0x11;
+bool Endianness::sIsBigEndian = *reinterpret_cast<const char*>(&nPattern)==0x11;
 
 //-------------------------------------------------------------------------------------------------
 

@@ -12,8 +12,10 @@
 #define INC__Bt_Net_Mqtt_MqttSn_Messages__hpp
 
 #include <stdint.h>
+#include <deque>
 #include <string>
 #include <Bt/Util/Endianness.hpp>
+#include <vector>
 
 namespace Bt {
 namespace Net {
@@ -54,6 +56,9 @@ enum class MsgType : uint8_t {
       WILLMSGRESP
 };
 
+std::ostream& operator<<(std::ostream& iStream, MsgType iMsgType);
+
+
 enum class ReturnCode : uint8_t {
    ACCEPTED = 0x00,
    REJECTED_CONGESTION,
@@ -74,62 +79,412 @@ union Flags {
       } bits;
 };
 
-class Header {
+
+class I_PacketReader {
    public:
-      Header(MsgType iMsgType, uint8_t iLength)
-      : mLength(iLength), mMsgType(iMsgType) {
+      virtual ~I_PacketReader(){}
 
+      virtual std::streamsize readIn(int8_t& oValue) = 0;
+      virtual std::streamsize readIn(uint8_t& oValue) = 0;
+      virtual std::streamsize readIn(uint16_t& oValue) = 0;
+      virtual std::streamsize readIn(std::string& oValue) = 0;
+      virtual std::streamsize size() = 0;
+
+      template<typename T>
+      T read() {
+         T value;
+         readIn(value);
+         return value;
       }
 
-      uint8_t length() { return mLength; }
-      MsgType msgType() { return mMsgType; }
-
-   private:
-      uint8_t mLength;
-      MsgType mMsgType;
-};
-
-class Connect {
-   public:
-      Connect(const std::string& iClientId)
-      : mHeader(MsgType::CONNECT, sizeof(Connect) + iClientId.length()) {
-         mFlags.bits.dup = false;
-         mFlags.bits.qos = 0;
-         mFlags.bits.retain = false;
-         mFlags.bits.will = false; //TODO (BT) implement support for will topic!
-         mFlags.bits.cleanSession = true;
-         mFlags.bits.topicIdType = 0;
-         mProtocolId = PROTOCOL_ID_1_2;
-         mDuration = 0xFFFF; //TODO (BT) implement support duration of Keep Alive timer
-      }
-
-      uint16_t getDuration() {
-         return Util::Endianness::networkToHost(mDuration);
-      }
-
-   private:
-      Header mHeader;
-      Flags mFlags;
-      uint8_t mProtocolId;
-      uint16_t mDuration;
-      char mClientId[0];
-};
-
-class Connack {
-   public:
-      Connack(ReturnCode iReturnCode)
-      : mHeader(MsgType::CONNACK,sizeof(Connack)), mReturnCode(iReturnCode) {
-
-      }
-
-      ReturnCode returnCode() { return mReturnCode; }
-
-   private:
-      Header      mHeader;
-      ReturnCode  mReturnCode;
 };
 
 
+template<template <typename T, typename... A> class Container, typename... Rest>
+class PacketReader : public I_PacketReader {
+   public:
+
+      PacketReader(Container<uint8_t>& container)
+      : mContainer(container), mReadPosition(0) {
+
+      }
+
+      virtual std::streamsize readIn(int8_t& oValue) {
+         return readBytes(reinterpret_cast<uint8_t*>(&oValue), sizeof(int8_t));
+      }
+
+      virtual std::streamsize readIn(uint8_t& oValue) {
+         return readBytes(&oValue, sizeof(int8_t));
+      }
+
+      virtual std::streamsize readIn(uint16_t& oValue) {
+         std::streamsize result = readBytes(reinterpret_cast<uint8_t*>(&oValue), sizeof(uint16_t));
+         oValue = Util::Endianness::networkToHost<uint16_t>(oValue);
+         return result;
+      }
+
+      virtual std::streamsize readIn(std::string& oValue) {
+         oValue.clear();
+         std::streamsize result = size();
+         if (result == 0) {
+            return -1; // EOF
+         }
+         oValue.append(mContainer.begin() + mReadPosition, mContainer.end());
+         mReadPosition = mContainer.size();
+         return result;
+      }
+
+      virtual std::streamsize size() {
+         return static_cast<std::streamsize>(mContainer.size() - mReadPosition);
+      }
+
+      std::streamsize readBytes(uint8_t* s, std::streamsize n) {
+         std::streamsize amt = size();
+         std::streamsize result = (std::min)(n, amt);
+         if (result != 0) {
+            std::copy( mContainer.begin() + mReadPosition,
+                       mContainer.begin() + mReadPosition + result,
+                       s );
+            mReadPosition += result;
+            return result;
+         } else {
+            return -1; // EOF
+         }
+      }
+
+      Container<uint8_t, Rest...>& container() { return mContainer; }
+
+   private:
+
+      Container<uint8_t, Rest...>&  mContainer;
+      typename Container<uint8_t, Rest...>::size_type   mReadPosition;
+};
+
+class I_PacketWriter {
+   public:
+      virtual ~I_PacketWriter(){}
+
+      virtual std::streamsize write(int8_t iValue) = 0;
+      virtual std::streamsize write(uint8_t iValue) = 0;
+      virtual std::streamsize write(uint16_t iValue) = 0;
+      virtual std::streamsize write(const std::string& iValue) = 0;
+      virtual std::streamsize size() = 0;
+
+};
+
+
+template<template <typename T, typename... A> class Container, typename... Rest>
+class PacketWriter : public I_PacketWriter {
+   public:
+
+      PacketWriter(Container<uint8_t>& container)
+      : mContainer(container) {
+
+      }
+
+      virtual std::streamsize write(int8_t iValue) {
+         return writeBytes(reinterpret_cast<uint8_t*>(&iValue), sizeof(int8_t));
+      }
+
+      virtual std::streamsize write(uint8_t iValue) {
+         return writeBytes(&iValue, sizeof(int8_t));
+      }
+
+      virtual std::streamsize write(uint16_t iValue) {
+         iValue = Util::Endianness::hostToNetwork<uint16_t>(iValue);
+         return writeBytes(reinterpret_cast<uint8_t*>(&iValue), sizeof(uint16_t));
+      }
+
+      virtual std::streamsize write(const std::string& iValue) {
+         return writeBytes(reinterpret_cast<const uint8_t*>(iValue.c_str()), iValue.size());
+      }
+
+      virtual std::streamsize size() {
+         return static_cast<std::streamsize>(mContainer.size());
+      }
+
+      std::streamsize writeBytes(const uint8_t* s, std::streamsize n)
+      {
+         mContainer.insert(mContainer.end(), s, s + n);
+         return n;
+      }
+
+
+      Container<uint8_t, Rest...>& container() { return mContainer; }
+
+   private:
+
+      Container<uint8_t, Rest...>&  mContainer;
+};
+
+
+//class PacketReader {
+//   public:
+//
+//      PacketReader(std::vector<uint8_t>& iBuffer) : mBuffer(iBuffer), mPosition(0) {
+//
+//      }
+//
+//      size_t size() { return mBuffer.size() - mPosition; }
+//
+//
+//      void readIn(int8_t& oValue) {
+//         oValue = *(mBuffer.data() + mPosition);
+//         mPosition++;
+//      }
+//
+//      void readIn(uint8_t& oValue) {
+//         oValue = *(mBuffer.data() + mPosition);
+//         mPosition++;
+//      }
+//
+//      void readIn(uint16_t& oValue) {
+//         oValue = Util::Endianness::networkToHost<uint16_t>(*reinterpret_cast<uint16_t*>(mBuffer.data() + mPosition));
+//         mPosition += 2;
+//      }
+//
+//      void readIn(std::string& oValue) {
+//         oValue = *reinterpret_cast<char*>(mBuffer.data() + mPosition);
+//         mPosition += oValue.size() + 1;
+//      }
+//
+//      template<typename T>
+//      T read() {
+//         T value;
+//         readIn(value);
+//         return value;
+//      }
+//
+//
+//   private:
+//      std::vector<uint8_t>& mBuffer;
+//      size_t mPosition;
+//};
+//
+//class PacketWriter {
+//   public:
+//
+//      PacketWriter() {
+//
+//      }
+//
+//      size_t size() { return mBuffer.size(); }
+//
+//
+//      void write(int8_t iValue) {
+//         mBuffer.push_back(iValue);
+//      }
+//
+//      void write(uint8_t& iValue) {
+//         mBuffer.push_back(iValue);
+//      }
+//
+//      void readIn(uint16_t& oValue) {
+//         oValue = Util::Endianness::networkToHost<uint16_t>(*reinterpret_cast<uint16_t*>(mBuffer.data() + mPosition));
+//         mPosition += 2;
+//      }
+//
+//      void readIn(std::string& oValue) {
+//         oValue = *reinterpret_cast<char*>(mBuffer.data() + mPosition);
+//         mPosition += oValue.size() + 1;
+//      }
+//
+//      template<typename T>
+//      T read() {
+//         T value;
+//         readIn(value);
+//         return value;
+//      }
+//
+//
+//   private:
+//      std::vector<uint8_t>& mBuffer;
+//};
+
+
+class I_MessageVisitor;
+
+class I_Message {
+   public:
+      virtual ~I_Message(){}
+      virtual void write(I_PacketWriter& iWriter) const = 0;
+      virtual void accept(I_MessageVisitor& iVistor) = 0;
+};
+
+class Connect;
+class Connack;
+class Register;
+class Regack;
+class Publish;
+
+class I_MessageVisitor {
+   public:
+      virtual ~I_MessageVisitor(){}
+      virtual void visit(Connect& iMessage) = 0;
+      virtual void visit(Connack& iMessage) = 0;
+      virtual void visit(Register& iMessage) = 0;
+      virtual void visit(Regack& iMessage) = 0;
+      virtual void visit(Publish& iMessage) = 0;
+};
+
+class Connect : public I_Message {
+   public:
+      Flags flags;
+      uint16_t duration;
+      std::string clientId;
+
+      Connect(I_PacketReader& reader) {
+         flags.byte = reader.read<uint8_t>();
+         reader.read<uint8_t>(); // ProtocolId
+         duration = reader.read<uint16_t>();
+         clientId = reader.read<std::string>();
+      }
+
+      Connect(std::string iClientId) {
+         flags.bits.dup = false;
+         flags.bits.qos = 0;
+         flags.bits.retain = false;
+         flags.bits.will = false; //TODO (BT) implement support for will topic!
+         flags.bits.cleanSession = true;
+         flags.bits.topicIdType = 0;
+         duration = 0xFFFF; //TODO (BT) implement support duration of Keep Alive timer
+         clientId = std::move(iClientId);
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 6 + clientId.size();
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::CONNECT));
+         iWriter.write(flags.byte);
+         iWriter.write(static_cast<uint8_t>(PROTOCOL_ID_1_2));
+         iWriter.write(duration);
+         iWriter.write(clientId);
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+
+   private:
+
+};
+
+class Connack : public I_Message {
+   public:
+      ReturnCode  returnCode;
+
+      Connack(ReturnCode iReturnCode) : returnCode(iReturnCode) {
+      }
+
+      Connack(I_PacketReader& reader) {
+         returnCode = static_cast<ReturnCode>(reader.read<uint8_t>());
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 3;
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::CONNACK));
+         iWriter.write(static_cast<uint8_t>(returnCode));
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+
+   private:
+};
+
+class Register : public I_Message {
+   public:
+      uint16_t topicId;
+      uint16_t msgId;
+      std::string topicName;
+
+      Register(I_PacketReader& reader) {
+         topicId = reader.read<uint16_t>();
+         msgId = reader.read<uint16_t>();
+         topicName = reader.read<std::string>();
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 6 + topicName.length();
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::REGISTER));
+         iWriter.write(topicId);
+         iWriter.write(msgId);
+         iWriter.write(topicName);
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+
+   private:
+};
+
+class Regack : public I_Message {
+   public:
+      uint16_t topicId;
+      uint16_t msgId;
+      ReturnCode returnCode;
+
+      Regack(uint16_t iTopicId, uint16_t iMsgId, ReturnCode iReturnCode)
+      : topicId(iTopicId), msgId(iMsgId), returnCode(iReturnCode) {
+
+      }
+
+      Regack(I_PacketReader& reader) {
+         topicId = reader.read<uint16_t>();
+         msgId = reader.read<uint16_t>();
+         returnCode = static_cast<ReturnCode>(reader.read<uint8_t>());
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 7 ;
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::REGACK));
+         iWriter.write(topicId);
+         iWriter.write(msgId);
+         iWriter.write(static_cast<uint8_t>(returnCode));
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+
+   private:
+};
+
+class Publish : public I_Message {
+   public:
+      Flags flags;
+      uint16_t topicId;
+      uint16_t msgId;
+      std::string data;
+
+      Publish(I_PacketReader& reader) {
+         flags.byte = reader.read<uint8_t>();
+         topicId = reader.read<uint16_t>();
+         msgId = reader.read<uint16_t>();
+         data = reader.read<std::string>();
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 7 + data.size();
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::PUBLISH));
+         iWriter.write(flags.byte);
+         iWriter.write(topicId);
+         iWriter.write(msgId);
+         iWriter.write(data);
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+
+   private:
+};
 
 
 } // namespace MqttSn

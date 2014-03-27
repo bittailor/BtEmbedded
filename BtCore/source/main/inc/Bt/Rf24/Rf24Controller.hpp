@@ -113,7 +113,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
       RxMode mRxMode;
       TxMode mTxMode;
       StateBase* mCurrentState;
-
+      uint32_t mLogTimer;
 
 
 

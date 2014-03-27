@@ -191,8 +191,11 @@ Rf24Device::~Rf24Device() {
 Rf24Device::Status Rf24Device::status()
 {
    uint8_t status = readRegister(*mSpi, REGISTER_STATUS);
+   if(status != 0x0e) {
+      printf("status = %02x \n",status);
+   }
    //printf("status = %02x \n",status);
-   return Status(status & 0x40, status & 0x20, status & 0x10);
+   return Status(status);
 }
 
 //-------------------------------------------------------------------------------------------------
