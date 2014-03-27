@@ -142,11 +142,11 @@ void Rf24DeviceController::stopListening() {
 //-------------------------------------------------------------------------------------------------
 
 bool Rf24DeviceController::isDataAvailable() {
-   if (mLogTimer < Bt::Util::milliseconds()) {
-      std::cout << "isDataAvailable: transceiverMode " << mDevice->transceiverMode() << std::endl;
-      std::cout << "isDataAvailable: current state is " << typeid(*mCurrentState).name() << std::endl;
-      mLogTimer = Bt::Util::milliseconds() + 1000;
-   }
+//   if (mLogTimer < Bt::Util::milliseconds()) {
+//      std::cout << "isDataAvailable: transceiverMode " << mDevice->transceiverMode() << std::endl;
+//      std::cout << "isDataAvailable: current state is " << typeid(*mCurrentState).name() << std::endl;
+//      mLogTimer = Bt::Util::milliseconds() + 1000;
+//   }
 
 
    if (mDevice->status().receiveFifoEmpty()) {

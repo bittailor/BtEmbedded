@@ -8,8 +8,12 @@
 //  
 //*************************************************************************************************
 
-#include <Bt/Rf24/I_RfPacketSocket.hpp>
 #include "Bt/Rf24/RfPacketSocketFactory.hpp"
+
+#include <thread>
+#include <atomic>
+
+#include <Bt/Rf24/I_RfPacketSocket.hpp>
 #include "Bt/Mcu/Pin.hpp"
 #include "Bt/Mcu/Spi.hpp"
 #include "Bt/Rf24/Rf24Device.hpp"
@@ -18,7 +22,6 @@
 #include "Bt/Rf24/Rf24Controller.hpp"
 
 #include "Bt/Rf24/RfPacketSocket.hpp"
-#include <atomic>
 
 namespace Bt {
 namespace Rf24 {
@@ -70,6 +73,7 @@ class RfPacketSocketWrapper : public I_RfPacketSocket {
       void workcycle() {
          while(mRunning.load()) {
             mPacketSocket.workcycle();
+            std::this_thread::sleep_for(std::chrono::microseconds(10));
          }
       }
 
