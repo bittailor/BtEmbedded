@@ -4,12 +4,12 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::Mqtt::MqttSn::Messages
+//  Bt::Net::MqttSn::Messages
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_Mqtt_MqttSn_Messages__hpp
-#define INC__Bt_Net_Mqtt_MqttSn_Messages__hpp
+#ifndef INC__Bt_Net_MqttSn_Messages__hpp
+#define INC__Bt_Net_MqttSn_Messages__hpp
 
 #include <stdint.h>
 #include <deque>
@@ -19,7 +19,6 @@
 
 namespace Bt {
 namespace Net {
-namespace Mqtt {
 namespace MqttSn {
 
 enum ProtocolId {
@@ -488,8 +487,7 @@ class Publish : public I_Message {
 
 
 } // namespace MqttSn
-} // namespace Mqtt
 } // namespace Net
 } // namespace Bt
 
-#endif // INC__Bt_Net_Mqtt_MqttSn_Messages__hpp
+#endif // INC__Bt_Net_MqttSn_Messages__hpp

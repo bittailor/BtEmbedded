@@ -13,18 +13,18 @@
 
 #include <memory>
 #include <Bt/Rf24/I_RfPacketSocket.hpp>
-#include <Bt/Net/Mqtt/MqttSn/Messages.hpp>
+#include <Bt/Net/MqttSn/Messages.hpp>
 
 namespace Bt {
 namespace Mqtt {
 
-class Client : private Bt::Net::Mqtt::MqttSn::I_MessageVisitor
+class Client : private Bt::Net::MqttSn::I_MessageVisitor
 {
    public:
       Client(uint8_t iRfNodeId, std::shared_ptr<Rf24::I_RfPacketSocket> iSocket);
       ~Client();
 
-      void handle(std::shared_ptr<Bt::Net::Mqtt::MqttSn::I_Message> iMessage);
+      void handle(std::shared_ptr<Bt::Net::MqttSn::I_Message> iMessage);
    
    private:
    	  // Constructor to prohibit copy construction.
@@ -33,13 +33,13 @@ class Client : private Bt::Net::Mqtt::MqttSn::I_MessageVisitor
       // Operator= to prohibit copy assignment
       Client& operator=(const Client&);
 
-      virtual void visit(Bt::Net::Mqtt::MqttSn::Connect& iMessage);
-      virtual void visit(Bt::Net::Mqtt::MqttSn::Connack& iMessage);
-      virtual void visit(Bt::Net::Mqtt::MqttSn::Register& iMessage);
-      virtual void visit(Bt::Net::Mqtt::MqttSn::Regack& iMessage);
-      virtual void visit(Bt::Net::Mqtt::MqttSn::Publish& iMessage);
+      virtual void visit(Bt::Net::MqttSn::Connect& iMessage);
+      virtual void visit(Bt::Net::MqttSn::Connack& iMessage);
+      virtual void visit(Bt::Net::MqttSn::Register& iMessage);
+      virtual void visit(Bt::Net::MqttSn::Regack& iMessage);
+      virtual void visit(Bt::Net::MqttSn::Publish& iMessage);
 
-      void send(Bt::Net::Mqtt::MqttSn::I_Message& iMessage);
+      void send(Bt::Net::MqttSn::I_Message& iMessage);
 
       uint8_t mRfNodeId;
       std::shared_ptr<Rf24::I_RfPacketSocket> mSocket;

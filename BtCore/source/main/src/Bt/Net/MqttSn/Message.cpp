@@ -4,23 +4,22 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::Mqtt::MqttSn::Message
+//  Bt::Net::MqttSn::Message
 //  
 //*************************************************************************************************
 
-#include "Bt/Net/Mqtt/MqttSn/Message.hpp"
+#include "Bt/Net/MqttSn/Message.hpp"
 
 #include <iostream>
 
 #include <Bt/Util/Range.hpp>
-#include <Bt/Net/Mqtt/MqttSn/Messages.hpp>
+#include <Bt/Net/MqttSn/Messages.hpp>
 #include <Bt/Util/Endianness.hpp>
 
 
 
 namespace Bt {
 namespace Net {
-namespace Mqtt {
 namespace MqttSn {
 
 namespace {
@@ -136,6 +135,5 @@ std::ostream& operator<<(std::ostream& iStream, const MessageBuffer& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 } // namespace MqttSn
-} // namespace Mqtt
 } // namespace Net
 } // namespace Bt

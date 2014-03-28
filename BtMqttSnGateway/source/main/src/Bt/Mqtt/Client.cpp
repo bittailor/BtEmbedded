@@ -31,49 +31,49 @@ Client::~Client() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Client::handle(std::shared_ptr<Bt::Net::Mqtt::MqttSn::I_Message> iMessage) {
+void Client::handle(std::shared_ptr<Bt::Net::MqttSn::I_Message> iMessage) {
    iMessage->accept(*this);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void Client::visit(Bt::Net::Mqtt::MqttSn::Connect& iMessage) {
+void Client::visit(Bt::Net::MqttSn::Connect& iMessage) {
    std::cout << "Connect : " << iMessage.clientId << std::endl;
-   Bt::Net::Mqtt::MqttSn::Connack connack(Bt::Net::Mqtt::MqttSn::ReturnCode::ACCEPTED);
+   Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::ACCEPTED);
    send(connack);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void Client::visit(Bt::Net::Mqtt::MqttSn::Connack& iMessage) {
+void Client::visit(Bt::Net::MqttSn::Connack& iMessage) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void Client::visit(Bt::Net::Mqtt::MqttSn::Register& iMessage) {
+void Client::visit(Bt::Net::MqttSn::Register& iMessage) {
    std::cout << "Register : " << iMessage.topicName << std::endl;
-   Bt::Net::Mqtt::MqttSn::Regack regack(77, iMessage.msgId , Bt::Net::Mqtt::MqttSn::ReturnCode::ACCEPTED);
+   Bt::Net::MqttSn::Regack regack(77, iMessage.msgId , Bt::Net::MqttSn::ReturnCode::ACCEPTED);
    send(regack);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void Client::visit(Bt::Net::Mqtt::MqttSn::Regack& iMessage) {
+void Client::visit(Bt::Net::MqttSn::Regack& iMessage) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void Client::visit(Bt::Net::Mqtt::MqttSn::Publish& iMessage) {
+void Client::visit(Bt::Net::MqttSn::Publish& iMessage) {
    std::cout << "Publish : " << iMessage.data << std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void Client::send(Bt::Net::Mqtt::MqttSn::I_Message& iMessage) {
+void Client::send(Bt::Net::MqttSn::I_Message& iMessage) {
    std::vector<uint8_t> buffer;
-   Bt::Net::Mqtt::MqttSn::PacketWriter<std::vector> writer(buffer);
+   Bt::Net::MqttSn::PacketWriter<std::vector> writer(buffer);
    iMessage.write(writer);
    mSocket->send(buffer.data(),buffer.size(), mRfNodeId);
 }

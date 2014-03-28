@@ -4,12 +4,12 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::Mqtt::MqttSn::Message
+//  Bt::Net::MqttSn::Message
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Net_Mqtt_MqttSn_Message__hpp
-#define INC__Bt_Net_Mqtt_MqttSn_Message__hpp
+#ifndef INC__Bt_Net_MqttSn_Message__hpp
+#define INC__Bt_Net_MqttSn_Message__hpp
 
 #include <cstddef>
 #include <cstdint>
@@ -17,11 +17,10 @@
 #include <memory>
 #include <vector>
 
-#include <Bt/Net/Mqtt/MqttSn/Messages.hpp>
+#include <Bt/Net/MqttSn/Messages.hpp>
 
 namespace Bt {
 namespace Net {
-namespace Mqtt {
 namespace MqttSn {
 
 class MessageBuffer 
@@ -52,8 +51,7 @@ class MessageBuffer
 };
 
 } // namespace MqttSn
-} // namespace Mqtt
 } // namespace Net
 } // namespace Bt
 
-#endif // INC__Bt_Net_Mqtt_MqttSn_Message__hpp
+#endif // INC__Bt_Net_MqttSn_Message__hpp

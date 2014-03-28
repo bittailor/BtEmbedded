@@ -14,11 +14,11 @@
 #include <vector>
 
 #include <Bt/Rf24/RfPacketSocketFactory.hpp>
-#include <Bt/Net/Mqtt/MqttSn/Message.hpp>
+#include <Bt/Net/MqttSn/Message.hpp>
 
 #include "Bt/Mqtt/Client.hpp"
 
-using Bt::Net::Mqtt::MqttSn::MessageBuffer;
+using Bt::Net::MqttSn::MessageBuffer;
 using Bt::Rf24::RfPacketSocketFactory;
 
 
@@ -47,7 +47,7 @@ int SnGateway::run() {
       std::cout << "Run Loop" << mRunning << std::endl;
       uint8_t nodeId = 0;
       //std::cout << "mSocket->payloadCapacity() = " << mSocket->payloadCapacity() << std::endl;
-      Net::Mqtt::MqttSn::MessageBuffer buffer(mSocket->payloadCapacity());
+      Net::MqttSn::MessageBuffer buffer(mSocket->payloadCapacity());
       //std::cout << "message.buffer() = 0x" <<  std::hex << reinterpret_cast<uint64_t>(buffer.buffer()) << std::dec << std::endl;
       //std::cout << "message.bufferCapacity() ="  << buffer.bufferCapacity() << std::endl;
 

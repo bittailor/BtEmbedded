@@ -18,7 +18,7 @@ class BuildFramework
     @artefacts = Hash.new { |hash, key| hash[key] = Hash.new }
     set_defaults()
     puts "configuration is #{@variables['configuration']}" if Rake.application.options.trace
-    @configuration = Configuration.new(@variables['configuration'])
+    @configuration = Configuration.new(@variables['configuration'],@variables)
     
     puts "platform is #{@configuration[:platform]}" if Rake.application.options.trace    
     @platform = Platform.new(@configuration)      

@@ -4,18 +4,17 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Net::Mqtt::MqttSn::Messages
+//  Bt::Net::MqttSn::Messages
 //  
 //*************************************************************************************************
 
 #include <type_traits>
 #include <iostream>
 
-#include "Bt/Net/Mqtt/MqttSn/Messages.hpp"
+#include "Bt/Net/MqttSn/Messages.hpp"
 
 namespace Bt {
 namespace Net {
-namespace Mqtt {
 namespace MqttSn {
 
 std::ostream& operator<<(std::ostream& iStream, MsgType iMsgType) {
@@ -58,6 +57,5 @@ std::ostream& operator<<(std::ostream& iStream, MsgType iMsgType) {
 //static_assert(std::is_standard_layout<Connack>::value,"Connack must be standard_layout");
 
 } // namespace MqttSn
-} // namespace Mqtt
 } // namespace Net
 } // namespace Bt
