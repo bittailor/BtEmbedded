@@ -11,7 +11,8 @@
 #ifndef INC__Bt_Net_MqttSn_Messages__hpp
 #define INC__Bt_Net_MqttSn_Messages__hpp
 
-#include <stdint.h>
+#include <ios>
+#include <cstdint>
 #include <deque>
 #include <string>
 #include <Bt/Util/Endianness.hpp>

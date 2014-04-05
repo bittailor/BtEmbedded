@@ -23,7 +23,7 @@ class I_Rf24DeviceController {
    public:
 
       class Packet;
-      struct Configuration;
+      class Configuration;
 
       enum { MAX_PAYLOAD_SIZE = I_Rf24Device::MAX_PAYLOAD_SIZE };
 

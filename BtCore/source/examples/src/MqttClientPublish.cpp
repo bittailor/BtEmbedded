@@ -41,17 +41,21 @@ int main(int argc, const char* argv[]) {
 
 
    Listener listener;
-   Bt::Net::Mqtt::MqttClient client(listener, argv[1], "ExampleTestId");
+   Bt::Net::Mqtt::MqttClient client(listener, argv[1], "ExampleMqttClientPub");
 
    std::cout << "connect ..." << std::endl;
    client.connect(Bt::Net::Mqtt::MqttClient::ConnectOptions{argv[2],argv[3]});
 
-   Bt::Net::Mqtt::MqttClient::Message message {"Hello",false};
-   std::cout << "publish ..." << std::endl;
-   client.publish("bt/example",message);
+   for (int qos = 0; qos < 3; ++qos) {
+      std::cout << "publish qos = " <<  qos  << "..." << std::endl;
+      auto message = std::string("CppClient Hello ") + std::to_string(qos);
+      auto future = client.publish("ch/bittailor/test", message, qos, false);
+      std::cout << "... wait for publish future ..." << std::endl;
+      bool delivery = future.get();
+      std::cout << "... delivery = "  << delivery << std::endl;
+   }
 
-   std::cout << "wait ..." << std::endl;
-   std::this_thread::sleep_for( std::chrono::seconds(20) );
+
 
    std::cout << "disconnect ..." << std::endl;
    client.disconnect(1000);

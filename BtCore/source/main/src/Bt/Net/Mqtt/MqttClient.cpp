@@ -38,6 +38,7 @@ void MqttClient::deliveryCompleteCallback(void *iContext, MQTTClient_deliveryTok
    if(iContext != nullptr) {
       MqttClient* client = static_cast<MqttClient*>(iContext);
       client->deliveryComplete(iDeliveryToken);
+
    }
 }
 
@@ -73,6 +74,7 @@ MqttClient::~MqttClient() {
 bool MqttClient::connect(const ConnectOptions& options) {
    MQTTClient_connectOptions connectOptions = MQTTClient_connectOptions_initializer;
    connectOptions.cleansession = 1;
+   connectOptions.connectTimeout = 100;
    if(!options.username.empty()) {
       connectOptions.username = const_cast<char*>(options.username.c_str());
       connectOptions.password = const_cast<char*>(options.password.c_str());
@@ -94,23 +96,33 @@ bool MqttClient::disconnect(int timeout) {
 
 //-------------------------------------------------------------------------------------------------
 
-bool MqttClient::publish(const std::string& iTopicName, const Message& iMessage) {
+std::future<bool> MqttClient::publish(const std::string& iTopicName, const std::string& iPayload, int iQos, bool iRetained) {
    MQTTClient_message message = MQTTClient_message_initializer;
-   message.payload = const_cast<char *>(iMessage.payload.data());
-   message.payloadlen = iMessage.payload.size();
-   message.qos = 0;
-   message.retained = iMessage.retained;
+   message.payload = const_cast<char *>(iPayload.data());
+   message.payloadlen = iPayload.size();
+   message.qos = iQos;
+   message.retained = iRetained;
 
    MQTTClient_deliveryToken deliveryToken;
 
+   std::promise<bool> promise;
+   std::future<bool> future = promise.get_future();
 
    int result = MQTTClient_publishMessage(mClient, const_cast<char*>(iTopicName.c_str()), &message, &deliveryToken);
    if (result != MQTTCLIENT_SUCCESS)
    {
       std::cout << "MqttClient::publish: failed with " << result << std::endl;
-      return false;
+      promise.set_value(false);
+      return future;
    }
-   return true;
+
+   if (iQos > 0) {
+      mTokens[deliveryToken] = std::move(promise);
+   } else {
+      promise.set_value(true);
+   }
+
+   return future;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -143,6 +155,15 @@ int MqttClient::messageArrived(char *iTopicName, int iTopicLength, MQTTClient_me
 
 void MqttClient::deliveryComplete(MQTTClient_deliveryToken iDeliveryToken) {
    std::cout << "MqttClient::deliveryComplete: token = " << iDeliveryToken << std::endl;
+
+   auto iterator = mTokens.find(iDeliveryToken);
+   if (iterator == mTokens.end()) {
+      std::cout << "MqttClient::deliveryComplete: could not find token = " << iDeliveryToken << std::endl;
+      return;
+   }
+
+   iterator->second.set_value(true);
+   mTokens.erase(iterator);
 }
 
 //-------------------------------------------------------------------------------------------------

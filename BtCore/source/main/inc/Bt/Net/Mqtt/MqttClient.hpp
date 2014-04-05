@@ -13,7 +13,9 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <memory>
+#include <future>
 
 extern "C" {
 #include "MQTTClient.h"
@@ -48,7 +50,7 @@ class MqttClient
 
       bool connect(const ConnectOptions& options);
       bool disconnect(int timeout);
-      bool publish(const std::string& iTopicName, const Message& iMessage);
+      std::future<bool> publish(const std::string& iTopicName, const std::string& iPayload, int iQos, bool iRetained);
    
    private:
       static void connectionLostCallback(void *iContext, char *iCause);
@@ -69,6 +71,7 @@ class MqttClient
       I_Listener& mListener;
       std::string mAddress;
       std::string mClientId;
+      std::map<MQTTClient_deliveryToken,std::promise<bool>> mTokens;
 
 
 };

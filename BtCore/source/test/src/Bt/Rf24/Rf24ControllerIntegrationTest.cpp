@@ -11,6 +11,7 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
+#include <numeric>
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>

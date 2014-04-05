@@ -1,1 +1,2 @@
 - Order includes of project accoring to dependencies.
+- Add support to add additional flags on artifact level
