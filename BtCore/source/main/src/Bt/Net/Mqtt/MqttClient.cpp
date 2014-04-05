@@ -91,12 +91,12 @@ bool MqttClient::connect(const ConnectOptions& options) {
 //-------------------------------------------------------------------------------------------------
 
 bool MqttClient::disconnect(int timeout) {
-   return MQTTClient_disconnect(mClient, timeout) > 0;
+   return MQTTClient_disconnect(mClient, timeout) == MQTTCLIENT_SUCCESS;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-std::future<bool> MqttClient::publish(const std::string& iTopicName, const std::string& iPayload, int iQos, bool iRetained) {
+std::future<bool> MqttClient::publish(const std::string& iTopic, const std::string& iPayload, int iQos, bool iRetained) {
    MQTTClient_message message = MQTTClient_message_initializer;
    message.payload = const_cast<char *>(iPayload.data());
    message.payloadlen = iPayload.size();
@@ -108,7 +108,7 @@ std::future<bool> MqttClient::publish(const std::string& iTopicName, const std::
    std::promise<bool> promise;
    std::future<bool> future = promise.get_future();
 
-   int result = MQTTClient_publishMessage(mClient, const_cast<char*>(iTopicName.c_str()), &message, &deliveryToken);
+   int result = MQTTClient_publishMessage(mClient, const_cast<char*>(iTopic.c_str()), &message, &deliveryToken);
    if (result != MQTTCLIENT_SUCCESS)
    {
       std::cout << "MqttClient::publish: failed with " << result << std::endl;
@@ -117,12 +117,19 @@ std::future<bool> MqttClient::publish(const std::string& iTopicName, const std::
    }
 
    if (iQos > 0) {
+      std::lock_guard<std::mutex> lock(mMutex);
       mTokens[deliveryToken] = std::move(promise);
    } else {
       promise.set_value(true);
    }
 
    return future;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+int MqttClient::subscribe(const std::string& iTopic, int iQos) {
+   return MQTTClient_subscribe(mClient, const_cast<char*>(iTopic.c_str()), iQos);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -155,7 +162,7 @@ int MqttClient::messageArrived(char *iTopicName, int iTopicLength, MQTTClient_me
 
 void MqttClient::deliveryComplete(MQTTClient_deliveryToken iDeliveryToken) {
    std::cout << "MqttClient::deliveryComplete: token = " << iDeliveryToken << std::endl;
-
+   std::lock_guard<std::mutex> lock(mMutex);
    auto iterator = mTokens.find(iDeliveryToken);
    if (iterator == mTokens.end()) {
       std::cout << "MqttClient::deliveryComplete: could not find token = " << iDeliveryToken << std::endl;

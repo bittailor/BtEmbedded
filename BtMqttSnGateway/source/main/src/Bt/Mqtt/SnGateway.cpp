@@ -16,7 +16,8 @@
 #include <Bt/Rf24/RfPacketSocketFactory.hpp>
 #include <Bt/Net/MqttSn/Message.hpp>
 
-#include "Bt/Mqtt/Client.hpp"
+#include "Bt/Mqtt/GatewayConnection.hpp"
+#include "Bt/Mqtt/MqttFactory.hpp"
 
 using Bt::Net::MqttSn::MessageBuffer;
 using Bt::Rf24::RfPacketSocketFactory;
@@ -28,7 +29,8 @@ namespace Mqtt {
 
 //-------------------------------------------------------------------------------------------------
 
-SnGateway::SnGateway() : mSocket(RfPacketSocketFactory().createPacketSocket(17,8,0)) {
+SnGateway::SnGateway(const std::string& iAddress, const std::string& iUser, const std::string& iPassword)
+: mSocket(RfPacketSocketFactory().createPacketSocket(17,8,0)), mMqttFactory(std::make_shared<MqttFactory>(iAddress, iUser, iPassword)) {
    std::cout << "SnGateway::SnGateway()" << std::endl;
 }
 
@@ -44,14 +46,9 @@ int SnGateway::run() {
    mRunning = true;
 
    while(mRunning) {
-      std::cout << "Run Loop" << mRunning << std::endl;
+      std::cout << "loop (" << mRunning << ")"<< std::endl;
       uint8_t nodeId = 0;
-      //std::cout << "mSocket->payloadCapacity() = " << mSocket->payloadCapacity() << std::endl;
       Net::MqttSn::MessageBuffer buffer(mSocket->payloadCapacity());
-      //std::cout << "message.buffer() = 0x" <<  std::hex << reinterpret_cast<uint64_t>(buffer.buffer()) << std::dec << std::endl;
-      //std::cout << "message.bufferCapacity() ="  << buffer.bufferCapacity() << std::endl;
-
-
       int receivedSize = mSocket->receive(buffer.buffer(), buffer.bufferCapacity(), &nodeId);
       if (receivedSize > 0) {
          if (buffer.length() != receivedSize) {
@@ -59,16 +56,24 @@ int SnGateway::run() {
             continue;
          }
 
-         std::cout << "raw message : " << buffer <<  std::endl;
+         std::cout << "Raw message : " << buffer <<  std::endl;
 
          auto message = buffer.parse();
          if (!message) {
             std::cout << "Could not parse message" <<  std::endl;
             continue;
          }
-         std::shared_ptr<Client> client(new Client(nodeId,mSocket));
-                     client->handle(message);
 
+         auto gatewayConnection = mConnections.lookup(nodeId);
+         if(!gatewayConnection) {
+            std::cout << "Create new gateway connection for node " << nodeId <<  std::endl;
+            gatewayConnection = std::make_shared<GatewayConnection>(nodeId,
+                                                                    mSocket,
+                                                                    mMqttFactory,
+                                                                    std::bind(&Bt::Util::Repository<GatewayConnection>::remove, &mConnections, std::placeholders::_1));
+            mConnections.add(gatewayConnection);
+         }
+         gatewayConnection->handle(message);
       }
    }
 

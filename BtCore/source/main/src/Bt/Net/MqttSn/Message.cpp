@@ -93,7 +93,7 @@ std::shared_ptr<I_Message> MessageBuffer::parse()  {
 //      case MsgType::UNSUBACK        : iStream << "UNSUBACK"; break;
 //      case MsgType::PINGREQ         : iStream << "PINGREQ"; break;
 //      case MsgType::PINGRESP        : iStream << "PINGRESP"; break;
-//      case MsgType::DISCONNECT      : iStream << "DISCONNECT"; break;
+      case MsgType::DISCONNECT       : return std::shared_ptr<I_Message>(new Disconnect(reader));
 //      case MsgType::WILLTOPICUPD    : iStream << "WILLTOPICUPD"; break;
 //      case MsgType::WILLTOPICRESP   : iStream << "WILLTOPICRESP"; break;
 //      case MsgType::WILLMSGUPD      : iStream << "WILLMSGUPD"; break;

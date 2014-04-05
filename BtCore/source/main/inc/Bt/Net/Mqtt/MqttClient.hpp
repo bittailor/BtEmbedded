@@ -21,36 +21,23 @@ extern "C" {
 #include "MQTTClient.h"
 }
 
+#include <Bt/Net/Mqtt/I_MqttClient.hpp>
+
 namespace Bt {
 namespace Net {
 namespace Mqtt {
 
-class MqttClient 
+class MqttClient : public I_MqttClient
 {
    public:
-
-      struct ConnectOptions {
-         std::string username;
-         std::string password;
-      };
-
-      struct Message {
-         std::string payload;
-         bool retained;
-      };
-
-      class I_Listener {
-         public:
-            virtual ~I_Listener() {}
-            virtual bool messageArrived(const std::string& iTopicName, std::shared_ptr<Message> iMessage) = 0;
-      };
 
       MqttClient(I_Listener& iListener, std::string iAddress, std::string iClientId);
       ~MqttClient();
 
-      bool connect(const ConnectOptions& options);
-      bool disconnect(int timeout);
-      std::future<bool> publish(const std::string& iTopicName, const std::string& iPayload, int iQos, bool iRetained);
+      virtual bool connect(const ConnectOptions& options);
+      virtual bool disconnect(int timeout);
+      virtual std::future<bool> publish(const std::string& iTopic, const std::string& iPayload, int iQos, bool iRetained);
+      virtual int subscribe(const std::string& iTopic, int iQos);
    
    private:
       static void connectionLostCallback(void *iContext, char *iCause);
@@ -71,6 +58,7 @@ class MqttClient
       I_Listener& mListener;
       std::string mAddress;
       std::string mClientId;
+      std::mutex mMutex;
       std::map<MQTTClient_deliveryToken,std::promise<bool>> mTokens;
 
 

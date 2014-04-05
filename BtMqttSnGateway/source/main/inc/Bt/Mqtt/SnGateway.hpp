@@ -13,6 +13,11 @@
 
 #include <Bt/Rf24/RfPacketSocket.hpp>
 
+#include "Bt/Mqtt/I_MqttFactory.hpp"
+#include "Bt/Util/Repository.hpp"
+
+#include "Bt/Mqtt/GatewayConnection.hpp"
+
 
 namespace Bt {
 namespace Mqtt {
@@ -20,7 +25,7 @@ namespace Mqtt {
 class SnGateway 
 {
    public:
-      SnGateway();
+      SnGateway(const std::string& iAddress, const std::string& iUser, const std::string& iPassword);
       ~SnGateway();
    
       int run();
@@ -34,6 +39,9 @@ class SnGateway
       SnGateway& operator=(const SnGateway&);
 
       std::shared_ptr<Rf24::I_RfPacketSocket> mSocket;
+      std::shared_ptr<I_MqttFactory> mMqttFactory;
+      Bt::Util::Repository<GatewayConnection> mConnections;
+
       volatile bool mRunning;
 
 };

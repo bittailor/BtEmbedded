@@ -316,6 +316,7 @@ class Connack;
 class Register;
 class Regack;
 class Publish;
+class Disconnect;
 
 class I_MessageVisitor {
    public:
@@ -325,6 +326,7 @@ class I_MessageVisitor {
       virtual void visit(Register& iMessage) = 0;
       virtual void visit(Regack& iMessage) = 0;
       virtual void visit(Publish& iMessage) = 0;
+      virtual void visit(Disconnect& iMessage) = 0;
 };
 
 class Connect : public I_Message {
@@ -485,6 +487,46 @@ class Publish : public I_Message {
 
    private:
 };
+
+class Disconnect : public I_Message {
+   public:
+      bool withDuration;
+      uint16_t duration;
+
+      Disconnect() : withDuration(false), duration(0) {
+      }
+
+      Disconnect(I_PacketReader& iReader) {
+         if (iReader.size() == 0) {
+            withDuration = false;
+            return;
+         }
+         withDuration = true;
+         duration = iReader.read<uint16_t>();
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 2;
+
+         if(withDuration) {
+            length = 4;
+         }
+
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::DISCONNECT));
+         if(withDuration) {
+            iWriter.write(duration);
+         }
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+
+   private:
+};
+
+
 
 
 } // namespace MqttSn

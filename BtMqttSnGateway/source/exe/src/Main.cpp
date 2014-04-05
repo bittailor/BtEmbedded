@@ -38,6 +38,13 @@ void signalHandler(int signal)
 //-------------------------------------------------------------------------------------------------
 
 int main(int argc, char* argv[]) {
+
+   if(argc < 4) {
+      std::cout << "usage: " << argv[0] << "broker_url user password" << std::endl;
+      return -1;
+   }
+
+
    std::cout << "Main" << std::endl;
 
    Bt::CoreInitializer coreInitializer;
@@ -48,7 +55,7 @@ int main(int argc, char* argv[]) {
    power.write(true);
    Bt::Util::delayInMilliseconds(10);
 
-   Bt::Mqtt::SnGateway gateway;
+   Bt::Mqtt::SnGateway gateway(argv[1], argv[2], argv[3]);
 
    std::signal(SIGINT, signalHandler);
 

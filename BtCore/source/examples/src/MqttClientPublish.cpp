@@ -11,6 +11,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <sstream>
 
 #include "Bt/Net/Mqtt/MqttClient.hpp"
 
@@ -39,6 +40,7 @@ int main(int argc, const char* argv[]) {
       return -1;
    }
 
+   const char* topic = "ch/bittailor/test";
 
    Listener listener;
    Bt::Net::Mqtt::MqttClient client(listener, argv[1], "ExampleMqttClientPub");
@@ -46,10 +48,13 @@ int main(int argc, const char* argv[]) {
    std::cout << "connect ..." << std::endl;
    client.connect(Bt::Net::Mqtt::MqttClient::ConnectOptions{argv[2],argv[3]});
 
+   client.subscribe("ch/bittailor/test",1);
+
    for (int qos = 0; qos < 3; ++qos) {
       std::cout << "publish qos = " <<  qos  << "..." << std::endl;
-      auto message = std::string("CppClient Hello ") + std::to_string(qos);
-      auto future = client.publish("ch/bittailor/test", message, qos, false);
+      std::stringstream message;
+      message << "CppClient Hello " << qos;
+      auto future = client.publish(topic, message.str(), qos, false);
       std::cout << "... wait for publish future ..." << std::endl;
       bool delivery = future.get();
       std::cout << "... delivery = "  << delivery << std::endl;

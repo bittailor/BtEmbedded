@@ -160,7 +160,7 @@
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.macosx.base.502786771;cdt.managedbuild.toolchain.gnu.macosx.base.502786771.720903047;cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1709587251;cdt.managedbuild.tool.gnu.c.compiler.input.2128716365">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
+			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.cross.base.304056531.874541957;cdt.managedbuild.toolchain.gnu.cross.base.304056531.874541957.;cdt.managedbuild.tool.gnu.cross.c.compiler.1035279519;cdt.managedbuild.tool.gnu.c.compiler.input.2143682953">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
