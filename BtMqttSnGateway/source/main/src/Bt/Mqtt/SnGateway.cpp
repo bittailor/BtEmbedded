@@ -44,7 +44,7 @@ SnGateway::~SnGateway() {
 
 int SnGateway::run() {
    mRunning = true;
-   std::cout << "eneter loop " << std::endl;
+   std::cout << "enter loop " << std::endl;
    while(mRunning) {
       //std::cout << "loop (" << mRunning << ")"<< std::endl;
       uint8_t nodeId = 0;
