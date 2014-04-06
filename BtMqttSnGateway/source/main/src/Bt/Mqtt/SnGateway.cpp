@@ -44,9 +44,9 @@ SnGateway::~SnGateway() {
 
 int SnGateway::run() {
    mRunning = true;
-
+   std::cout << "eneter loop " << std::endl;
    while(mRunning) {
-      std::cout << "loop (" << mRunning << ")"<< std::endl;
+      //std::cout << "loop (" << mRunning << ")"<< std::endl;
       uint8_t nodeId = 0;
       Net::MqttSn::MessageBuffer buffer(mSocket->payloadCapacity());
       int receivedSize = mSocket->receive(buffer.buffer(), buffer.bufferCapacity(), &nodeId);
@@ -56,7 +56,7 @@ int SnGateway::run() {
             continue;
          }
 
-         std::cout << "Raw message : " << buffer <<  std::endl;
+         //std::cout << "Raw message : " << buffer <<  std::endl;
 
          auto message = buffer.parse();
          if (!message) {
