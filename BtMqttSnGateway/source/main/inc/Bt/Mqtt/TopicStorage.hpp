@@ -23,9 +23,13 @@ class TopicStorage
 {
    public:
 
-      TopicStorage() = default;
+      enum { NO_TOPIC_ID = 0x0000 };
+
+
+      TopicStorage();
 
       uint16_t getOrCreateTopicId(const std::string& iTopicName);
+      uint16_t getTopicId(const std::string& iTopicName);
       std::string getTopicName(uint16_t iTopicId);
    
    private:

@@ -27,8 +27,9 @@ class I_MqttClient {
       };
 
       struct Message {
-            std::string payload;
+            int qos;
             bool retained;
+            std::string data;
       };
 
       class I_Listener {
@@ -42,7 +43,7 @@ class I_MqttClient {
       virtual bool connect(const ConnectOptions& options) = 0;
       virtual bool disconnect(int timeout) = 0;
       virtual std::future<bool> publish(const std::string& iTopic, const std::string& iPayload, int iQos, bool iRetained) = 0;
-      virtual int subscribe(const std::string& iTopic, int iQos) = 0;
+      virtual bool subscribe(const std::string& iTopic, int iQos) = 0;
 
 };
 

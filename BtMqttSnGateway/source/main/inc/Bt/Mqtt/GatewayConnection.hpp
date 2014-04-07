@@ -54,8 +54,12 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       virtual void visit(Bt::Net::MqttSn::Regack& iMessage);
       virtual void visit(Bt::Net::MqttSn::Publish& iMessage);
       virtual void visit(Bt::Net::MqttSn::Disconnect& iMessage);
+      virtual void visit(Bt::Net::MqttSn::Subscribe& iMessage);
+      virtual void visit(Bt::Net::MqttSn::Suback& iMessage);
 
       void send(Bt::Net::MqttSn::I_Message& iMessage);
+
+      bool containsWildcardCharacters(const std::string& iTopicName);
 
       uint8_t mRfNodeId;
       std::shared_ptr<Rf24::I_RfPacketSocket> mSocket;
@@ -63,6 +67,7 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       std::function<bool(int)> mDispose;
       std::shared_ptr<Net::Mqtt::I_MqttClient> mBrokerClient;
       TopicStorage mTopicStorage;
+      uint16_t mMsgIdCounter;
 };
 
 } // namespace Mqtt

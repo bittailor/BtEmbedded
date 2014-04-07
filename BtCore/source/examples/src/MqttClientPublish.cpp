@@ -21,7 +21,7 @@ class Listener : public Bt::Net::Mqtt::MqttClient::I_Listener {
       virtual bool messageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::MqttClient::Message> iMessage) {
          std::cout << "messageArrived: "
                   << iTopicName
-                  << iMessage->payload
+                  << iMessage->data
                   << std::endl;
          return true;
       }

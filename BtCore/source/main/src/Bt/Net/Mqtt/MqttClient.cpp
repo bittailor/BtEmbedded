@@ -128,8 +128,8 @@ std::future<bool> MqttClient::publish(const std::string& iTopic, const std::stri
 
 //-------------------------------------------------------------------------------------------------
 
-int MqttClient::subscribe(const std::string& iTopic, int iQos) {
-   return MQTTClient_subscribe(mClient, const_cast<char*>(iTopic.c_str()), iQos);
+bool MqttClient::subscribe(const std::string& iTopic, int iQos) {
+   return MQTTClient_subscribe(mClient, const_cast<char*>(iTopic.c_str()), iQos) == MQTTCLIENT_SUCCESS;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -146,10 +146,11 @@ int MqttClient::messageArrived(char *iTopicName, int iTopicLength, MQTTClient_me
       topicName = std::string(iTopicName,iTopicLength);
    }
 
-   auto message = std::shared_ptr<Message>( new Message {
-      std::string(static_cast<char*>(iMessage->payload), iMessage->payloadlen),
-      iMessage->retained > 0
-   });
+   auto message = std::shared_ptr<Message>( new Message{
+      iMessage->qos,
+      iMessage->retained > 0,
+      std::string(static_cast<char*>(iMessage->payload), iMessage->payloadlen)}
+   );
 
    mListener.messageArrived(topicName, message);
 

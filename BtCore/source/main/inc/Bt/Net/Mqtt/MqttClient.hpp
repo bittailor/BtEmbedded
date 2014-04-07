@@ -37,7 +37,7 @@ class MqttClient : public I_MqttClient
       virtual bool connect(const ConnectOptions& options);
       virtual bool disconnect(int timeout);
       virtual std::future<bool> publish(const std::string& iTopic, const std::string& iPayload, int iQos, bool iRetained);
-      virtual int subscribe(const std::string& iTopic, int iQos);
+      virtual bool subscribe(const std::string& iTopic, int iQos);
    
    private:
       static void connectionLostCallback(void *iContext, char *iCause);

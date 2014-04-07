@@ -22,7 +22,7 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
                                      std::shared_ptr<Rf24::I_RfPacketSocket> iSocket,
                                      std::shared_ptr<I_MqttFactory> iFactory,
                                      std::function<bool(int)> iDispose)
-: mRfNodeId(iRfNodeId), mSocket(iSocket), mFactory(iFactory), mDispose(iDispose) {
+: mRfNodeId(iRfNodeId), mSocket(iSocket), mFactory(iFactory), mDispose(iDispose), mMsgIdCounter(1) {
    std::cout << "GatewayConnection() "<< static_cast<int>(mRfNodeId) << std::endl;
 }
 
@@ -47,6 +47,20 @@ void GatewayConnection::handle(std::shared_ptr<Bt::Net::MqttSn::I_Message> iMess
 //-------------------------------------------------------------------------------------------------
 
 bool GatewayConnection::messageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   uint16_t topicId = mTopicStorage.getTopicId(iTopicName);
+
+   if(topicId == TopicStorage::NO_TOPIC_ID) {
+      topicId = mTopicStorage.getOrCreateTopicId(iTopicName);
+      uint16_t msgId = mMsgIdCounter++;
+      Bt::Net::MqttSn::Register registerMessage(topicId, msgId, iTopicName);
+      send(registerMessage);
+   }
+
+   uint16_t msgId = mMsgIdCounter++;
+
+   Bt::Net::MqttSn::Publish publish(iMessage->qos, iMessage->retained, topicId, msgId, iMessage->data);
+   send(publish);
+
    return true;
 }
 
@@ -88,7 +102,7 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Register& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Regack& iMessage) {
-
+   std::cout << "Regack : " << iMessage.topicId << std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -123,11 +137,40 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
 
 //-------------------------------------------------------------------------------------------------
 
+void GatewayConnection::visit(Bt::Net::MqttSn::Subscribe& iMessage) {
+   uint16_t topicId = 0x0000;
+   if(!containsWildcardCharacters(iMessage.topicName)) {
+      topicId = mTopicStorage.getOrCreateTopicId(iMessage.topicName);
+   }
+
+   Bt::Net::MqttSn::ReturnCode returnCode = Bt::Net::MqttSn::ReturnCode::ACCEPTED;
+   if (!mBrokerClient->subscribe(iMessage.topicName,iMessage.flags.bits.qos)) {
+      returnCode = Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED;
+   }
+
+   Bt::Net::MqttSn::Suback suback(iMessage.flags.bits.qos, topicId, iMessage.msgId, returnCode);
+   send(suback);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::visit(Bt::Net::MqttSn::Suback& iMessage) {
+   std::cout << "Suback : " << iMessage.topicId << std::endl;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void GatewayConnection::send(Bt::Net::MqttSn::I_Message& iMessage) {
    std::vector<uint8_t> buffer;
    Bt::Net::MqttSn::PacketWriter<std::vector> writer(buffer);
    iMessage.write(writer);
    mSocket->send(buffer.data(),buffer.size(), mRfNodeId);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool GatewayConnection::containsWildcardCharacters(const std::string& iTopicName) {
+   return iTopicName.find_first_of("*+") != std::string::npos;
 }
 
 //-------------------------------------------------------------------------------------------------

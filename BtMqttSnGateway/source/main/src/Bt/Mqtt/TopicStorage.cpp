@@ -16,6 +16,12 @@ namespace Mqtt {
 
 //-------------------------------------------------------------------------------------------------
 
+TopicStorage::TopicStorage() {
+   mIdToName.push_back("0x0000 == RESERVED");
+}
+
+//-------------------------------------------------------------------------------------------------
+
 uint16_t TopicStorage::getOrCreateTopicId(const std::string& iTopicName) {
    std::lock_guard<std::mutex> lock(mMutex);
    auto iter = mNameToId.find(iTopicName);
@@ -31,6 +37,18 @@ uint16_t TopicStorage::getOrCreateTopicId(const std::string& iTopicName) {
 }
 
 
+
+//-------------------------------------------------------------------------------------------------
+
+uint16_t TopicStorage::getTopicId(const std::string& iTopicName) {
+   std::lock_guard<std::mutex> lock(mMutex);
+   auto iter = mNameToId.find(iTopicName);
+
+   if(iter != mNameToId.end()) {
+      return iter->second;
+   }
+   return NO_TOPIC_ID;
+}
 
 //-------------------------------------------------------------------------------------------------
 

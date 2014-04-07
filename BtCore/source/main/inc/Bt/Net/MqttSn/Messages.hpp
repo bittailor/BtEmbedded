@@ -317,6 +317,8 @@ class Register;
 class Regack;
 class Publish;
 class Disconnect;
+class Subscribe;
+class Suback;
 
 class I_MessageVisitor {
    public:
@@ -327,6 +329,8 @@ class I_MessageVisitor {
       virtual void visit(Regack& iMessage) = 0;
       virtual void visit(Publish& iMessage) = 0;
       virtual void visit(Disconnect& iMessage) = 0;
+      virtual void visit(Subscribe& iMessage) = 0;
+      virtual void visit(Suback& iMessage) = 0;
 };
 
 class Connect : public I_Message {
@@ -408,6 +412,10 @@ class Register : public I_Message {
          topicName = reader.read<std::string>();
       }
 
+      Register(uint16_t iTopicId, uint16_t iMsgId, std::string iTopicName)
+      : topicId(iTopicId), msgId(iMsgId), topicName(std::move(iTopicName))  {
+      }
+
       virtual void write(I_PacketWriter& iWriter) const {
          uint8_t length = 6 + topicName.length();
          iWriter.write(length);
@@ -471,6 +479,16 @@ class Publish : public I_Message {
          data = reader.read<std::string>();
       }
 
+      Publish(uint8_t iQos, bool iRetain, uint16_t iTopicId, uint16_t iMsgId, std::string iData)
+      : topicId(iTopicId), msgId(iMsgId), data(std::move(iData)) {
+         flags.bits.dup = false;
+         flags.bits.qos = iQos;
+         flags.bits.retain = iRetain;
+         flags.bits.will = false; // not used by Publish
+         flags.bits.cleanSession = false; // not used by Publish
+         flags.bits.topicIdType = 0x00;
+      }
+
       virtual void write(I_PacketWriter& iWriter) const {
          uint8_t length = 7 + data.size();
          iWriter.write(length);
@@ -525,6 +543,82 @@ class Disconnect : public I_Message {
 
    private:
 };
+
+class Subscribe : public I_Message {
+   public:
+      Flags flags;
+      uint16_t msgId;
+      std::string topicName;
+
+      Subscribe(I_PacketReader& reader) {
+         flags.byte = reader.read<uint8_t>();
+         msgId = reader.read<uint16_t>();
+         topicName = reader.read<std::string>();
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 5 + topicName.size() ;
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::SUBSCRIBE));
+         iWriter.write(flags.byte);
+         iWriter.write(msgId);
+         iWriter.write(topicName);
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+
+   private:
+};
+
+class Suback : public I_Message {
+   public:
+      Flags flags;
+      uint16_t topicId;
+      uint16_t msgId;
+      ReturnCode returnCode;
+
+      Suback(uint8_t iQos, uint16_t iTopicId, uint16_t iMsgId, ReturnCode iReturnCode) {
+         flags.bits.dup = false;
+         flags.bits.qos = iQos;
+         flags.bits.retain = false; // not used by Suback
+         flags.bits.will = false; // not used by Suback
+         flags.bits.cleanSession = false; // not used by Suback
+         flags.bits.topicIdType = 0; // not used by Suback
+         topicId = iTopicId;
+         msgId = iMsgId;
+         returnCode = ReturnCode::ACCEPTED;
+      }
+
+      Suback(I_PacketReader& reader) {
+         flags.byte = reader.read<uint8_t>();
+         topicId = reader.read<uint16_t>();
+         msgId = reader.read<uint16_t>();
+         returnCode = static_cast<ReturnCode>(reader.read<uint8_t>());
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 8 ;
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::SUBACK));
+         iWriter.write(flags.byte);
+         iWriter.write(topicId);
+         iWriter.write(msgId);
+         iWriter.write(static_cast<uint8_t>(returnCode));
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+
+   private:
+};
+
+
+
+
+
 
 
 

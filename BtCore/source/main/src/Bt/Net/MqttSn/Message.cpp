@@ -67,6 +67,8 @@ std::shared_ptr<I_Message> MessageBuffer::parse()  {
       size = reader.read<uint16_t>();
    }
 
+   mBuffer.resize(size);
+
    uint8_t rawMsgType = reader.read<uint8_t>();
    MsgType msgType = static_cast<MsgType>(rawMsgType);
 
@@ -87,8 +89,8 @@ std::shared_ptr<I_Message> MessageBuffer::parse()  {
 //      case MsgType::PUBCOMP         : iStream << "PUBCOMP"; break;
 //      case MsgType::PUBREC          : iStream << "PUBREC"; break;
 //      case MsgType::PUBREL          : iStream << "PUBREL"; break;
-//      case MsgType::SUBSCRIBE       : iStream << "SUBSCRIBE"; break;
-//      case MsgType::SUBACK          : iStream << "SUBACK"; break;
+      case MsgType::SUBSCRIBE       : return std::shared_ptr<I_Message>(new Subscribe(reader));
+      case MsgType::SUBACK          : return std::shared_ptr<I_Message>(new Suback(reader));
 //      case MsgType::UNSUBSCRIBE     : iStream << "UNSUBSCRIBE"; break;
 //      case MsgType::UNSUBACK        : iStream << "UNSUBACK"; break;
 //      case MsgType::PINGREQ         : iStream << "PINGREQ"; break;
