@@ -109,6 +109,11 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Regack& iMessage) {
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Publish& iMessage) {
    std::cout << "Publish : " << iMessage.data << std::endl;
+   if(!mBrokerClient) {
+      std::cout << "BrokerClient is null !" << std::endl;
+      return;
+   }
+
 
    std::string topicName = mTopicStorage.getTopicName(iMessage.topicId);
    if (topicName.empty()) {
@@ -124,6 +129,11 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Publish& iMessage) {
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
    std::cout << "Disconnect : " << std::endl;
+   if(!mBrokerClient) {
+      std::cout << "BrokerClient is null !" << std::endl;
+      return;
+   }
+
    if(!mBrokerClient->disconnect(1000)) {
       std::cout << "Disconnect : disconnect failed" << std::endl;
    }
@@ -138,6 +148,11 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Subscribe& iMessage) {
+   if(!mBrokerClient) {
+      std::cout << "BrokerClient is null !" << std::endl;
+      return;
+   }
+
    uint16_t topicId = 0x0000;
    if(!containsWildcardCharacters(iMessage.topicName)) {
       topicId = mTopicStorage.getOrCreateTopicId(iMessage.topicName);
