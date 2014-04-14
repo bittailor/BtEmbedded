@@ -22,13 +22,16 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
                                      std::shared_ptr<Rf24::I_RfPacketSocket> iSocket,
                                      std::shared_ptr<I_MqttFactory> iFactory,
                                      std::function<bool(int)> iDispose)
-: mRfNodeId(iRfNodeId), mSocket(iSocket), mFactory(iFactory), mDispose(iDispose), mMsgIdCounter(1) {
+: mRunning(true), mRfNodeId(iRfNodeId), mSocket(iSocket)
+, mFactory(iFactory), mDispose(iDispose)
+, mMsgIdCounter(1), mThread(&GatewayConnection::workcycle,this) {
    std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "GatewayConnection() "<< std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 GatewayConnection::~GatewayConnection() {
+   mThread.join();
    std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "~GatewayConnection() " << std::endl;
 }
 
@@ -41,12 +44,19 @@ int GatewayConnection::id() {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::handle(std::shared_ptr<Bt::Net::MqttSn::I_Message> iMessage) {
-   iMessage->accept(*this);
+   mQueue.push([=](){iMessage->accept(*this);});
 }
 
 //-------------------------------------------------------------------------------------------------
 
 bool GatewayConnection::messageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   std::string topicName = iTopicName;
+   mQueue.push([=](){this->messageArrivedInternal(topicName,iMessage);});
+   return true;
+}
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::messageArrivedInternal(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
    std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PublishFromBroker: " << iTopicName << " " << iMessage->data << std::endl;
 
    uint16_t topicId = mTopicStorage.getTopicId(iTopicName);
@@ -62,8 +72,6 @@ bool GatewayConnection::messageArrived(const std::string& iTopicName, std::share
 
    Bt::Net::MqttSn::Publish publish(iMessage->qos, iMessage->retained, topicId, msgId, iMessage->data);
    send(publish);
-
-   return true;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -150,6 +158,7 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
 
    Bt::Net::MqttSn::Disconnect disconnect;
    send(disconnect);
+   mRunning = false;
    mDispose(id());
 }
 
@@ -184,6 +193,20 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Suback& iMessage) {
 
 //-------------------------------------------------------------------------------------------------
 
+void GatewayConnection::visit(Bt::Net::MqttSn::Pingreq& iMessage) {
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" "PingreqFromClient: " << std::endl;
+   Bt::Net::MqttSn::Pingresp response;
+   send(response);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::visit(Bt::Net::MqttSn::Pingresp& iMessage) {
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" "PingrespFromClient: " << std::endl;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void GatewayConnection::send(Bt::Net::MqttSn::I_Message& iMessage) {
    std::vector<uint8_t> buffer;
    Bt::Net::MqttSn::PacketWriter<std::vector> writer(buffer);
@@ -195,6 +218,16 @@ void GatewayConnection::send(Bt::Net::MqttSn::I_Message& iMessage) {
 
 bool GatewayConnection::containsWildcardCharacters(const std::string& iTopicName) {
    return iTopicName.find_first_of("*+") != std::string::npos;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::workcycle() {
+   while (mRunning) {
+      std::function<void()> action;
+      mQueue.pop(action);
+      action();
+   }
 }
 
 //-------------------------------------------------------------------------------------------------

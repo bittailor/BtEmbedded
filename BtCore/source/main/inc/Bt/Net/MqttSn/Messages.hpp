@@ -319,6 +319,8 @@ class Publish;
 class Disconnect;
 class Subscribe;
 class Suback;
+class Pingreq;
+class Pingresp;
 
 class I_MessageVisitor {
    public:
@@ -331,6 +333,8 @@ class I_MessageVisitor {
       virtual void visit(Disconnect& iMessage) = 0;
       virtual void visit(Subscribe& iMessage) = 0;
       virtual void visit(Suback& iMessage) = 0;
+      virtual void visit(Pingreq& iMessage) = 0;
+      virtual void visit(Pingresp& iMessage) = 0;
 };
 
 class Connect : public I_Message {
@@ -613,6 +617,41 @@ class Suback : public I_Message {
       }
 
    private:
+};
+
+class Pingreq : public I_Message {
+   public:
+      Pingreq(I_PacketReader& reader) {
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 2 ;
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::PINGREQ));
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
+};
+
+class Pingresp : public I_Message {
+   public:
+      Pingresp() {
+      }
+
+      Pingresp(I_PacketReader& reader) {
+      }
+
+      virtual void write(I_PacketWriter& iWriter) const {
+         uint8_t length = 2 ;
+         iWriter.write(length);
+         iWriter.write(static_cast<uint8_t>(MsgType::PINGRESP));
+      }
+
+      virtual void accept(I_MessageVisitor& iVistor) {
+         iVistor.visit(*this);
+      }
 };
 
 
