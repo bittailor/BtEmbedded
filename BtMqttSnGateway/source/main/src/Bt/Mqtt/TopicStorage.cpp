@@ -62,5 +62,14 @@ std::string TopicStorage::getTopicName(uint16_t iTopicId) {
 
 //-------------------------------------------------------------------------------------------------
 
+void TopicStorage::clear() {
+   std::lock_guard<std::mutex> lock(mMutex);
+   mIdToName.resize(1);
+   mNameToId.clear();
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
 } // namespace Mqtt
 } // namespace Bt

@@ -26,7 +26,8 @@ RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24DeviceController& pContro
       mFree.pushBack(package);
    }
 
-   I_Rf24DeviceController::Configuration configuration;
+   uint8_t autoRetransmitDelay = ((mNodeId.id() % 6) * 2) + 5;
+   I_Rf24DeviceController::Configuration configuration(autoRetransmitDelay);
 
    for(RfPipe pipe : RfPipes::ALL_PIPES) {
       mRouting.configurePipe(mNodeId, pipe, configuration[pipe]);

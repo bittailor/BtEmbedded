@@ -31,6 +31,8 @@ class TopicStorage
       uint16_t getOrCreateTopicId(const std::string& iTopicName);
       uint16_t getTopicId(const std::string& iTopicName);
       std::string getTopicName(uint16_t iTopicId);
+
+      void clear();
    
    private:
    	  // Constructor to prohibit copy construction.

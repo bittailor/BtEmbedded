@@ -190,8 +190,10 @@ Rf24Device::~Rf24Device() {
 
 Rf24Device::Status Rf24Device::status()
 {
+   static uint8_t sLastStatus = 0x00;
    uint8_t status = readRegister(*mSpi, REGISTER_STATUS);
-   if(status != 0x0e) {
+   if(status != sLastStatus) {
+      sLastStatus = status;
       printf("status = %02x \n",status);
    }
    //printf("status = %02x \n",status);

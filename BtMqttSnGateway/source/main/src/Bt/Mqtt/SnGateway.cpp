@@ -30,7 +30,9 @@ namespace Mqtt {
 //-------------------------------------------------------------------------------------------------
 
 SnGateway::SnGateway(const std::string& iAddress, const std::string& iUser, const std::string& iPassword)
-: mSocket(RfPacketSocketFactory().createPacketSocket(17,8,0)), mMqttFactory(std::make_shared<MqttFactory>(iAddress, iUser, iPassword)) {
+: mSocket(RfPacketSocketFactory().createPacketSocket(17,8,0))
+//: mSocket(RfPacketSocketFactory().createPacketSocket(24,7,0))
+, mMqttFactory(std::make_shared<MqttFactory>(iAddress, iUser, iPassword)) {
    std::cout << "SnGateway::SnGateway()" << std::endl;
 }
 

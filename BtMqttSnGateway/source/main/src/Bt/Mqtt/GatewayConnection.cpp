@@ -23,13 +23,13 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
                                      std::shared_ptr<I_MqttFactory> iFactory,
                                      std::function<bool(int)> iDispose)
 : mRfNodeId(iRfNodeId), mSocket(iSocket), mFactory(iFactory), mDispose(iDispose), mMsgIdCounter(1) {
-   std::cout << "GatewayConnection() "<< static_cast<int>(mRfNodeId) << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "GatewayConnection() "<< std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 GatewayConnection::~GatewayConnection() {
-   std::cout << "~GatewayConnection() "<< static_cast<int>(mRfNodeId) << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "~GatewayConnection() " << std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -47,6 +47,8 @@ void GatewayConnection::handle(std::shared_ptr<Bt::Net::MqttSn::I_Message> iMess
 //-------------------------------------------------------------------------------------------------
 
 bool GatewayConnection::messageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PublishFromBroker: " << iTopicName << " " << iMessage->data << std::endl;
+
    uint16_t topicId = mTopicStorage.getTopicId(iTopicName);
 
    if(topicId == TopicStorage::NO_TOPIC_ID) {
@@ -67,7 +69,13 @@ bool GatewayConnection::messageArrived(const std::string& iTopicName, std::share
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Connect& iMessage) {
-   std::cout << "Connect : " << iMessage.clientId << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "ConnectFromClient: " << iMessage.clientId << std::endl;
+
+   if(mBrokerClient) {
+      std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "Reconnect without disconnect => flush topic storage" << std::endl;
+      mBrokerClient->disconnect(1000);
+      mTopicStorage.clear();
+   }
 
    mBrokerClient = mFactory->createClient(*this, iMessage.clientId);
 
@@ -92,7 +100,7 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Connack& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Register& iMessage) {
-   std::cout << "Register : " << iMessage.topicName << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "RegisterFromClient: " << iMessage.topicName << std::endl;
 
    uint16_t topicId = mTopicStorage.getOrCreateTopicId(iMessage.topicName);
    Bt::Net::MqttSn::Regack regack(topicId, iMessage.msgId , Bt::Net::MqttSn::ReturnCode::ACCEPTED);
@@ -102,40 +110,40 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Register& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Regack& iMessage) {
-   std::cout << "Regack : " << iMessage.topicId << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "RegackFromClient: " << iMessage.topicId << std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Publish& iMessage) {
-   std::cout << "Publish : " << iMessage.data << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PublishFromClient: " << iMessage.topicId << " "  << iMessage.data << std::endl;
    if(!mBrokerClient) {
-      std::cout << "BrokerClient is null !" << std::endl;
+      std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "BrokerClient is null !" << std::endl;
       return;
    }
 
 
    std::string topicName = mTopicStorage.getTopicName(iMessage.topicId);
    if (topicName.empty()) {
-      std::cout << "Publish : could not find topic name for id " << iMessage.topicId << std::endl;
+      std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PublishFromClient: could not find topic name for id " << iMessage.topicId << std::endl;
    }
 
    if(!mBrokerClient->publish(topicName, iMessage.data, iMessage.flags.bits.qos, iMessage.flags.bits.retain).get()) {
-      std::cout << "Publish : failed "<< std::endl;
+      std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PublishFromClient : publish to broker failed "<< std::endl;
    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
-   std::cout << "Disconnect : " << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "DisconnectFromClient : " << std::endl;
    if(!mBrokerClient) {
-      std::cout << "BrokerClient is null !" << std::endl;
+      std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "BrokerClient is null !" << std::endl;
       return;
    }
 
    if(!mBrokerClient->disconnect(1000)) {
-      std::cout << "Disconnect : disconnect failed" << std::endl;
+      std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "DisconnectFromClient : disconnect to broker failed" << std::endl;
    }
 
    mBrokerClient.reset();
@@ -148,8 +156,9 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Subscribe& iMessage) {
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "SubscribeFromClient: " << iMessage.topicName << std::endl;
    if(!mBrokerClient) {
-      std::cout << "BrokerClient is null !" << std::endl;
+      std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "BrokerClient is null !" << std::endl;
       return;
    }
 
@@ -170,7 +179,7 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Subscribe& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Suback& iMessage) {
-   std::cout << "Suback : " << iMessage.topicId << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" "SubackFromClient: " << iMessage.topicId << std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------

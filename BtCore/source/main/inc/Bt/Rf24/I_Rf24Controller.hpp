@@ -95,12 +95,21 @@ class I_Rf24DeviceController::Configuration {
          RfAddress mAddress;
       };
 
+      Configuration(uint8_t iAutoRetransmitDelay = 0x6) : mAutoRetransmitDelay(iAutoRetransmitDelay) {
+
+      }
+
+      uint8_t autoRetransmitDelay() const {
+         return mAutoRetransmitDelay;
+      }
+
       PipeConfiguration& operator[](RfPipe pPipe) {
          return mPipeConfigurations[static_cast<size_t>(pPipe)];
       }
 
    private:
       Util::StaticArray<PipeConfiguration,RfPipes::NUMBER_OF_PIPES> mPipeConfigurations;
+      uint8_t mAutoRetransmitDelay;
 };
 
 
