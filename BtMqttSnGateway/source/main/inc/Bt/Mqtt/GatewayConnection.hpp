@@ -63,6 +63,7 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       virtual void visit(Bt::Net::MqttSn::Pingreq& iMessage);
       virtual void visit(Bt::Net::MqttSn::Pingresp& iMessage);
 
+      void disconnect(bool iSendDisconnectToClient);
       void send(Bt::Net::MqttSn::I_Message& iMessage);
 
       bool containsWildcardCharacters(const std::string& iTopicName);
@@ -79,6 +80,8 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       TopicStorage mTopicStorage;
       uint16_t mMsgIdCounter;
       std::thread mThread;
+      std::chrono::seconds mTimeTillNextKeepAlive;
+
 };
 
 } // namespace Mqtt

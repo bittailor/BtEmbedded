@@ -24,14 +24,15 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
                                      std::function<bool(int)> iDispose)
 : mRunning(true), mRfNodeId(iRfNodeId), mSocket(iSocket)
 , mFactory(iFactory), mDispose(iDispose)
-, mMsgIdCounter(1), mThread(&GatewayConnection::workcycle,this) {
+, mMsgIdCounter(1), mThread(&GatewayConnection::workcycle,this)
+, mTimeTillNextKeepAlive(0){
    std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "GatewayConnection() "<< std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 GatewayConnection::~GatewayConnection() {
-   mThread.join();
+   mThread.detach();
    std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "~GatewayConnection() " << std::endl;
 }
 
@@ -78,6 +79,8 @@ void GatewayConnection::messageArrivedInternal(const std::string& iTopicName, st
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Connect& iMessage) {
    std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "ConnectFromClient: " << iMessage.clientId << std::endl;
+
+   mTimeTillNextKeepAlive = std::chrono::seconds(iMessage.duration + (iMessage.duration / 2));
 
    if(mBrokerClient) {
       std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "Reconnect without disconnect => flush topic storage" << std::endl;
@@ -144,6 +147,12 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Publish& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
+   disconnect(true);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::disconnect(bool iSendDisconnectToClient) {
    std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "DisconnectFromClient : " << std::endl;
    if(!mBrokerClient) {
       std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "BrokerClient is null !" << std::endl;
@@ -156,8 +165,11 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
 
    mBrokerClient.reset();
 
-   Bt::Net::MqttSn::Disconnect disconnect;
-   send(disconnect);
+   if (iSendDisconnectToClient) {
+      Bt::Net::MqttSn::Disconnect disconnect;
+      send(disconnect);
+   }
+
    mRunning = false;
    mDispose(id());
 }
@@ -188,13 +200,13 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Subscribe& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Suback& iMessage) {
-   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" "SubackFromClient: " << iMessage.topicId << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "SubackFromClient: " << iMessage.topicId << std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Pingreq& iMessage) {
-   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" "PingreqFromClient: " << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PingreqFromClient: " << std::endl;
    Bt::Net::MqttSn::Pingresp response;
    send(response);
 }
@@ -202,7 +214,7 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Pingreq& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Pingresp& iMessage) {
-   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" "PingrespFromClient: " << std::endl;
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PingrespFromClient: " << std::endl;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -225,9 +237,22 @@ bool GatewayConnection::containsWildcardCharacters(const std::string& iTopicName
 void GatewayConnection::workcycle() {
    while (mRunning) {
       std::function<void()> action;
-      mQueue.pop(action);
-      action();
+      bool validAction = true;
+      if(mTimeTillNextKeepAlive == std::chrono::seconds(0)) {
+         mQueue.pop(action);
+      } else {
+         validAction = mQueue.tryPop(action, mTimeTillNextKeepAlive);
+      }
+
+      if (validAction) {
+         action();
+      } else {
+         std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "missing keep alive message => disconnect()" << std::endl;
+         disconnect(false);
+      }
    }
+   std::cout << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "end of workcycle" << std::endl;
+
 }
 
 //-------------------------------------------------------------------------------------------------
