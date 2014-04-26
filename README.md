@@ -1,7 +1,6 @@
->Code repository for my embedded and electronics projects
+>Code repository for various embedded and electronics projects
 
 ---
-
 
 ## BtMqttSnGateway
 
