@@ -7,6 +7,10 @@
 
 A [MQTT-SN][MQTT-SN]  *gateway* running on a [Raspberry Pi][RasPi] communicating over a [nRF24L01+][nRF24] Transceiver with the MQTT-SN *clients*.
 
+
+![Overview](http://bittailor.ch/res/MQTT-SN%20Overview.png "Overview")
+
+
 ### Links
  - [BtMqttSn][BtMqttSn] corresponding *client* library for [Arduino][Arduino].
 
