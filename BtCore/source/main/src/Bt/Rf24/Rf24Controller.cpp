@@ -103,6 +103,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    if (status.retransmitsExceeded()) {
       mDevice->clearRetransmitsExceeded();
+      mDevice->flushTransmitFifo();
       printf("write: send failed retransmits exceeded ! \n");
       sentSize = 0;
    }
@@ -177,6 +178,24 @@ bool Rf24DeviceController::read(Packet& pPacket, RfPipe& pPipe) {
    }
    size_t size = mDevice->readReceivePayload(pPipe, pPacket.buffer(), Packet::BUFFER_CAPACITY);
    pPacket.size(size);
+
+   std::cout << "read: ";
+   for (size_t i = 0 ; i < 3 ; i++) {
+      std::cout << (int)pPacket.buffer()[i];
+      std::cout << ",";
+   }
+
+   for (size_t i = 0 ; i < pPacket.size() ; i++) {
+      if(isprint((char) pPacket.buffer()[i])) {
+         std::cout << (char) pPacket.buffer()[i];
+      } else {
+         std::cout << (int)pPacket.buffer()[i];
+      }
+      std::cout << ",";
+   }
+   std::cout <<" end";
+
+
    if(mDevice->isReceiveFifoEmpty()) {
       mDevice->clearDataReady();
    }
