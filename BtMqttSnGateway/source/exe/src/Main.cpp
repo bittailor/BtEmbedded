@@ -13,6 +13,8 @@
 #include <csignal>
 #include <cstdlib>
 
+#include <boost/log/trivial.hpp>
+
 #include <Bt/CoreInitializer.hpp>
 #include <Bt/Mqtt/SnGateway.hpp>
 #include <Bt/Mcu/Pin.hpp>
@@ -26,9 +28,9 @@ namespace {
 
 void signalHandler(int signal)
 {
-   std::cout << "Hanlde SIGNAL " << signal << std::endl;
+   BOOST_LOG_TRIVIAL(info) << "Hanlde SIGNAL " << signal ;
    if (sPower != nullptr ) {
-      std::cout << "Power off" << std::endl;
+      BOOST_LOG_TRIVIAL(info) << "Power off" ;
       sPower->write(false);
       std::exit(0);
    }
@@ -40,12 +42,12 @@ void signalHandler(int signal)
 int main(int argc, char* argv[]) {
 
    if(argc < 4) {
-      std::cout << "usage: " << argv[0] << "broker_url user password" << std::endl;
+      std::cout << "usage: " << argv[0] << "broker_url user password" << std::endl ;
       return -1;
    }
 
 
-   std::cout << "Main" << std::endl;
+   BOOST_LOG_TRIVIAL(info) << "Main" ;
 
    Bt::CoreInitializer coreInitializer;
    Bt::Mcu::Pin power(4, Bt::Mcu::Pin::MODE_OUTPUT);
@@ -59,15 +61,15 @@ int main(int argc, char* argv[]) {
 
    std::signal(SIGINT, signalHandler);
 
-   std::cout << "gateway run ..." << std::endl;
+   BOOST_LOG_TRIVIAL(info) << "gateway run ..." ;
    int result = gateway.run();
-   std::cout << "... gateway end" << std::endl;
+   BOOST_LOG_TRIVIAL(info) << "... gateway end" ;
 
    power.write(false);
 
    sPower = nullptr;
 
-   std::cout << "bye" << std::endl;
+   BOOST_LOG_TRIVIAL(info) << "bye" ;
 
    return result;
 }

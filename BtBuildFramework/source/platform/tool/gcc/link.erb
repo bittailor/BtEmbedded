@@ -1,1 +1,3 @@
-build <%= "#{target_folder}/#{name}" %>  : link <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> <%= libraries.join(' ') %>
+build <%= "#{target_folder}/#{name}" %>  : link <%= sources.pathmap("%{^source,#{target_folder}}X.obj").join(' ') %> <%= libraries.join(' ') %><% if !external_libraries.empty? %>
+   libs = <%= external_libraries.collect{|i| "-l"+i}.join(" ")  %><% end %>
+

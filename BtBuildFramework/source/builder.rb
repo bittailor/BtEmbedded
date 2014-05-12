@@ -61,10 +61,9 @@ class Builder
     
   end
  
-  def executable(file, project, name, sources, includes, library_artefacts)
+  def executable(file, project, name, sources, includes, library_artefacts, external_libraries)
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name)
-      
-    
+       
     libraries = []
     library_artefacts.each do |library|
       if library.project == project
@@ -73,6 +72,7 @@ class Builder
         libraries << "../#{library.project}/#{target_folder}/lib#{library.name}.a"
       end
     end 
+    
     
     file.write(ERB.new(@tool.template("compile")).result(binding))
     file.write(ERB.new(@tool.template("link")).result(binding))

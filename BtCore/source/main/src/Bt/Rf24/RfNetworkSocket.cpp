@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <boost/log/trivial.hpp>
+
 #include "Bt/Rf24/RfNetworkSocket.hpp"
 #include "Bt/Util/Logging.hpp"
 
@@ -86,11 +88,11 @@ void RfNetworkSocket::workcycle() {
       Packet packet;
       if (mController->read(packet.mControllerPackage)) {
          if (packet.destination() != mNodeId.id()) {
-            printf(" - route  %i => %i\n",(int)packet.source() ,(int)packet.destination());
+            BOOST_LOG_TRIVIAL(debug) << " - route  " << (int)packet.source() << " => " << (int)packet.destination();
             sendInternal(packet);
             continue;
          }
-         printf(" - receive  %i => %i\n",(int)packet.source() ,(int)packet.destination());
+         BOOST_LOG_TRIVIAL(debug) << " - receive  " << (int)packet.source() << " => " << (int)packet.destination();
          receiveInternal(packet);
       }
    }

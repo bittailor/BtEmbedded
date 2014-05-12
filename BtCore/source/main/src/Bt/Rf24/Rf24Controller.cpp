@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <typeinfo>
+#include <sstream>
+
+#include <boost/log/trivial.hpp>
 
 #include "Bt/Rf24/Rf24Controller.hpp"
 
@@ -20,23 +23,6 @@
 
 namespace Bt {
 namespace Rf24 {
-
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-
-namespace{
-
-template<typename T>
-void printArray(const T& pArray)
-{
-  printf(" 0x");
-  for(size_t i = pArray.size() ; i > 0 ; i--)
-  {
-    printf("%02x",pArray[i-1]);
-  }
-}
-
-}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -72,8 +58,8 @@ bool Rf24DeviceController::write(RfPipe pPipe, Packet& pPacket) {
 size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    StateBase* originalState = mCurrentState;
-   std::cout << "transceiverMode " << mDevice->transceiverMode() << std::endl;
-   std::cout << "write current state is " << typeid(*mCurrentState).name() << std::endl;
+   BOOST_LOG_TRIVIAL(debug) << "transceiverMode " << mDevice->transceiverMode() ;
+   BOOST_LOG_TRIVIAL(debug) << "write current state is " << typeid(*mCurrentState).name() ;
    mCurrentState->ToStandbyI();
 
    RfAddress backupPipe0 = mDevice->receiveAddress(RfPipe::PIPE_0);
@@ -84,7 +70,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    mDevice->writeTransmitPayload(pData, pSize);
 
    while(mDevice->isTransmitFifoEmpty()) {
-      std::cout << "transmit FIFO empty after sending payload ==> try again " << std::endl;
+      BOOST_LOG_TRIVIAL(warning) << "transmit FIFO empty after sending payload ==> try again " ;
       mDevice->writeTransmitPayload(pData, pSize);
    }
 
@@ -104,7 +90,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    if (status.retransmitsExceeded()) {
       mDevice->clearRetransmitsExceeded();
       mDevice->flushTransmitFifo();
-      printf("write: send failed retransmits exceeded ! \n");
+      BOOST_LOG_TRIVIAL(warning) << "write: send failed retransmits exceeded!";
       sentSize = 0;
    }
 
@@ -112,7 +98,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    if (timeout.isTimedOut()) {
       mDevice->clearRetransmitsExceeded();
       mDevice->flushTransmitFifo();
-      printf("write: send failed timeout ! \n");
+      BOOST_LOG_TRIVIAL(warning) << "write: send failed timeout!";
       sentSize = 0;
    }
 
@@ -144,8 +130,8 @@ void Rf24DeviceController::stopListening() {
 
 bool Rf24DeviceController::isDataAvailable() {
 //   if (mLogTimer < Bt::Util::milliseconds()) {
-//      std::cout << "isDataAvailable: transceiverMode " << mDevice->transceiverMode() << std::endl;
-//      std::cout << "isDataAvailable: current state is " << typeid(*mCurrentState).name() << std::endl;
+//      BOOST_LOG_TRIVIAL(debug) << "isDataAvailable: transceiverMode " << mDevice->transceiverMode() ;
+//      BOOST_LOG_TRIVIAL(debug) << "isDataAvailable: current state is " << typeid(*mCurrentState).name() ;
 //      mLogTimer = Bt::Util::milliseconds() + 1000;
 //   }
 
@@ -179,21 +165,24 @@ bool Rf24DeviceController::read(Packet& pPacket, RfPipe& pPipe) {
    size_t size = mDevice->readReceivePayload(pPipe, pPacket.buffer(), Packet::BUFFER_CAPACITY);
    pPacket.size(size);
 
-   std::cout << "read: ";
+   std::stringstream message;
    for (size_t i = 0 ; i < 3 ; i++) {
-      std::cout << (int)pPacket.buffer()[i];
-      std::cout << ",";
+      message << (int)pPacket.buffer()[i];
+      message << ",";
    }
 
    for (size_t i = 0 ; i < pPacket.size() ; i++) {
       if(isprint((char) pPacket.buffer()[i])) {
-         std::cout << (char) pPacket.buffer()[i];
+         message << (char) pPacket.buffer()[i];
       } else {
-         std::cout << (int)pPacket.buffer()[i];
+         message << (int)pPacket.buffer()[i];
       }
-      std::cout << ",";
+      message << ",";
    }
-   std::cout <<" end";
+   message << " end";
+
+
+   BOOST_LOG_TRIVIAL(debug) << "read: " << message;
 
 
    if(mDevice->isReceiveFifoEmpty()) {
@@ -300,7 +289,7 @@ void Rf24DeviceController::StandbyI::ToRxMode() {
 void Rf24DeviceController::StandbyI::ToTxMode() {
    if (mController->mDevice->isTransmitFifoEmpty())
    {
-      printf("StandbyI::ToTxMode: transmit fifo is empty => StandbyI ! \n");
+      BOOST_LOG_TRIVIAL(warning) << "StandbyI::ToTxMode: transmit fifo is empty => StandbyI !";
       return;
    }
 

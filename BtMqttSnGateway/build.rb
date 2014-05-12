@@ -36,7 +36,10 @@ def bt_library_project (name)
                          "source/platform/#{BuildFramework.instance.platform.name}/inc",  
                          "source/mock/inc"
     
-    builder.libraries.add name, "3rdParty/gmock"   
+    builder.libraries.add name, "3rdParty/gmock"  
+      
+    
+     
   end
   
   test_run("#{name}_Test") do |builder|    
@@ -50,6 +53,7 @@ executable("BtMqttSnGateway") do |builder|
   builder.sources.add_pattern "source/exe/src/*.cpp"
   builder.includes.add "source/main/inc" 
   builder.libraries.add "BtMqttSnGatewayLibrary"
+ 
 end
 
   

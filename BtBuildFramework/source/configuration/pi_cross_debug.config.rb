@@ -8,7 +8,7 @@ class Configuration
     self[:is_host] = false;
     self[:platform] = "pi";
     self[:remote_run_folder] = "/Volumes/pi/Code/Run";
-    self[:hostname] =`BtPiIp`.strip()
+    self[:hostname] = "pione.local"    # `BtPiIp`.strip()
     self[:username] = "pi"
     self[:password] = ENV["pi_pwd"]
     self[:run_folder] = "/home/pi/Code/Run";  

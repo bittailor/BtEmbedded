@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include <boost/log/trivial.hpp>
+
 #include "Bt/Util/Logging.hpp"
 
 namespace Bt {
@@ -95,7 +97,7 @@ void RfPacketSocket::workcycle() {
 
    SendMessage sendPacket;
    if(mSendQueue.tryPop(sendPacket)) {
-      std::cout << "send a packet of size " << sendPacket.second->size() << std::endl;
+      BOOST_LOG_TRIVIAL(debug) << "send a packet of size " << sendPacket.second->size() ;
       bool sendResult = mNetworkSocket.send(*sendPacket.second);
       sendPacket.first.set_value(sendResult);
    }

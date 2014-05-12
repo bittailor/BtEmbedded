@@ -30,6 +30,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2060911428" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -38,6 +39,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.746822915" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -54,6 +56,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.690314003" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -100,6 +103,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1889378370" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -109,6 +113,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1186203419" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -117,6 +122,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/3rdParty/source/include/arduino}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2128716365" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>

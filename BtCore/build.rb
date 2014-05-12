@@ -24,7 +24,10 @@ def bt_library_project (name)
     if BuildFramework.instance.platform.name == "pi"
       builder.libraries.add "3rdParty/bcm2835"
       builder.exported_libraries.add "3rdParty/bcm2835"
-    end           
+    end 
+    
+    builder.external_libraries.push "boost_log", "boost_thread" , "boost_system", "boost_date_time" 
+              
   end
   
   

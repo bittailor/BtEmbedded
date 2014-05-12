@@ -35,13 +35,13 @@ namespace Mqtt {
 //-------------------------------------------------------------------------------------------------
 
 SnGateway::SnGateway() {
-   std::cout << "SnGateway::SnGateway()" << std::endl;
+   BOOST_LOG_TRIVIAL(debug) << "SnGateway::SnGateway()" ;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 SnGateway::~SnGateway() {
-   std::cout << "SnGateway::~SnGateway()" << std::endl;
+   BOOST_LOG_TRIVIAL(debug) << "SnGateway::~SnGateway()" ;
 
 }
 

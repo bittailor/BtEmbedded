@@ -98,13 +98,14 @@ end
 
 class BuildArtefact < Artefact
   
-  attr_reader :sources, :includes, :libraries
+  attr_reader :sources, :includes, :libraries, :external_libraries
    
   def initialize(name, project)
     super
     @sources = PathStorage.new()
-    @includes = PathStorage.new()
-    @libraries = ReferenceStorage.new(project)   
+    @includes = PathStorage.new()    
+    @libraries = ReferenceStorage.new(project)
+    @external_libraries = []   
   end
   
   def imported_includes
@@ -113,6 +114,10 @@ class BuildArtefact < Artefact
   
   def imported_libraries
     @libraries.resolve.collect {|library| library.usage_librarys }.flatten.uniq
+  end
+  
+  def imported_external_libraries
+    return (@external_libraries + @libraries.resolve.collect {|library| library.imported_external_libraries }).flatten.uniq
   end
    
 end
@@ -135,6 +140,10 @@ class StaticLibrary < BuildArtefact
   
   def usage_librarys
     return @libraries.resolve
+  end
+  
+  def usage_external_libraries
+    return @external_libraries
   end
   
   def generate_ninja(builder, file)
@@ -170,6 +179,10 @@ class HeaderLibrary < Artefact
     return []
   end
   
+  def usage_external_libraries
+    return @external_libraries
+  end
+  
   def generate_ninja(builder, file)
   end 
   
@@ -185,18 +198,24 @@ end
 # -------------------------------------------------------------------------------------------------
 
 class Executable < BuildArtefact
+  
+  attr_reader :libs
+  
   def initialize(name, project)
     super
-  end 
-  
+    @libs = []
+  end
+    
   def generate_ninja(builder, file)
     includes = @includes.storage + imported_includes 
     
     libraries = @libraries.resolve + imported_libraries 
      
-    libraries = libraries.delete_if { |library| !library.link? }   
+    libraries = libraries.delete_if { |library| !library.link? } 
     
-    builder.executable(file, project, name, @sources.storage, includes, libraries)
+    external_libraries = imported_external_libraries  
+      
+    builder.executable(file, project, name, @sources.storage, includes, libraries, external_libraries)
   end 
   
   def create_tasks(builder)

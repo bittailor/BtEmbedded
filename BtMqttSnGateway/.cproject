@@ -27,21 +27,24 @@
 								</inputType>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.macosx.base.680140086" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
-								<option id="gnu.both.asm.option.include.paths.1891997075" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.1891997075" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1594786122" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1620200770" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.839775332" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base">
-								<option id="gnu.cpp.compiler.option.include.paths.59788544" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.59788544" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.717137759" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.2034153150" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
-								<option id="gnu.c.compiler.option.include.paths.1676464600" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.1676464600" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2113657264" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -82,12 +85,14 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.2061414636" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
 								<option id="gnu.c.compiler.option.include.paths.1303837164" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1339643312" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1835580362" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
 								<option id="gnu.cpp.compiler.option.include.paths.1973659044" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1527052728" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -102,6 +107,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.808479173" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
 								<option id="gnu.both.asm.option.include.paths.1699516392" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/BtCore/source/main/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="/Volumes/Crosstool/usr/local/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1875059826" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

@@ -12,6 +12,8 @@
 
 #include <iostream>
 
+#include <boost/log/trivial.hpp>
+
 #include <Bt/Util/Range.hpp>
 #include <Bt/Net/MqttSn/Messages.hpp>
 #include <Bt/Util/Endianness.hpp>
@@ -103,7 +105,7 @@ std::shared_ptr<I_Message> MessageBuffer::parse()  {
       default: break;
    }
 
-   std::cout << msgType << "[" << static_cast<int>(rawMsgType) << "] not implemented or unknown" << std::endl;
+   BOOST_LOG_TRIVIAL(warning) << msgType << "[" << static_cast<int>(rawMsgType) << "] not implemented or unknown" ;
    return nullptr;
 }
 

@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <boost/log/trivial.hpp>
+
 #include "Bt/Mcu/I_Spi.hpp"
 #include "Bt/Util/Timing.hpp"
 #include "Bt/Util/StaticArray.hpp"
@@ -194,9 +196,8 @@ Rf24Device::Status Rf24Device::status()
    uint8_t status = readRegister(*mSpi, REGISTER_STATUS);
    if(status != sLastStatus) {
       sLastStatus = status;
-      printf("status = %02x \n",status);
+      BOOST_LOG_TRIVIAL(debug) << "status = 0x" << std::hex << status;
    }
-   //printf("status = %02x \n",status);
    return Status(status);
 }
 

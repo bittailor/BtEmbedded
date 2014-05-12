@@ -13,6 +13,8 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/log/trivial.hpp>
+
 #include <Bt/Rf24/RfPacketSocketFactory.hpp>
 #include <Bt/Net/MqttSn/Message.hpp>
 
@@ -33,42 +35,42 @@ SnGateway::SnGateway(const std::string& iAddress, const std::string& iUser, cons
 : mSocket(RfPacketSocketFactory().createPacketSocket(17,8,0))
 //: mSocket(RfPacketSocketFactory().createPacketSocket(24,7,0))
 , mMqttFactory(std::make_shared<MqttFactory>(iAddress, iUser, iPassword)) {
-   std::cout << "SnGateway::SnGateway()" << std::endl;
+   BOOST_LOG_TRIVIAL(debug) << "SnGateway::SnGateway()";
 }
 
 //-------------------------------------------------------------------------------------------------
 
 SnGateway::~SnGateway() {
-   std::cout << "SnGateway::~SnGateway()" << std::endl;
+   BOOST_LOG_TRIVIAL(debug) << "SnGateway::~SnGateway()";
 }
 
 //-------------------------------------------------------------------------------------------------
 
 int SnGateway::run() {
    mRunning = true;
-   std::cout << "enter loop " << std::endl;
+   BOOST_LOG_TRIVIAL(debug) << "enter loop " ;
    while(mRunning) {
-      //std::cout << "loop (" << mRunning << ")"<< std::endl;
+      //BOOST_LOG_TRIVIAL(debug) << "loop (" << mRunning << ")";
       uint8_t nodeId = 0;
       Net::MqttSn::MessageBuffer buffer(mSocket->payloadCapacity());
       int receivedSize = mSocket->receive(buffer.buffer(), buffer.bufferCapacity(), &nodeId);
       if (receivedSize > 0) {
          if (buffer.length() != receivedSize) {
-            std::cout << "Missmatching length (" << buffer.length() <<") and received size (" << receivedSize << ")" <<  std::endl;
+            BOOST_LOG_TRIVIAL(debug) << "Missmatching length (" << buffer.length() <<") and received size (" << receivedSize << ")" ;
             continue;
          }
 
-         //std::cout << "Raw message : " << buffer <<  std::endl;
+         //BOOST_LOG_TRIVIAL(debug) << "Raw message : " << buffer ;
 
          auto message = buffer.parse();
          if (!message) {
-            std::cout << "Could not parse message" <<  std::endl;
+            BOOST_LOG_TRIVIAL(debug) << "Could not parse message" ;
             continue;
          }
 
          auto gatewayConnection = mConnections.lookup(nodeId);
          if(!gatewayConnection) {
-            std::cout << "Create new gateway connection for node " << nodeId <<  std::endl;
+            BOOST_LOG_TRIVIAL(debug) << "Create new gateway connection for node " << nodeId ;
             gatewayConnection = std::make_shared<GatewayConnection>(nodeId,
                                                                     mSocket,
                                                                     mMqttFactory,
@@ -79,7 +81,7 @@ int SnGateway::run() {
       }
    }
 
-   std::cout << "SnGateway end of run loop" << std::endl;
+   BOOST_LOG_TRIVIAL(debug) << "SnGateway end of run loop" ;
 
    return 0;
 }
@@ -87,7 +89,7 @@ int SnGateway::run() {
 //-------------------------------------------------------------------------------------------------
 
 void SnGateway::stop() {
-   std::cout << "SnGateway::stop" << std::endl;
+   BOOST_LOG_TRIVIAL(debug) << "SnGateway::stop" ;
    mRunning = false;
 }
 
