@@ -10,7 +10,8 @@ end
 
 
 # ["host_debug","pi_cross_debug","arduino_uno"].each do |configuration|
-["host_debug","pi_cross_debug"].each do |configuration|
+# ["host_debug","pi_cross_debug"].each do |configuration|
+["pi_cross_debug"].each do |configuration|
 
 	cmd =  "rake configuration=#{configuration} project=3rdParty,BtCore,BtMqttSnGateway pi_run_ssh=true"
 
@@ -25,4 +26,3 @@ end
 	end
 
 end
-   

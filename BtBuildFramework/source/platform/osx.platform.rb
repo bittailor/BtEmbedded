@@ -11,11 +11,11 @@ class OsXBuilder < Builder
     @cxx = "g++";
     @ar = "ar";
     
-    @ccflags = "-Wall -Werror=return-type -g -DBT_PF_OSX -D_GLIBCXX_USE_NANOSLEEP=1 -DUSE_NAMED_SEMAPHORES"
-    @cxxflags = "-Wall -Werror=return-type -std=c++11 -g -DBT_PF_OSX -D_GLIBCXX_USE_NANOSLEEP=1"
-    @linkflags = ""
+    @ccflags = "-Wall -Werror=return-type -g -DBT_PF_OSX -D_GLIBCXX_USE_NANOSLEEP=1 -D_GLIBCXX_USE_SCHED_YIELD=1 -DUSE_NAMED_SEMAPHORES"
+    @cxxflags = "-Wall -Werror=return-type -std=c++11 -g -DBT_PF_OSX -D_GLIBCXX_USE_NANOSLEEP=1 -D_GLIBCXX_USE_SCHED_YIELD=1"
+    @linkflags = "-L/opt/local/lib"
           
-    @includes = ""
+    @includes = "-I/opt/local/include"
     @libraries = ""
       
     @tool = Tools::GCC

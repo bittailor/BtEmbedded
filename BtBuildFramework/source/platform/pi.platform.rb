@@ -11,8 +11,8 @@ class PiBuilder < Builder
     @cxx = "/Volumes/Crosstool/arm-pi-linux-gnueabi/bin/arm-pi-linux-gnueabi-g++";
     @ar = "/Volumes/Crosstool/arm-pi-linux-gnueabi/bin/arm-pi-linux-gnueabi-ar";
     
-    @ccflags = "-Wall -Werror=return-type -Wno-unused-local-typedefs -g -DBT_PF_PI -D_GLIBCXX_USE_NANOSLEEP=1"
-    @cxxflags = "-Wall -Werror=return-type -std=c++11 -D_GLIBCXX_USE_NANOSLEEP=1 -g -DBT_PF_PI -pthread"
+    @ccflags = "-Wall -Werror=return-type -Wno-unused-local-typedefs -g -DBT_PF_PI -D_GLIBCXX_USE_NANOSLEEP=1 -D_GLIBCXX_USE_SCHED_YIELD=1"
+    @cxxflags = "-Wall -Werror=return-type -std=c++11 -D_GLIBCXX_USE_NANOSLEEP=1 -D_GLIBCXX_USE_SCHED_YIELD=1 -g -DBT_PF_PI -pthread"
     @linkflags = "-pthread -lrt -L/Volumes/Crosstool/usr/local/lib"
     
     @includes = "-I/Volumes/Crosstool/usr/local/include"

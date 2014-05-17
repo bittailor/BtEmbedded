@@ -4,45 +4,41 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::Timeout
+//  Bt::Mcu::InterruptPin
 //  
 //*************************************************************************************************
 
-#include "Bt/Util/Timeout.hpp"
-#include "Bt/Util/Timing.hpp"
+#include "Bt/Mcu/InterruptPin.hpp"
 
 namespace Bt {
-namespace Util {
+namespace Mcu {
 
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::Timeout(uint32_t pMilliseconds) : mTimedOut(false),  mMilliseconds(pMilliseconds), mStart(milliseconds()){
-
+InterruptPin::InterruptPin(uint8_t iPinId, Edge iEdge) : InterruptPinPlatform(iPinId, iEdge) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::~Timeout() {
+InterruptPin::~InterruptPin() {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::operator bool() const {
-   if (mTimedOut) {
-      return true;
-   }
-
-   if ((milliseconds() - mStart) > mMilliseconds) {
-      mTimedOut = true;
-      return true;
-   }
-
-   return false;
+void InterruptPin::enable(std::function<void()> iInterruptHandler) {
+   InterruptPinPlatform::enable(iInterruptHandler);
 }
 
+//-------------------------------------------------------------------------------------------------
 
-} // namespace Util
+void InterruptPin::disable() {
+   InterruptPinPlatform::disable();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+} // namespace Mcu
 } // namespace Bt

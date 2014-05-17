@@ -25,13 +25,11 @@ class Timeout
       Timeout(uint32_t pMilliseconds);
       ~Timeout();
 
-      bool checkForTimeout();
-
-      bool isTimedOut();
+      explicit operator bool() const;
 
    
    private:
-      bool mTimedOut;
+      mutable bool mTimedOut;
       uint32_t mMilliseconds;
       uint32_t mStart;
 

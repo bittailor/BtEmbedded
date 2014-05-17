@@ -13,8 +13,10 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <iomanip>
 
 #include <boost/log/trivial.hpp>
+#include <boost/io/ios_state.hpp>
 
 #include "Bt/Mcu/I_Spi.hpp"
 #include "Bt/Util/Timing.hpp"
@@ -190,13 +192,27 @@ Rf24Device::~Rf24Device() {
 
 //-------------------------------------------------------------------------------------------------
 
+template<typename T> struct HexLogStreamer {
+      const int witdh;
+      const T value;
+
+};
+
+template<typename T> std::ostream& operator<<(std::ostream& iOut, const HexLogStreamer<T>& iStreamer) {
+   boost::io::ios_flags_saver  ifs( iOut );
+   iOut << std::showbase << std::internal << std::setfill('0') << std::setw(iStreamer.witdh) << std::hex << iStreamer.value;
+   return iOut;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 Rf24Device::Status Rf24Device::status()
 {
    static uint8_t sLastStatus = 0x00;
    uint8_t status = readRegister(*mSpi, REGISTER_STATUS);
    if(status != sLastStatus) {
       sLastStatus = status;
-      BOOST_LOG_TRIVIAL(debug) << "status = 0x" << std::hex << status;
+      BOOST_LOG_TRIVIAL(debug) << "status = " << HexLogStreamer<int>{4,status};
    }
    return Status(status);
 }

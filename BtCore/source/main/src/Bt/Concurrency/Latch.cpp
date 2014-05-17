@@ -4,45 +4,29 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Util::Timeout
+//  Bt::Concurrency::Latch
 //  
 //*************************************************************************************************
 
-#include "Bt/Util/Timeout.hpp"
-#include "Bt/Util/Timing.hpp"
+#include "Bt/Concurrency/Latch.hpp"
 
 namespace Bt {
-namespace Util {
+namespace Concurrency {
 
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::Timeout(uint32_t pMilliseconds) : mTimedOut(false),  mMilliseconds(pMilliseconds), mStart(milliseconds()){
-
+Latch::Latch() {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::~Timeout() {
+Latch::~Latch() {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::operator bool() const {
-   if (mTimedOut) {
-      return true;
-   }
-
-   if ((milliseconds() - mStart) > mMilliseconds) {
-      mTimedOut = true;
-      return true;
-   }
-
-   return false;
-}
-
-
-} // namespace Util
+} // namespace Concurrency
 } // namespace Bt

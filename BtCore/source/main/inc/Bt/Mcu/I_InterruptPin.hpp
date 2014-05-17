@@ -4,36 +4,31 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::I_Pin
+//  Bt::Mcu::I_InterruptPin
 //  
 //*************************************************************************************************
 
-#ifndef INC__Bt_Mcu_I_Pin__hpp
-#define INC__Bt_Mcu_I_Pin__hpp
+#ifndef INC__Bt_Mcu_I_InterruptPin__hpp
+#define INC__Bt_Mcu_I_InterruptPin__hpp
 
 namespace Bt {
 namespace Mcu {
 
-class I_Pin {
+class I_InterruptPin {
    public:
-
-      enum Mode {
-         MODE_INPUT,
-         MODE_OUTPUT
+      enum class Edge
+      {
+         FALLING,
+         RISING,
+         BOTH
       };
 
-      virtual ~I_Pin() {}
-      
-      virtual void mode(Mode pMode) = 0;
 
-      virtual void write(bool pHigh) = 0;
-
-      virtual bool read() = 0;
-
+      virtual ~I_InterruptPin() {}
 
 };
 
 } // namespace Mcu
 } // namespace Bt
 
-#endif // INC__Bt_Mcu_I_Pin__hpp
+#endif // INC__Bt_Mcu_I_InterruptPin__hpp

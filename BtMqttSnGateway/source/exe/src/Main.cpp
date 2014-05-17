@@ -13,7 +13,18 @@
 #include <csignal>
 #include <cstdlib>
 
+#include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sinks/unlocked_frontend.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/utility/empty_deleter.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+
 
 #include <Bt/CoreInitializer.hpp>
 #include <Bt/Mqtt/SnGateway.hpp>
@@ -45,6 +56,24 @@ int main(int argc, char* argv[]) {
       std::cout << "usage: " << argv[0] << "broker_url user password" << std::endl ;
       return -1;
    }
+
+//   boost::log::add_file_log
+//   (
+//            boost::log::keywords::file_name = "mqtt-sn-gw_%N.log",
+//            boost::log::keywords::rotation_size = 10 * 1024 * 1024
+//   );
+//
+//
+//   boost::shared_ptr< boost::log::core > core = boost::log::core::get();
+//
+//   // Set a sink that will write log records to the console
+//   boost::shared_ptr< boost::log::sinks::text_ostream_backend > backend =
+//            boost::make_shared< boost::log::sinks::text_ostream_backend >();
+//   backend->add_stream(boost::shared_ptr< std::ostream >(&std::cout, boost::empty_deleter()));
+//
+//   typedef boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend > sink_t;
+//       boost::shared_ptr< sink_t > sink(new sink_t(backend));
+//   core->add_sink(sink);
 
 
    BOOST_LOG_TRIVIAL(info) << "Main" ;
