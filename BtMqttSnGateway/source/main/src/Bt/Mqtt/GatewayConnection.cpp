@@ -209,6 +209,11 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Suback& iMessage) {
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Pingreq& iMessage) {
    BOOST_LOG_TRIVIAL(debug) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PingreqFromClient: " ;
+   if(!mBrokerClient) {
+      BOOST_LOG_TRIVIAL(debug) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "BrokerClient is null !" ;
+      return;
+   }
+
    Bt::Net::MqttSn::Pingresp response;
    send(response);
 }
