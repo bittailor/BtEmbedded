@@ -26,7 +26,7 @@ def bt_library_project (name)
       builder.exported_libraries.add "3rdParty/bcm2835"
     end 
     
-    builder.external_libraries.push "boost_log" , "boost_filesystem" , "boost_thread" , "boost_system", "boost_date_time" 
+    #  builder.external_libraries.push "boost_log" , "boost_filesystem" , "boost_thread" , "boost_system", "boost_date_time" 
           
     
     # builder.external_libraries.push "boost_log-mt" , "boost_filesystem-mt" , "boost_thread-mt" , "boost_system-mt", "boost_date_time-mt" 

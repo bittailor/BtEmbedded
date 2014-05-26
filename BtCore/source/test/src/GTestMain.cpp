@@ -24,7 +24,6 @@ int main(int argc, char **argv) {
    std::cout << "int     " << sizeof(int) << std::endl;
    std::cout << "enum    " << sizeof(JustAnEnumForSizeTesting) << std::endl;
 
-
    ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

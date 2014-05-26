@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 
-#include <boost/log/trivial.hpp>
+#include <Bt/Log/Logging.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <bcm2835.h>
@@ -108,7 +108,7 @@ void InterruptPinPlatform::enable(std::function<void()> iInterruptHandler) {
    mPinFileHandle = open(pinValuePath.c_str(), O_RDWR);
    if(mPinFileHandle < 0) {
       auto message = std::string("could not open gpio file ") + pinValuePath + " " + strerror(errno);
-      BOOST_LOG_TRIVIAL(warning) << message;
+      BT_LOG(WARNING) << message;
       throw std::domain_error(message);
    }
 

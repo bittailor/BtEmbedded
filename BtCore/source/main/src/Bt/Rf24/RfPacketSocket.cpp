@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include <boost/log/trivial.hpp>
+#include <Bt/Log/Logging.hpp>
 
 #include "Bt/Util/Logging.hpp"
 
@@ -97,7 +97,7 @@ void RfPacketSocket::workcycle() {
 
    SendMessage sendPacket;
    if(mSendQueue.tryPop(sendPacket)) {
-      BOOST_LOG_TRIVIAL(debug) << "send a packet of size " << sendPacket.second->size() ;
+      BT_LOG(DEBUG) << "send a packet of size " << sendPacket.second->size() ;
       bool sendResult = mNetworkSocket.send(*sendPacket.second);
       sendPacket.first.set_value(sendResult);
    }

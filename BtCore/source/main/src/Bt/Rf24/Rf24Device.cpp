@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <iomanip>
 
-#include <boost/log/trivial.hpp>
+#include <Bt/Log/Logging.hpp>
 #include <boost/io/ios_state.hpp>
 
 #include "Bt/Mcu/I_Spi.hpp"
@@ -212,7 +212,7 @@ Rf24Device::Status Rf24Device::status()
    uint8_t status = readRegister(*mSpi, REGISTER_STATUS);
    if(status != sLastStatus) {
       sLastStatus = status;
-      BOOST_LOG_TRIVIAL(debug) << "status = " << HexLogStreamer<int>{4,status};
+      BT_LOG(DEBUG) << "status = " << HexLogStreamer<int>{4,status};
    }
    return Status(status);
 }

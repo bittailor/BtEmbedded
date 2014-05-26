@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#include <boost/log/trivial.hpp>
+#include <Bt/Log/Logging.hpp>
 
 #include <Bt/Util/Range.hpp>
 #include <Bt/Net/MqttSn/Messages.hpp>
@@ -105,7 +105,7 @@ std::shared_ptr<I_Message> MessageBuffer::parse()  {
       default: break;
    }
 
-   BOOST_LOG_TRIVIAL(warning) << msgType << "[" << static_cast<int>(rawMsgType) << "] not implemented or unknown" ;
+   BT_LOG(WARNING) << msgType << "[" << static_cast<int>(rawMsgType) << "] not implemented or unknown" ;
    return nullptr;
 }
 

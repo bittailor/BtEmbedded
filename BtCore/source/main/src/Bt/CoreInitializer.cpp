@@ -10,6 +10,8 @@
 
 #include "Bt/CoreInitializer.hpp"
 
+#include <Bt/Log/Logging.hpp>
+
 namespace Bt {
 
 

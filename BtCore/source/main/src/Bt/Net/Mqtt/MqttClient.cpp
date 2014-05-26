@@ -14,7 +14,7 @@
 #include <memory>
 #include <vector>
 
-#include <boost/log/trivial.hpp>
+#include <Bt/Log/Logging.hpp>
 
 namespace Bt {
 namespace Net {
@@ -54,13 +54,13 @@ MqttClient::MqttClient(I_Listener& iListener, std::string iAddress, std::string 
    int result = MQTTClient_create(&mClient, const_cast<char*>(mAddress.c_str()), const_cast<char*>(mClientId.c_str()), MQTTCLIENT_PERSISTENCE_NONE, nullptr);
    if (result != MQTTCLIENT_SUCCESS)
    {
-      BOOST_LOG_TRIVIAL(warning) << "MQTTClient_create: failed with " << result ;
+      BT_LOG(WARNING) << "MQTTClient_create: failed with " << result ;
    }
 
    result = MQTTClient_setCallbacks(mClient, this, &connectionLostCallback, &messageArrivedCallback, &deliveryCompleteCallback);
    if (result != MQTTCLIENT_SUCCESS)
    {
-      BOOST_LOG_TRIVIAL(warning) << "MQTTClient_setCallbacks: failed with " << result ;
+      BT_LOG(WARNING) << "MQTTClient_setCallbacks: failed with " << result ;
    }
 
 }
@@ -84,7 +84,7 @@ bool MqttClient::connect(const ConnectOptions& options) {
    int connectResult = MQTTClient_connect(mClient, &connectOptions);
    if (connectResult != MQTTCLIENT_SUCCESS)
    {
-      BOOST_LOG_TRIVIAL(warning) << "MqttClient::connect: failed with " << connectResult ;
+      BT_LOG(WARNING) << "MqttClient::connect: failed with " << connectResult ;
       return false;
    }
    return true;
@@ -113,7 +113,7 @@ std::future<bool> MqttClient::publish(const std::string& iTopic, const std::stri
    int result = MQTTClient_publishMessage(mClient, const_cast<char*>(iTopic.c_str()), &message, &deliveryToken);
    if (result != MQTTCLIENT_SUCCESS)
    {
-      BOOST_LOG_TRIVIAL(warning) << "MqttClient::publish: failed with " << result ;
+      BT_LOG(WARNING) << "MqttClient::publish: failed with " << result ;
       promise.set_value(false);
       return future;
    }
@@ -137,7 +137,7 @@ bool MqttClient::subscribe(const std::string& iTopic, int iQos) {
 //-------------------------------------------------------------------------------------------------
 
 void MqttClient::connectionLost(char* iCause) {
-   BOOST_LOG_TRIVIAL(debug) << "MqttClient::connectionLost: " << iCause ;
+   BT_LOG(DEBUG) << "MqttClient::connectionLost: " << iCause ;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -164,11 +164,11 @@ int MqttClient::messageArrived(char *iTopicName, int iTopicLength, MQTTClient_me
 //-------------------------------------------------------------------------------------------------
 
 void MqttClient::deliveryComplete(MQTTClient_deliveryToken iDeliveryToken) {
-   BOOST_LOG_TRIVIAL(debug) << "MqttClient::deliveryComplete: token = " << iDeliveryToken ;
+   BT_LOG(DEBUG) << "MqttClient::deliveryComplete: token = " << iDeliveryToken ;
    std::lock_guard<std::mutex> lock(mMutex);
    auto iterator = mTokens.find(iDeliveryToken);
    if (iterator == mTokens.end()) {
-      BOOST_LOG_TRIVIAL(warning) << "MqttClient::deliveryComplete: could not find token = " << iDeliveryToken ;
+      BT_LOG(WARNING) << "MqttClient::deliveryComplete: could not find token = " << iDeliveryToken ;
       return;
    }
 

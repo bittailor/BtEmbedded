@@ -14,7 +14,7 @@
 #include <typeinfo>
 #include <sstream>
 
-#include <boost/log/trivial.hpp>
+#include <Bt/Log/Logging.hpp>
 
 #include "Bt/Rf24/Rf24Controller.hpp"
 
@@ -58,8 +58,8 @@ bool Rf24DeviceController::write(RfPipe pPipe, Packet& pPacket) {
 size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    StateBase* originalState = mCurrentState;
-   BOOST_LOG_TRIVIAL(debug) << "transceiverMode " << mDevice->transceiverMode() ;
-   BOOST_LOG_TRIVIAL(debug) << "write current state is " << typeid(*mCurrentState).name() ;
+   BT_LOG(DEBUG) << "transceiverMode " << mDevice->transceiverMode() ;
+   BT_LOG(DEBUG) << "write current state is " << typeid(*mCurrentState).name() ;
    mCurrentState->ToStandbyI();
 
    RfAddress backupPipe0 = mDevice->receiveAddress(RfPipe::PIPE_0);
@@ -70,7 +70,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    mDevice->writeTransmitPayload(pData, pSize);
 
    while(mDevice->isTransmitFifoEmpty()) {
-      BOOST_LOG_TRIVIAL(warning) << "transmit FIFO empty after sending payload ==> try again " ;
+      BT_LOG(WARNING) << "transmit FIFO empty after sending payload ==> try again " ;
       mDevice->writeTransmitPayload(pData, pSize);
    }
 
@@ -90,7 +90,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    if (status.retransmitsExceeded()) {
       mDevice->clearRetransmitsExceeded();
       mDevice->flushTransmitFifo();
-      BOOST_LOG_TRIVIAL(warning) << "write: send failed retransmits exceeded!";
+      BT_LOG(WARNING) << "write: send failed retransmits exceeded!";
       sentSize = 0;
    }
 
@@ -98,7 +98,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    if (timeout) {
       mDevice->clearRetransmitsExceeded();
       mDevice->flushTransmitFifo();
-      BOOST_LOG_TRIVIAL(warning) << "write: send failed timeout!";
+      BT_LOG(WARNING) << "write: send failed timeout!";
       sentSize = 0;
    }
 
@@ -130,8 +130,8 @@ void Rf24DeviceController::stopListening() {
 
 bool Rf24DeviceController::isDataAvailable() {
 //   if (mLogTimer < Bt::Util::milliseconds()) {
-//      BOOST_LOG_TRIVIAL(debug) << "isDataAvailable: transceiverMode " << mDevice->transceiverMode() ;
-//      BOOST_LOG_TRIVIAL(debug) << "isDataAvailable: current state is " << typeid(*mCurrentState).name() ;
+//      BT_LOG(DEBUG) << "isDataAvailable: transceiverMode " << mDevice->transceiverMode() ;
+//      BT_LOG(DEBUG) << "isDataAvailable: current state is " << typeid(*mCurrentState).name() ;
 //      mLogTimer = Bt::Util::milliseconds() + 1000;
 //   }
 
@@ -182,7 +182,7 @@ bool Rf24DeviceController::read(Packet& pPacket, RfPipe& pPipe) {
    message << " end";
 
 
-   BOOST_LOG_TRIVIAL(debug) << "read: " << message.str();
+   BT_LOG(DEBUG) << "read: " << message.str();
 
 
    if(mDevice->isReceiveFifoEmpty()) {
@@ -289,7 +289,7 @@ void Rf24DeviceController::StandbyI::ToRxMode() {
 void Rf24DeviceController::StandbyI::ToTxMode() {
    if (mController->mDevice->isTransmitFifoEmpty())
    {
-      BOOST_LOG_TRIVIAL(warning) << "StandbyI::ToTxMode: transmit fifo is empty => StandbyI !";
+      BT_LOG(WARNING) << "StandbyI::ToTxMode: transmit fifo is empty => StandbyI !";
       return;
    }
 
