@@ -12,9 +12,7 @@
 #include <string.h>
 
 #include <Bt/Log/Logging.hpp>
-
 #include "Bt/Rf24/RfNetworkSocket.hpp"
-#include "Bt/Util/Logging.hpp"
 
 namespace Bt {
 namespace Rf24 {
@@ -143,7 +141,7 @@ void RfNetworkSocket::receiveInternal(Packet& pPacket) {
    }
 
    if (mFree.empty()) {
-      BT_UTIL_LOG_ERROR("drop packet");
+      BT_LOG(WARNING) << "drop packet" ;
       return;
    }
 

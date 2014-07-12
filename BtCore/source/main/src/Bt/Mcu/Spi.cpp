@@ -16,11 +16,8 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-Spi::Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed, I_Pin& pChipSelectPin)
-   : SpiPlatform(pBitOrder,pSpiMode,pSpeed)
-   , mChipSelectPin(&pChipSelectPin) {
-   mChipSelectPin->mode(I_Pin::MODE_OUTPUT);
-   mChipSelectPin->write(true);
+Spi::Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed, ChipSelect pChipSelect)
+   : SpiPlatform(pBitOrder,pSpiMode,pSpeed,pChipSelect) {
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -29,17 +26,17 @@ Spi::~Spi() {
 
 }
 
-//-------------------------------------------------------------------------------------------------
-
-
-void Spi::chipSelect(bool pSelect) {
-   mChipSelectPin->write(!pSelect);
-}
 
 //-------------------------------------------------------------------------------------------------
 
 uint8_t Spi::transfer(uint8_t pData) {
    return SpiPlatform::transfer(pData);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void Spi::transfer(uint8_t* pTransmitData, uint8_t* pReceiveData, size_t pSize) {
+   SpiPlatform::transfer(pTransmitData,pReceiveData,pSize);
 }
 
 //-------------------------------------------------------------------------------------------------

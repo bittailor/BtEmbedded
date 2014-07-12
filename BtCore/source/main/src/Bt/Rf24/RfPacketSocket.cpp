@@ -15,7 +15,6 @@
 
 #include <Bt/Log/Logging.hpp>
 
-#include "Bt/Util/Logging.hpp"
 
 namespace Bt {
 namespace Rf24 {

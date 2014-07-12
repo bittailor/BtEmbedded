@@ -8,11 +8,12 @@
 //  
 //*************************************************************************************************
 
+
 #include "Bt/Net/RmiProxyStreamSocket.hpp"
 
 #include <algorithm>
 
-#include "Bt/Util/Logging.hpp"
+#include <Bt/Log/Logging.hpp>
 
 namespace Bt {
 namespace Net {
@@ -115,7 +116,7 @@ size_t RmiProxyStreamSocket::read(uint8_t* pData, size_t pMaxSize) {
 
    if (received > maxReadSize)
    {
-      BT_UTIL_LOG_ERROR("received " << received << "> maxReadSize" << maxReadSize  );
+      BT_LOG(WARNING) << "received " << received << "> maxReadSize" << maxReadSize ;
       received = maxReadSize;
    }
 

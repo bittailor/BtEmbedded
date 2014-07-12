@@ -23,11 +23,12 @@ class Spi : public I_Spi , private SpiPlatform
 {
    public:
 
-      Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed, I_Pin& pChipSelectPin);
+
+      Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed, ChipSelect pChipSelect);
       virtual ~Spi();
 
-      virtual void chipSelect(bool pSelect);
       virtual uint8_t transfer(uint8_t pData);
+      virtual void transfer(uint8_t* pTransmitData, uint8_t* pReceiveData, size_t pSize);
    
    private:
    	  // Constructor to prohibit copy construction.
@@ -35,8 +36,6 @@ class Spi : public I_Spi , private SpiPlatform
 
       // Operator= to prohibit copy assignment
       Spi& operator=(const Spi&);
-
-      I_Pin* mChipSelectPin;
 };
 
 } // namespace Mcu

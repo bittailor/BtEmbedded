@@ -24,9 +24,9 @@ std::atomic<int> SpiPlatform::sInstanceCounter(0);
 
 //-------------------------------------------------------------------------------------------------
 
-SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed) {
+SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed, I_Spi::ChipSelect pChipSelect) {
    if(sInstanceCounter.fetch_add(1) == 0 ) {
-      initialize(pBitOrder,pSpiMode,pSpeed);
+      initialize(pBitOrder,pSpiMode,pSpeed,pChipSelect);
    }
 }
 
@@ -42,7 +42,8 @@ SpiPlatform::~SpiPlatform() {
 
 //-------------------------------------------------------------------------------------------------
 
-void SpiPlatform::initialize(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed) {
+void SpiPlatform::initialize(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode,
+                             I_Spi::Speed pSpeed, I_Spi::ChipSelect pChipSelect) {
    GpioLibrary::ensureIsInitialized();
    bcm2835_spi_begin();
    bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
@@ -64,6 +65,12 @@ void SpiPlatform::initialize(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_
       case I_Spi::SPEED_8_MHZ : bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32); break;
    }
 
+   switch (pChipSelect) {
+      case I_Spi::CHIP_SELECT_0    : bcm2835_spi_chipSelect(BCM2835_SPI_CS0); break;
+      case I_Spi::CHIP_SELECT_1    : bcm2835_spi_chipSelect(BCM2835_SPI_CS1); break;
+      case I_Spi::CHIP_SELECT_NONE : bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE); break;
+   }
+
 }
 
 
@@ -75,9 +82,14 @@ void SpiPlatform::dispose() {
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t SpiPlatform::transfer(uint8_t pData)
-{
+uint8_t SpiPlatform::transfer(uint8_t pData) {
    return bcm2835_spi_transfer(pData);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void SpiPlatform::transfer(uint8_t* pTransmitData, uint8_t* pReceiveData, size_t pSize) {
+   bcm2835_spi_transfernb(reinterpret_cast<char*>(pTransmitData), reinterpret_cast<char*>(pReceiveData), pSize);
 }
 
 //-------------------------------------------------------------------------------------------------

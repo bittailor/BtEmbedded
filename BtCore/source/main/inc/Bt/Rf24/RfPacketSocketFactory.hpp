@@ -13,7 +13,7 @@
 
 #include <memory>
 #include <Bt/Rf24/I_RfPacketSocket.hpp>
-
+#include "Bt/Mcu/I_Spi.hpp"
 
 namespace Bt {
 namespace Rf24 {
@@ -23,7 +23,7 @@ class RfPacketSocketFactory
    public:
       RfPacketSocketFactory() = default;
 
-      virtual std::shared_ptr<I_RfPacketSocket> createPacketSocket(uint8_t iChipEnable, uint8_t iChipSelect, uint8_t iNodeId);
+      virtual std::shared_ptr<I_RfPacketSocket> createPacketSocket(uint8_t iChipEnable, Mcu::I_Spi::ChipSelect iChipSelect, uint8_t iNodeId);
    
    private:
    	  // Constructor to prohibit copy construction.

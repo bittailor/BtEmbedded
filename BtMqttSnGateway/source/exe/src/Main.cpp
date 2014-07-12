@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
    BT_LOG(INFO) << "Main" ;
 
    Bt::CoreInitializer coreInitializer;
-   Bt::Mcu::Pin power(4, Bt::Mcu::Pin::MODE_OUTPUT);
+   Bt::Mcu::Pin power(27, Bt::Mcu::Pin::MODE_OUTPUT);
    sPower = &power;
    power.write(false);
    Bt::Util::delayInMilliseconds(10);

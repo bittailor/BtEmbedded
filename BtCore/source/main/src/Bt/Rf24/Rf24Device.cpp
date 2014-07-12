@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <iomanip>
+#include <cstring>
 
 #include <Bt/Log/Logging.hpp>
 #include <boost/io/ios_state.hpp>
@@ -92,11 +93,12 @@ inline uint8_t calculateMask(uint8_t pBitSize, uint8_t pOffset) {
 uint8_t readRegister(Bt::Mcu::I_Spi& pSpi, OneByteRegister pRegister)
 {
    uint8_t cmd = CMD_R_REGISTER | (pRegister & MASK_REGISTER_CMD);
-   pSpi.chipSelect(true);
-   pSpi.transfer(cmd);
-   uint8_t value = pSpi.transfer(CMD_NOP);
-   pSpi.chipSelect(false);
-   return value;
+   uint8_t txBuffer[2] = {cmd,CMD_NOP};
+   uint8_t rxBuffer[2] = {0};
+
+   pSpi.transfer(txBuffer,rxBuffer,2);
+
+   return rxBuffer[1];
 }
 
 
@@ -120,12 +122,14 @@ Util::StaticArray<uint8_t,5> readRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister
    Util::StaticArray<uint8_t,5> value;
    uint8_t cmd = CMD_R_REGISTER | (pRegister & MASK_REGISTER_CMD);
 
-   pSpi.chipSelect(true);
-   pSpi.transfer(cmd);
+   uint8_t txBuffer[6] = {cmd,CMD_NOP,CMD_NOP,CMD_NOP,CMD_NOP,CMD_NOP};
+   uint8_t rxBuffer[6] = {0};
+
+   pSpi.transfer(txBuffer,rxBuffer,6);
+
    for (size_t i = 0 ; i < value.size()  ; ++i) {
-      value[i] = pSpi.transfer(CMD_NOP);
+      value[i] = rxBuffer[i+1];
    }
-   pSpi.chipSelect(false);
 
    return value;
 }
@@ -136,11 +140,12 @@ uint8_t writeRegister(Bt::Mcu::I_Spi& pSpi, OneByteRegister pRegister, uint8_t p
 {
    uint8_t cmd = CMD_W_REGISTER | (pRegister & MASK_REGISTER_CMD);
 
-   pSpi.chipSelect(true);
-   uint8_t status = pSpi.transfer(cmd);
-   pSpi.transfer(pValue);
-   pSpi.chipSelect(false);
-   return status;
+   uint8_t txBuffer[2] = {cmd,pValue};
+   uint8_t rxBuffer[2] = {0};
+
+   pSpi.transfer(txBuffer,rxBuffer,2);
+
+   return rxBuffer[0];
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -162,13 +167,12 @@ uint8_t writeRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister pRegister, Util::St
 {
    uint8_t cmd = CMD_W_REGISTER | (pRegister & MASK_REGISTER_CMD);
 
-   pSpi.chipSelect(true);
-   uint8_t status = pSpi.transfer(cmd);
-   for (size_t i = 0 ; i < pValue.size() ; ++i) {
-      pSpi.transfer(pValue[i]);
-   }
-   pSpi.chipSelect(false);
-   return status;
+   uint8_t txBuffer[6] = {cmd,pValue[0],pValue[1],pValue[2],pValue[3],pValue[4]};
+   uint8_t rxBuffer[6] = {0};
+
+   pSpi.transfer(txBuffer,rxBuffer,6);
+
+   return rxBuffer[0];
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -484,9 +488,7 @@ bool Rf24Device::isTransmitFifoFull() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24Device::flushTransmitFifo() {
-   mSpi->chipSelect(true);
    mSpi->transfer(CMD_FLUSH_TX);
-   mSpi->chipSelect(false);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -504,9 +506,7 @@ bool Rf24Device::isReceiveFifoFull() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24Device::flushReceiveFifo() {
-   mSpi->chipSelect(true);
    mSpi->transfer(CMD_FLUSH_RX);
-   mSpi->chipSelect(false);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -521,12 +521,12 @@ size_t Rf24Device::writeTransmitPayload(uint8_t* pData, size_t pSize) {
       dataSize = MAX_PAYLOAD_SIZE;
    }
 
-   mSpi->chipSelect(true);
-   mSpi->transfer(CMD_W_TX_PAYLOAD);
-   for (size_t i = 0; i < dataSize ; ++i) {
-      mSpi->transfer(pData[i]);
-   }
-   mSpi->chipSelect(false);
+   uint8_t txBuffer[MAX_PAYLOAD_SIZE + 1] = {CMD_W_TX_PAYLOAD};
+   uint8_t rxBuffer[MAX_PAYLOAD_SIZE + 1] = {0};
+
+   std::memcpy(txBuffer+1,pData,dataSize);
+
+   mSpi->transfer(txBuffer,rxBuffer,dataSize+1);
 
    return dataSize;
 }
@@ -534,11 +534,13 @@ size_t Rf24Device::writeTransmitPayload(uint8_t* pData, size_t pSize) {
 //-------------------------------------------------------------------------------------------------
 
 size_t Rf24Device::availableReceivePayload() {
-   mSpi->chipSelect(true);
-   mSpi->transfer(CMD_R_RX_PL_WID);
-   size_t size = mSpi->transfer(CMD_NOP);
-   mSpi->chipSelect(false);
-   return size;
+
+   uint8_t txBuffer[2] = {CMD_R_RX_PL_WID,CMD_NOP};
+   uint8_t rxBuffer[2] = {0};
+
+   mSpi->transfer(txBuffer,rxBuffer,2);
+
+   return rxBuffer[1];
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -557,25 +559,21 @@ size_t Rf24Device::readReceivePayload(RfPipe& pPipe, uint8_t* pData, size_t pSiz
 
    size_t availableSize = availableReceivePayload();
    size_t dataSize;
-   size_t stuffingSize;
 
    if (pSize >= availableSize) {
       dataSize = availableSize;
-      stuffingSize = 0;
    } else {
       dataSize = pSize;
-      stuffingSize = availableSize - pSize;
    }
 
-   mSpi->chipSelect(true);
-   mSpi->transfer(CMD_R_RX_PAYLOAD);
-   for (size_t i = 0; i < dataSize ; ++i) {
-      pData[i] = mSpi->transfer(CMD_NOP);
-   }
-   for (size_t i = 0; i < stuffingSize ; ++i) {
-      mSpi->transfer(CMD_NOP);
-   }
-   mSpi->chipSelect(false);
+   uint8_t txBuffer[MAX_PAYLOAD_SIZE + 1] = {CMD_R_RX_PAYLOAD};
+   uint8_t rxBuffer[MAX_PAYLOAD_SIZE + 1] = {0};
+   std::fill(txBuffer + 1,txBuffer + MAX_PAYLOAD_SIZE + 1,CMD_NOP);
+
+   mSpi->transfer(txBuffer,rxBuffer,availableSize + 1);
+
+   std::memcpy(pData,rxBuffer+1,pSize);
+
    return dataSize;
 }
 

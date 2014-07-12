@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <chrono>
 #include <iostream>
+#include <thread>
+#include <signal.h>
 
 #include <Bt/Util/Timing.hpp>
 #include <Bt/CoreInitializer.hpp>
@@ -22,10 +24,10 @@
 #include "Bt/Rf24/RfNetworkSocket.hpp"
 #include "Bt/Rf24/I_RfNetworkSocket.hpp"
 
+//-------------------------------------------------------------------------------------------------
 
-#include "Bt/Workcycle/MainWorkcycle.hpp"
-
-using Bt::Workcycle::MainWorkcycle;
+#define PIN_POWER 27
+#define PIN_CHIP_ENABLE 25
 
 //-------------------------------------------------------------------------------------------------
 
@@ -57,9 +59,11 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
                    << "ms."
                    << std::endl << std::endl;
 
+
+         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
          start();
       }
-
 
    private:
       Bt::Rf24::I_RfNetworkSocket* mSocket;
@@ -71,13 +75,31 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
 
 //-------------------------------------------------------------------------------------------------
 
-#define CHIP_ENABLE 17
-#define CHIP_SELECT 8
+std::atomic<bool> sRunning(true);
+
+//-------------------------------------------------------------------------------------------------
+
+void signalCallbackHandler(int signum) {
+   printf("\nstopping ...\n");
+   sRunning.store(false);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+
+void workcycle(uint8_t pNodeId, uint8_t pPingId, std::string message, std::atomic<bool>& pRunning) {
+
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
 
 int main(int argc, const char* argv[]) {
    if (argc < 4) {
       return printf("Usage %s SelfNodeId PingNodeId Message \n", argv[0]);
    }
+   signal(SIGINT, signalCallbackHandler);
 
    uint8_t nodeId = atoi(argv[1]);
    uint8_t pingId = atoi(argv[2]);
@@ -85,41 +107,33 @@ int main(int argc, const char* argv[]) {
 
    Bt::CoreInitializer coreInitializer;
 
-   Bt::Mcu::Pin power(4, Bt::Mcu::I_Pin::MODE_OUTPUT);
 
-   std::cout << "Toggle power ...";
-   power.write(false);
-   Bt::Util::delayInMilliseconds(100);
-   std::cout << "...";
+   Bt::Mcu::Pin power(PIN_POWER, Bt::Mcu::I_Pin::MODE_OUTPUT);
+   printf("power on\n");
    power.write(true);
-   Bt::Util::delayInMilliseconds(10);
-   std::cout << "...OK" << std::endl;
 
-
-   Bt::Mcu::Pin chipEnable(CHIP_ENABLE, Bt::Mcu::I_Pin::MODE_OUTPUT);
-   Bt::Mcu::Pin chipSelect(CHIP_SELECT, Bt::Mcu::I_Pin::MODE_OUTPUT);
+   Bt::Mcu::Pin chipEnable(PIN_CHIP_ENABLE, Bt::Mcu::I_Pin::MODE_OUTPUT);
    Bt::Mcu::Spi spi(Bt::Mcu::I_Spi::BIT_ORDER_MSBFIRST,
                     Bt::Mcu::I_Spi::MODE_0,
                     Bt::Mcu::I_Spi::SPEED_8_MHZ,
-                    chipSelect);
+                    Bt::Mcu::I_Spi::CHIP_SELECT_0);
 
    Bt::Rf24::Rf24Device device(spi,chipEnable);
    Bt::Rf24::Rf24DeviceController controller(device);
    Bt::Rf24::RfNetworkSocket socket(nodeId, controller);
 
    PingClient pingClient(socket, pingId, message);
-
    socket.setListener(pingClient);
-
    pingClient.start();
 
-   MainWorkcycle workcycle;
-   workcycle.add(socket);
 
-   printf("Enter ping client workcycle for node %i => node %i\n",(int) nodeId, (int) pingId);
+   printf("enter ping client workcycle for node %i\n",(int) nodeId);
+   while(sRunning.load()) {
+      socket.workcycle();
+   }
 
-   workcycle.run();
-
+   printf("power off\n");
+   power.write(false);
    return 0;
 }
 

@@ -20,6 +20,8 @@ template<typename T, size_t SIZE>
 class StaticArray {
    public:
 
+      enum {ARRAY_SIZE = SIZE};
+
       typedef T value_type;
       typedef T* iterator;
       typedef T const *  const_iterator;

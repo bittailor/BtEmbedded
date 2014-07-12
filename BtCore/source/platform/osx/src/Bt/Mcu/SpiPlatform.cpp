@@ -16,7 +16,7 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed) {
+SpiPlatform::SpiPlatform(I_Spi::BitOrder pBitOrder, I_Spi::Mode pSpiMode, I_Spi::Speed pSpeed, I_Spi::ChipSelect pChipSelect) {
 
 }
 
@@ -28,8 +28,13 @@ SpiPlatform::~SpiPlatform() {
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t SpiPlatform::transfer(uint8_t data) {
-   return 0u;
+uint8_t SpiPlatform::transfer(uint8_t pData) {
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void SpiPlatform::transfer(uint8_t* pTransmitData, uint8_t* pReceiveData, size_t pSize) {
 }
 
 //-------------------------------------------------------------------------------------------------

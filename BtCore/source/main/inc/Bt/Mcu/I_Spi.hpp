@@ -11,7 +11,9 @@
 #ifndef INC__Bt_Mcu_I_Spi__hpp
 #define INC__Bt_Mcu_I_Spi__hpp
 
-#include <stdint.h>
+#include <cstdint>
+#include <cstddef>
+
 
 namespace Bt {
 namespace Mcu {
@@ -22,11 +24,12 @@ class I_Spi {
       enum BitOrder {BIT_ORDER_LSBFIRST , BIT_ORDER_MSBFIRST};
       enum Mode {MODE_0,MODE_1,MODE_2,MODE_3};
       enum Speed {SPEED_4_MHZ, SPEED_8_MHZ};
+      enum ChipSelect {CHIP_SELECT_0, CHIP_SELECT_1, CHIP_SELECT_NONE};
 
       virtual ~I_Spi() {}
       
-      virtual void chipSelect(bool pSelect) = 0;
-      virtual uint8_t transfer(uint8_t pData) = 0;
+      virtual uint8_t transfer(uint8_t pData)=0;
+      virtual void transfer(uint8_t* pTransmitData, uint8_t* pReceiveData, size_t pSize) = 0;
 };
 
 } // namespace Mcu

@@ -20,7 +20,7 @@ class SpiTest : public ::testing::Test {
    
    protected:
       
-      SpiTest(): mSpi(Spi::BIT_ORDER_MSBFIRST, Spi::MODE_0, Spi::SPEED_4_MHZ, mChipSelect) {
+      SpiTest(): mSpi(Spi::BIT_ORDER_MSBFIRST, Spi::MODE_0, Spi::SPEED_4_MHZ, Spi::CHIP_SELECT_0) {
       }
 
       virtual void SetUp() {
@@ -30,7 +30,6 @@ class SpiTest : public ::testing::Test {
          
       }
 
-      PinGMock mChipSelect;
       Spi mSpi;
 
 };

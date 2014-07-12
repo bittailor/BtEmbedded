@@ -54,7 +54,7 @@ class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
 #include <EEPROM.h>
 #include <Arduino.h>
 
-#define CHIP_ENABLE 9
+#define PIN_CHIP_ENABLE 9
 #define CHIP_SELECT 10
 
 //void setNodeId() {
@@ -80,8 +80,7 @@ int main() {
    uint8_t nodeId = 12;
 
 #else
-#define CHIP_ENABLE 17
-#define CHIP_SELECT 8
+#define PIN_CHIP_ENABLE 17
 
 int main(int argc, const char* argv[]) {
    Bt::CoreInitializer coreInitializer;
@@ -97,12 +96,11 @@ int main(int argc, const char* argv[]) {
 
 
 
-   Bt::Mcu::Pin chipEnable(CHIP_ENABLE, Bt::Mcu::I_Pin::MODE_OUTPUT);
-   Bt::Mcu::Pin chipSelect(CHIP_SELECT, Bt::Mcu::I_Pin::MODE_OUTPUT);
+   Bt::Mcu::Pin chipEnable(PIN_CHIP_ENABLE, Bt::Mcu::I_Pin::MODE_OUTPUT);
    Bt::Mcu::Spi spi(Bt::Mcu::I_Spi::BIT_ORDER_MSBFIRST,
                     Bt::Mcu::I_Spi::MODE_0,
                     Bt::Mcu::I_Spi::SPEED_8_MHZ,
-                    chipSelect);
+                    Bt::Mcu::I_Spi::CHIP_SELECT_0);
 
    Bt::Rf24::Rf24Device device(spi,chipEnable);
    Bt::Rf24::Rf24DeviceController controller(device);

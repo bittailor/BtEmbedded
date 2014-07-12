@@ -53,7 +53,7 @@ namespace Rf24 {
 //-------------------------------------------------------------------------------------------------
 
 struct Rf24DeviceIntegrationTestParameters {
-      uint8_t chipSelect;
+      Mcu::I_Spi::ChipSelect chipSelect;
       uint8_t chipEnable;
 };
 
@@ -65,9 +65,8 @@ class Rf24DeviceIntegrationTest : public ::testing::Test, public ::testing::With
    protected:
       
       Rf24DeviceIntegrationTest()
-         : mPower(4, Mcu::I_Pin::MODE_OUTPUT)
-         , mChipSelect(GetParam().chipSelect, Mcu::I_Pin::MODE_OUTPUT)
-         , mSpi(Mcu::I_Spi::BIT_ORDER_MSBFIRST, Mcu::I_Spi::MODE_0, Mcu::I_Spi::SPEED_8_MHZ , mChipSelect)
+         : mPower(27, Mcu::I_Pin::MODE_OUTPUT)
+         , mSpi(Mcu::I_Spi::BIT_ORDER_MSBFIRST, Mcu::I_Spi::MODE_0, Mcu::I_Spi::SPEED_8_MHZ , GetParam().chipSelect)
          , mChipEnable(GetParam().chipEnable, Mcu::I_Pin::MODE_OUTPUT)
          , mDevice(powerOn(),mChipEnable) {
 
@@ -89,7 +88,6 @@ class Rf24DeviceIntegrationTest : public ::testing::Test, public ::testing::With
       }
 
       Mcu::Pin mPower;
-      Mcu::Pin mChipSelect;
       Mcu::Spi mSpi;
       Mcu::Pin mChipEnable;
 
@@ -101,8 +99,8 @@ class Rf24DeviceIntegrationTest : public ::testing::Test, public ::testing::With
 //-------------------------------------------------------------------------------------------------
 
 INSTANTIATE_TEST_CASE_P(Default, Rf24DeviceIntegrationTest,::testing::Values(
-         Rf24DeviceIntegrationTestParameters{8,17},
-         Rf24DeviceIntegrationTestParameters{7,24}
+         Rf24DeviceIntegrationTestParameters{Mcu::I_Spi::CHIP_SELECT_0,25}
+         //Rf24DeviceIntegrationTestParameters{7,24}
 ));
 
 

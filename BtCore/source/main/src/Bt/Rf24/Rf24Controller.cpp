@@ -56,7 +56,6 @@ bool Rf24DeviceController::write(RfPipe pPipe, Packet& pPacket) {
 //-------------------------------------------------------------------------------------------------
 
 size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
-
    StateBase* originalState = mCurrentState;
    BT_LOG(DEBUG) << "transceiverMode " << mDevice->transceiverMode() ;
    BT_LOG(DEBUG) << "write current state is " << typeid(*mCurrentState).name() ;
@@ -74,30 +73,26 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
       mDevice->writeTransmitPayload(pData, pSize);
    }
 
-
    mCurrentState->ToTxMode();
-
+   Util::Timeout timeout(100); // MaxRetry [15] * ( MaxRetryDelay [4ms] + MaxTrasnmittionTime [0.5ms]) => ~100ms
    I_Rf24Device::Status status = mDevice->status();
-   Util::Timeout timeout(10000);
    while(!(status.dataSent() || status.retransmitsExceeded() || timeout) ) {
+      Util::delayInMicroseconds(5);
       status = mDevice->status();
-      // printf("TxMode::ToStandbyI: autoRetransmitCounter = %u \n", (mDevice->autoRetransmitCounter()) );
-      Util::delayInMicroseconds(10);
    }
 
    size_t sentSize = pSize;
+   bool flushTransmitFifo = false;
 
    if (status.retransmitsExceeded()) {
       mDevice->clearRetransmitsExceeded();
-      mDevice->flushTransmitFifo();
+      flushTransmitFifo = true;
       BT_LOG(WARNING) << "write: send failed retransmits exceeded!";
       sentSize = 0;
    }
 
-
    if (timeout) {
-      mDevice->clearRetransmitsExceeded();
-      mDevice->flushTransmitFifo();
+      flushTransmitFifo = true;
       BT_LOG(WARNING) << "write: send failed timeout!";
       sentSize = 0;
    }
@@ -106,9 +101,14 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
       mDevice->clearDataSent();
    }
 
+   mCurrentState->ToStandbyI();
+
    mDevice->receiveAddress(RfPipe::PIPE_0, backupPipe0);
 
-   mCurrentState->ToStandbyI();
+   if (flushTransmitFifo) {
+      mDevice->flushTransmitFifo();
+   }
+
    originalState->ApplyTo(*mCurrentState);
 
    return sentSize;

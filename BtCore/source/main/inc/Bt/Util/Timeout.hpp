@@ -27,6 +27,7 @@ class Timeout
 
       explicit operator bool() const;
 
+      bool lastChekTimedOut();
    
    private:
       mutable bool mTimedOut;
