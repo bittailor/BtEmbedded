@@ -100,7 +100,6 @@ class Rf24Device : public I_Rf24Device
 
       Mcu::I_Spi* mSpi;
       Mcu::I_Pin* mChipEnable;
-
 };
 
 } // namespace Device

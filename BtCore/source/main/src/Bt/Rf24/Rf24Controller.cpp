@@ -27,7 +27,8 @@ namespace Rf24 {
 //-------------------------------------------------------------------------------------------------
 
 Rf24DeviceController::Rf24DeviceController(I_Rf24Device& pDevice)
-: mDevice(&pDevice), mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this), mCurrentState(&mPowerDown), mLogTimer(Bt::Util::milliseconds() + 1000) {
+: mDevice(&pDevice), mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this),
+  mCurrentState(&mPowerDown), mLogTimer(Bt::Util::milliseconds() + 1000), mIrq(24, Mcu::I_Pin::MODE_INPUT) {
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -73,13 +74,20 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
       mDevice->writeTransmitPayload(pData, pSize);
    }
 
+   if(!mIrq.read()) {
+      BT_LOG(ERROR) << " **** IRQ already set before transmit - status " << mDevice->status();
+   }
+
    mCurrentState->ToTxMode();
    Util::Timeout timeout(100); // MaxRetry [15] * ( MaxRetryDelay [4ms] + MaxTrasnmittionTime [0.5ms]) => ~100ms
-   I_Rf24Device::Status status = mDevice->status();
-   while(!(status.dataSent() || status.retransmitsExceeded() || timeout) ) {
-      Util::delayInMicroseconds(5);
-      status = mDevice->status();
+
+   while(mIrq.read() && !timeout.check() ) {
+      BT_LOG(DEBUG) << "retransmit counter " << (int)mDevice->autoRetransmitCounter();
+      Util::delayInMicroseconds(1);
    }
+
+   I_Rf24Device::Status status = mDevice->status();
+   BT_LOG(DEBUG) << "status after IRQ " << status;
 
    size_t sentSize = pSize;
    bool flushTransmitFifo = false;
@@ -91,7 +99,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
       sentSize = 0;
    }
 
-   if (timeout) {
+   if (timeout.lastChekTimedOut()) {
       flushTransmitFifo = true;
       BT_LOG(WARNING) << "write: send failed timeout!";
       sentSize = 0;
@@ -103,16 +111,22 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    mCurrentState->ToStandbyI();
 
-   mDevice->receiveAddress(RfPipe::PIPE_0, backupPipe0);
+   if(!mIrq.read()) {
+      BT_LOG(ERROR) << " **** IRQ still set after clean - status =  " << mDevice->status();
+   }
+
 
    if (flushTransmitFifo) {
       mDevice->flushTransmitFifo();
    }
 
+   mDevice->receiveAddress(RfPipe::PIPE_0, backupPipe0);
+
    originalState->ApplyTo(*mCurrentState);
 
    return sentSize;
 }
+
 
 //-------------------------------------------------------------------------------------------------
 
@@ -214,9 +228,9 @@ size_t Rf24DeviceController::read(uint8_t* pData, size_t pSize, RfPipe& pPipe) {
 void Rf24DeviceController::configureDevice() {
 
    mDevice->dynamicPayloadFeatureEnabled(true);
-   mDevice->autoRetransmitDelay(0x6);
+   mDevice->autoRetransmitDelay(0x15);
    mDevice->autoRetransmitCount(0xf);
-   mDevice->channel(80);
+   mDevice->channel(10);
    mDevice->dataRate(I_Rf24Device::DR_1_MBPS);
 
 
@@ -282,6 +296,7 @@ void Rf24DeviceController::StandbyI::ToRxMode() {
    mController->mDevice->chipEnable(true);
    Util::delayInMicroseconds(130);
    mController->mCurrentState = &mController->mRxMode;
+   BT_LOG(DEBUG) << "RxMode";
 }
 
 //-------------------------------------------------------------------------------------------------

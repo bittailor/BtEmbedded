@@ -87,7 +87,7 @@ TEST_F(InterruptPinIntegrationTest, multipleFailingInterrupt) {
       outputPin.write(false);
       Util::Timeout timeout(1000);
       while(counter.load() <= i){
-         ASSERT_FALSE(timeout);
+         ASSERT_FALSE(timeout.check());
          std::this_thread::yield();
       }
       outputPin.write(true);

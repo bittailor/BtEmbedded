@@ -8,6 +8,7 @@
 //  
 //*************************************************************************************************
 
+#include <Bt/Log/Logging.hpp>
 #include "Bt/Util/Timeout.hpp"
 #include "Bt/Util/Timing.hpp"
 
@@ -30,12 +31,14 @@ Timeout::~Timeout() {
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::operator bool() const {
+bool Timeout::check() {
    if (mTimedOut) {
       return true;
    }
 
-   if ((milliseconds() - mStart) > mMilliseconds) {
+   uint32_t up = milliseconds() - mStart;
+   //BT_LOG(DEBUG) << "timeout check - " << up << " > " << mMilliseconds;
+   if (up > mMilliseconds) {
       mTimedOut = true;
       return true;
    }
@@ -45,7 +48,7 @@ Timeout::operator bool() const {
 
 //-------------------------------------------------------------------------------------------------
 
-bool Timeout::lastChekTimedOut() {
+bool Timeout::lastChekTimedOut() const {
    return mTimedOut;
 }
 

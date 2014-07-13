@@ -14,6 +14,7 @@
 #include <iostream>
 #include <thread>
 #include <signal.h>
+#include <sstream>
 
 #include <Bt/Util/Timing.hpp>
 #include <Bt/CoreInitializer.hpp>
@@ -34,14 +35,16 @@
 class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
    public:
 
-      PingClient(Bt::Rf24::I_RfNetworkSocket& pSocket, uint8_t pPingId, std::string pMessage)
-      : mSocket(&pSocket), mPingId(pPingId), mMessage(pMessage), mCounter(0) {
+      PingClient(Bt::Rf24::I_RfNetworkSocket& pSocket, uint8_t pPingId, int pDelay, std::string pMessage)
+      : mSocket(&pSocket), mPingId(pPingId), mDelay(pDelay), mMessage(pMessage), mCounter(0) {
       }
 
       void start() {
          Bt::Rf24::I_RfNetworkSocket::Packet packet;
          packet.destination(mPingId);
-         packet.writePayload(&mCounter, sizeof(mCounter));
+         std::stringstream message;
+         message << "M-" << mCounter;
+         packet.writePayload(message.str().c_str(), message.str().size());
          printf("Send Packet %i => %i [%i] \n", mCounter , (int)packet.destination(), (int)packet.size());
          mStart = std::chrono::system_clock::now();
          mCounter++;
@@ -51,8 +54,8 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
       virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& pPacket) {
          std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
          std::cout << "Packet from " << (int)pPacket.source() << " => " << (int)pPacket.destination() << std::endl;
-
-         std::cout << "Id: " << *(int*)pPacket.payload() << std::endl;
+         std::string message((char*)pPacket.payload(),(char*)pPacket.payload() + pPacket.size());
+         std::cout << "Message: " << message << std::endl;
 
          std::cout << "Ping took "
                    << std::chrono::duration_cast<std::chrono::milliseconds>(end - mStart).count()
@@ -60,14 +63,14 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
                    << std::endl << std::endl;
 
 
-         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
+         std::this_thread::sleep_for(std::chrono::milliseconds(mDelay));
          start();
       }
 
    private:
       Bt::Rf24::I_RfNetworkSocket* mSocket;
       uint8_t mPingId;
+      int mDelay;
       std::string mMessage;
       int mCounter;
       std::chrono::time_point<std::chrono::system_clock> mStart;
@@ -96,14 +99,15 @@ void workcycle(uint8_t pNodeId, uint8_t pPingId, std::string message, std::atomi
 
 
 int main(int argc, const char* argv[]) {
-   if (argc < 4) {
-      return printf("Usage %s SelfNodeId PingNodeId Message \n", argv[0]);
+   if (argc < 5) {
+      return printf("Usage %s SelfNodeId PingNodeId Delay Message \n", argv[0]);
    }
    signal(SIGINT, signalCallbackHandler);
 
    uint8_t nodeId = atoi(argv[1]);
    uint8_t pingId = atoi(argv[2]);
-   std::string message = argv[3];
+   int delay = atoi(argv[3]);
+   std::string message = argv[4];
 
    Bt::CoreInitializer coreInitializer;
 
@@ -122,7 +126,7 @@ int main(int argc, const char* argv[]) {
    Bt::Rf24::Rf24DeviceController controller(device);
    Bt::Rf24::RfNetworkSocket socket(nodeId, controller);
 
-   PingClient pingClient(socket, pingId, message);
+   PingClient pingClient(socket, pingId, delay, message);
    socket.setListener(pingClient);
    pingClient.start();
 

@@ -17,7 +17,7 @@
 #include <cstring>
 
 #include <Bt/Log/Logging.hpp>
-#include <boost/io/ios_state.hpp>
+
 
 #include "Bt/Mcu/I_Spi.hpp"
 #include "Bt/Util/Timing.hpp"
@@ -194,19 +194,7 @@ Rf24Device::~Rf24Device() {
 
 }
 
-//-------------------------------------------------------------------------------------------------
 
-template<typename T> struct HexLogStreamer {
-      const int witdh;
-      const T value;
-
-};
-
-template<typename T> std::ostream& operator<<(std::ostream& iOut, const HexLogStreamer<T>& iStreamer) {
-   boost::io::ios_flags_saver  ifs( iOut );
-   iOut << std::showbase << std::internal << std::setfill('0') << std::setw(iStreamer.witdh) << std::hex << iStreamer.value;
-   return iOut;
-}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -216,7 +204,7 @@ Rf24Device::Status Rf24Device::status()
    uint8_t status = readRegister(*mSpi, REGISTER_STATUS);
    if(status != sLastStatus) {
       sLastStatus = status;
-      BT_LOG(DEBUG) << "status = " << HexLogStreamer<int>{4,status};
+      BT_LOG(DEBUG) << "status = " << Log::HexLogStreamer<int>{4,status};
    }
    return Status(status);
 }

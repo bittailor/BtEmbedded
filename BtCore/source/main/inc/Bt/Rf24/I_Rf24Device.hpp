@@ -17,6 +17,8 @@
 #include "Bt/Util/StaticArray.hpp"
 #include "Bt/Rf24/RfPipe.hpp"
 #include "Bt/Rf24/RfAddress.hpp"
+#include "Bt/Log/Logging.hpp"
+
 
 namespace Bt {
 namespace Rf24 {
@@ -56,6 +58,8 @@ class I_Rf24Device {
 
          private:
             uint8_t mStatus;
+
+            friend std::ostream& operator<<(std::ostream& iStream, I_Rf24Device::Status iStatus);
       };
 
 
@@ -130,6 +134,12 @@ inline std::ostream& operator<<(std::ostream& iStream, I_Rf24Device::Transceiver
    }
    return iStream;
 }
+
+inline std::ostream& operator<<(std::ostream& iStream, I_Rf24Device::Status iStatus) {
+   iStream  << Log::HexLogStreamer<int>{4,iStatus.mStatus};
+   return iStream;
+}
+
 
 } // namespace Device
 } // namespace Bt

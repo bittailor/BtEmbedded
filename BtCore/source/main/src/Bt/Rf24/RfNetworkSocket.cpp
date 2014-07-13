@@ -129,7 +129,19 @@ bool RfNetworkSocket::resetListener() {
 
 bool RfNetworkSocket::sendInternal(Packet& pPacket) {
    RfPipe pipe = mRouting.calculateRoutingPipe(mNodeId, pPacket.destination());
-   return mController->write(pipe, pPacket.mControllerPackage);
+
+   int counter = 0;
+   while(!mController->write(pipe, pPacket.mControllerPackage)) {
+      counter++;
+      if (counter >= 5) {
+         return false;
+      }
+      BT_LOG(WARNING) << "send failed do retry " << counter <<  " after delay";
+      Util::delayInMicroseconds(counter*100);
+   }
+
+
+   return true;
 }
 
 //-------------------------------------------------------------------------------------------------

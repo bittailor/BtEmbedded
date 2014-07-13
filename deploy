@@ -1,0 +1,23 @@
+#!/usr/bin/ruby
+
+require 'FileUtils'
+
+pis = Dir["/Volumes/Pi*"]
+puts "Deploy to mounted pis: #{pis.join(' ')}"
+puts
+
+artefacts =
+[
+   "BtCore/target/pi_cross_debug/PingClient",
+   "BtCore/target/pi_cross_debug/PingServer"
+   #"BtMqttSnGateway/target/pi_cross_debug/BtMqttSnGateway"
+]
+
+pis.each do |pi|
+   puts "** deploy to #{pi} ..."
+   artefacts.each do |artefact|
+      FileUtils.cp(artefact, "#{pi}/Code/Run", :verbose => true)
+   end
+   puts "** ... done"
+   puts
+end
