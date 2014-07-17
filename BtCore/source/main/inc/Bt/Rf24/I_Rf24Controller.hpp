@@ -24,6 +24,7 @@ class I_Rf24DeviceController {
 
       class Packet;
       class Configuration;
+      class I_Listener;
 
       enum { MAX_PAYLOAD_SIZE = I_Rf24Device::MAX_PAYLOAD_SIZE };
 
@@ -43,6 +44,13 @@ class I_Rf24DeviceController {
 
       virtual size_t read(uint8_t* pBuffer, size_t pSize) = 0;
       virtual size_t read(uint8_t* pBuffer, size_t pSize, RfPipe& pPipe) = 0;
+};
+
+class I_Rf24DeviceController::I_Listener {
+      virtual ~I_Listener() {}
+
+      void received(Packet& pPacket, RfPipe& pPipe);
+
 };
 
 class I_Rf24DeviceController::Packet {

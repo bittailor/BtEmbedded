@@ -27,8 +27,8 @@ namespace Rf24 {
 //-------------------------------------------------------------------------------------------------
 
 Rf24DeviceController::Rf24DeviceController(I_Rf24Device& pDevice)
-: mDevice(&pDevice), mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this),
-  mCurrentState(&mPowerDown), mLogTimer(Bt::Util::milliseconds() + 1000), mIrq(24, Mcu::I_Pin::MODE_INPUT) {
+: mDevice(&pDevice), mInterruptPin(24, Mcu::I_InterruptPin::Edge::FALLING) , mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this),
+  mCurrentState(&mPowerDown), mLogTimer(Bt::Util::milliseconds() + 1000){
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -74,14 +74,14 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
       mDevice->writeTransmitPayload(pData, pSize);
    }
 
-   if(!mIrq.read()) {
+   if(!mInterruptPin.read()) {
       BT_LOG(ERROR) << " **** IRQ already set before transmit - status " << mDevice->status();
    }
 
    mCurrentState->ToTxMode();
    Util::Timeout timeout(100); // MaxRetry [15] * ( MaxRetryDelay [4ms] + MaxTrasnmittionTime [0.5ms]) => ~100ms
 
-   while(mIrq.read() && !timeout.check() ) {
+   while(mInterruptPin.read() && !timeout.check() ) {
       BT_LOG(DEBUG) << "retransmit counter " << (int)mDevice->autoRetransmitCounter();
       Util::delayInMicroseconds(1);
    }
@@ -111,7 +111,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
 
    mCurrentState->ToStandbyI();
 
-   if(!mIrq.read()) {
+   if(!mInterruptPin.read()) {
       BT_LOG(ERROR) << " **** IRQ still set after clean - status =  " << mDevice->status();
    }
 
@@ -249,6 +249,12 @@ void Rf24DeviceController::configureDevice() {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+void Rf24DeviceController::onInterrupt() {
+   BT_LOG(INFO) << " --- onInterrupt ----";
+}
+
+//-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
 void Rf24DeviceController::PowerDown::ToStandbyI() {
@@ -256,7 +262,7 @@ void Rf24DeviceController::PowerDown::ToStandbyI() {
    mController->mDevice->flushReceiveFifo();
    mController->mDevice->flushTransmitFifo();
    mController->configureDevice();
-
+   mController->mInterruptPin.enable(std::bind(&Rf24DeviceController::onInterrupt,mController));
    mController->mDevice->powerUp(true);
    Util::delayInMicroseconds(150);
 
@@ -282,6 +288,7 @@ void Rf24DeviceController::PowerDown::ToTxMode() {
 
 void Rf24DeviceController::StandbyI::ToPowerDown() {
    mController->mDevice->powerUp(false);
+   mController->mInterruptPin.disable();
    mController->mCurrentState = &mController->mPowerDown;
 }
 

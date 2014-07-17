@@ -17,7 +17,8 @@
 
 #include <Bt/Rf24/I_Rf24Controller.hpp>
 #include "Bt/Rf24/I_Rf24Device.hpp"
-#include "Bt/Mcu/Pin.hpp"
+#include <Bt/Mcu/InterruptPin.hpp>
+#include <Bt/Mcu/Pin.hpp>
 
 namespace Bt {
 namespace Rf24 {
@@ -107,16 +108,18 @@ class Rf24DeviceController : public I_Rf24DeviceController
       Rf24DeviceController& operator=(const Rf24DeviceController&);
 
       void configureDevice();
+      void onInterrupt();
 
       Configuration mConfiguration;
       I_Rf24Device* mDevice;
+      Mcu::InterruptPin mInterruptPin;
       PowerDown mPowerDown;
       StandbyI mStandbyI;
       RxMode mRxMode;
       TxMode mTxMode;
       StateBase* mCurrentState;
       uint32_t mLogTimer;
-      Mcu::Pin mIrq;
+
 #include <random>
 
 
