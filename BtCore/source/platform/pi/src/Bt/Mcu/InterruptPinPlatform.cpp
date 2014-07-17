@@ -154,7 +154,6 @@ void InterruptPinPlatform::disable() {
 
 bool InterruptPinPlatform::read() {
    std::string line = readLine(mPinPath + "/value");
-   std::cout << "line is '" << line << "'" << std::endl;
    return line == "1";
 }
 
