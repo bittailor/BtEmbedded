@@ -46,6 +46,14 @@ void writeToFile(const std::string& path, const std::string& value) {
    outputFile.close();
 }
 
+std::string readLine(const std::string& path) {
+   std::ifstream inputFile(path);
+   std::string line;
+   std::getline(inputFile, line);
+   inputFile.close();
+   return line;
+}
+
 std::string edgeToString(I_InterruptPin::Edge iEdge) {
    switch(iEdge) {
       case I_InterruptPin::Edge::FALLING : return "falling";
@@ -118,7 +126,7 @@ void InterruptPinPlatform::enable(std::function<void()> iInterruptHandler) {
    CHECK_SUCCESS(ioctl(mPinFileHandle, FIONREAD, &size));
    for (int i = 0 ; i < size ; ++i) {
       char c;
-      read (mPinFileHandle, &c, 1);
+      ::read(mPinFileHandle, &c, 1);
    }
 
    mPollThread = std::thread(&InterruptPinPlatform::pollCycle, this, iInterruptHandler, mPinFileHandle, mDisablePipe[0]);
@@ -144,6 +152,14 @@ void InterruptPinPlatform::disable() {
 
 //-------------------------------------------------------------------------------------------------
 
+bool InterruptPinPlatform::read() {
+   std::string line = readLine(mPinPath + "/value");
+   std::cout << "line is '" << line << "'" << std::endl;
+   return line == "1";
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void InterruptPinPlatform::pollCycle(std::function<void()> iInterruptHandler, int iPinFileHandle, int iPipeFileHandle) {
    while(mEnabled.load()) {
       if(waitForInterrupt(iPinFileHandle, iPipeFileHandle)) {
@@ -164,7 +180,7 @@ bool InterruptPinPlatform::waitForInterrupt(int iPinFileHandle, int iPipeFileHan
    int result = poll(pollData, Util::sizeOfArray(pollData), -1);
    if(result > 0 && mEnabled.load()) {
       char c;
-      read (iPinFileHandle, &c, 1);
+      ::read (iPinFileHandle, &c, 1);
       return true;
    }
 

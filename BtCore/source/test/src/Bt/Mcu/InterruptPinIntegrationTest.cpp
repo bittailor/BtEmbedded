@@ -108,10 +108,85 @@ TEST_F(InterruptPinIntegrationTest, enableDisableWithoutInterruot) {
       counter++;
    });
 
-   std::this_thread::sleep_for(std::chrono::seconds(2));
+   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
    interruptPin.disable();
    ASSERT_EQ(0, counter.load());
+}
+
+TEST_F(InterruptPinIntegrationTest, readDisabledLow) {
+   Pin outputPin(22,I_Pin::MODE_OUTPUT);
+   InterruptPin interruptPin(23, I_InterruptPin::Edge::FALLING);
+
+   outputPin.write(false);
+   ASSERT_FALSE(interruptPin.read());
+}
+
+TEST_F(InterruptPinIntegrationTest, readDisabledHigh) {
+   Pin outputPin(22,I_Pin::MODE_OUTPUT);
+   InterruptPin interruptPin(23, I_InterruptPin::Edge::FALLING);
+
+   outputPin.write(true);
+   ASSERT_TRUE(interruptPin.read());
+}
+
+TEST_F(InterruptPinIntegrationTest, readDisabledToggle) {
+   Pin outputPin(22,I_Pin::MODE_OUTPUT);
+   InterruptPin interruptPin(23, I_InterruptPin::Edge::FALLING);
+
+   outputPin.write(true);
+   ASSERT_TRUE(interruptPin.read());
+
+   outputPin.write(false);
+   ASSERT_FALSE(interruptPin.read());
+
+   outputPin.write(true);
+   ASSERT_TRUE(interruptPin.read());
+
+   outputPin.write(false);
+   ASSERT_FALSE(interruptPin.read());
+}
+
+TEST_F(InterruptPinIntegrationTest, readEnabledLow) {
+   Pin outputPin(22,I_Pin::MODE_OUTPUT);
+   InterruptPin interruptPin(23, I_InterruptPin::Edge::FALLING);
+
+   interruptPin.enable([] {
+   });
+
+   outputPin.write(false);
+   ASSERT_FALSE(interruptPin.read());
+}
+
+TEST_F(InterruptPinIntegrationTest, readEnabledHigh) {
+   Pin outputPin(22,I_Pin::MODE_OUTPUT);
+   InterruptPin interruptPin(23, I_InterruptPin::Edge::FALLING);
+
+   interruptPin.enable([] {
+   });
+
+   outputPin.write(true);
+   ASSERT_TRUE(interruptPin.read());
+}
+
+TEST_F(InterruptPinIntegrationTest, readEnabledToggle) {
+   Pin outputPin(22,I_Pin::MODE_OUTPUT);
+   InterruptPin interruptPin(23, I_InterruptPin::Edge::FALLING);
+
+   interruptPin.enable([] {
+   });
+
+   outputPin.write(true);
+   ASSERT_TRUE(interruptPin.read());
+
+   outputPin.write(false);
+   ASSERT_FALSE(interruptPin.read());
+
+   outputPin.write(true);
+   ASSERT_TRUE(interruptPin.read());
+
+   outputPin.write(false);
+   ASSERT_FALSE(interruptPin.read());
 }
 
 
