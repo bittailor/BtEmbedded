@@ -4,45 +4,50 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::InterruptPinPlatform
+//  Bt::Concurrency::CountdownLatch
 //  
 //*************************************************************************************************
 
-#include "Bt/Mcu/InterruptPinPlatform.hpp"
+#include "Bt/Concurrency/CountdownLatch.hpp"
 
+#include <system_error>
 
 namespace Bt {
-namespace Mcu {
+namespace Concurrency {
+
 
 //-------------------------------------------------------------------------------------------------
 
-InterruptPinPlatform::InterruptPinPlatform(uint8_t iPinId, I_InterruptPin::Edge iEdge) {
+CountdownLatch::CountdownLatch(unsigned int iCount) : mCount(iCount) {
+
 }
 
 //-------------------------------------------------------------------------------------------------
 
-InterruptPinPlatform::~InterruptPinPlatform() {
+CountdownLatch::~CountdownLatch() {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void InterruptPinPlatform::enable(std::function<void()> iInterruptHandler) {
+void CountdownLatch::countDown() {
+   std::unique_lock<std::mutex> lock(mMutex);
+   if (mCount <= 0) {
+      throw std::system_error(std::make_error_code(std::errc::invalid_argument));
+   }
+   if (--mCount == 0) {
+      mConditionVariable.notify_all();
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void InterruptPinPlatform::disable() {
+void CountdownLatch::wait() {
+   std::unique_lock<std::mutex> lock(mMutex);
+   mConditionVariable.wait(lock,[this]{return mCount == 0;});
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool InterruptPinPlatform::read() {
-   return false;
-}
-
-//-------------------------------------------------------------------------------------------------
-
-
-} // namespace Mcu
+} // namespace Concurrency
 } // namespace Bt

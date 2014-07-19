@@ -26,6 +26,7 @@ class InterruptPinPlatform
    
       void enable(std::function<void()> iInterruptHandler);
       void disable();
+      bool read();
 
    private:
    	  // Constructor to prohibit copy construction.

@@ -4,45 +4,62 @@
 //
 //-------------------------------------------------------------------------------------------------
 //
-//  Bt::Mcu::InterruptPinPlatform
+//  Bt::Concurrency::ExecutionContext
 //  
 //*************************************************************************************************
 
-#include "Bt/Mcu/InterruptPinPlatform.hpp"
+#include "Bt/Concurrency/ExecutionContext.hpp"
 
+#include <future>
+#include <iostream>
 
 namespace Bt {
-namespace Mcu {
+namespace Concurrency {
+
 
 //-------------------------------------------------------------------------------------------------
 
-InterruptPinPlatform::InterruptPinPlatform(uint8_t iPinId, I_InterruptPin::Edge iEdge) {
+ExecutionContext::ExecutionContext() : mRunning(true), mThread(&ExecutionContext::run,this) {
+
 }
 
 //-------------------------------------------------------------------------------------------------
 
-InterruptPinPlatform::~InterruptPinPlatform() {
-
+ExecutionContext::~ExecutionContext() {
+   mQueue.push([this](){mRunning = false;});
+   mThread.join();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void InterruptPinPlatform::enable(std::function<void()> iInterruptHandler) {
+void ExecutionContext::invoke(std::function<void()> iFunction) {
+   mQueue.push(std::move(iFunction));
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void InterruptPinPlatform::disable() {
+void ExecutionContext::run() {
+   while(mRunning) {
+      workcycle();
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool InterruptPinPlatform::read() {
-   return false;
+void ExecutionContext::workcycle() {
+   std::function<void ()> function;
+   mQueue.pop(function);
+   try {
+      function();
+   } catch(const std::exception& exception) {
+      std::cerr << "ExecutionContext caught a std exception (" << typeid(exception).name() << ") : "
+                << exception.what() << std::endl;
+   } catch (...) {
+      std::cerr << "ExecutionContext caught a non-std exception!" <<  std::endl;
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-
-} // namespace Mcu
+} // namespace Concurrency
 } // namespace Bt
