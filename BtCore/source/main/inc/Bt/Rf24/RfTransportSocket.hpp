@@ -19,7 +19,7 @@ namespace Rf24 {
 class RfTransportSocket 
 {
    public:
-      RfTransportSocket(I_RfNetworkSocket& pNetworkSocket);
+      RfTransportSocket(I_RfNetworkSocket& iNetworkSocket);
       ~RfTransportSocket();
 
 

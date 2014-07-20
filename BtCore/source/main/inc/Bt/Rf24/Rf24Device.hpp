@@ -24,11 +24,7 @@ class Rf24Device : public I_Rf24Device
 {
    public:
 
-
-
-
-
-      Rf24Device(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable);
+      Rf24Device(Mcu::I_Spi& iSpi, Mcu::I_Pin& iChipEnable);
       virtual ~Rf24Device();
 
       virtual Status status();
@@ -38,38 +34,38 @@ class Rf24Device : public I_Rf24Device
       virtual void clearRetransmitsExceeded();
 
       virtual bool powerUp();
-      virtual void powerUp(bool pValue);
+      virtual void powerUp(bool iValue);
 
       virtual TransceiverMode transceiverMode();
-      virtual void transceiverMode(TransceiverMode pMode);
+      virtual void transceiverMode(TransceiverMode iMode);
 
-      virtual void chipEnable(bool pValue);
+      virtual void chipEnable(bool iValue);
 
       virtual uint8_t autoRetransmitDelay();
-      virtual void autoRetransmitDelay(uint8_t pDelay);
+      virtual void autoRetransmitDelay(uint8_t iDelay);
 
       virtual uint8_t autoRetransmitCount();
-      virtual void autoRetransmitCount(uint8_t pCount);
+      virtual void autoRetransmitCount(uint8_t iCount);
 
       virtual uint8_t autoRetransmitCounter();
 
       virtual uint8_t channel();
-      virtual void channel(uint8_t pChannel);
+      virtual void channel(uint8_t iChannel);
 
       virtual DataRate dataRate();
-      virtual void dataRate(DataRate pDataRate);
+      virtual void dataRate(DataRate iDataRate);
 
-      virtual RfAddress receiveAddress(RfPipe pPipe);
-      virtual void receiveAddress(RfPipe pPipe, RfAddress pAddress);
+      virtual RfAddress receiveAddress(RfPipe iPipe);
+      virtual void receiveAddress(RfPipe iPipe, RfAddress iAddress);
 
-      virtual bool receivePipeEnabled(RfPipe pPipe);
-      virtual void receivePipeEnabled(RfPipe pPipe, bool pValue);
+      virtual bool receivePipeEnabled(RfPipe iPipe);
+      virtual void receivePipeEnabled(RfPipe iPipe, bool iValue);
 
-      virtual uint8_t receivePayloadSize(RfPipe pPipe);
-      virtual void receivePayloadSize(RfPipe pPipe, uint8_t pSize);
+      virtual uint8_t receivePayloadSize(RfPipe iPipe);
+      virtual void receivePayloadSize(RfPipe iPipe, uint8_t iSize);
 
       virtual RfAddress transmitAddress();
-      virtual void transmitAddress(RfAddress pAddress);
+      virtual void transmitAddress(RfAddress iAddress);
 
       virtual bool isTransmitFifoEmpty();
       virtual bool isTransmitFifoFull();
@@ -79,16 +75,16 @@ class Rf24Device : public I_Rf24Device
       virtual bool isReceiveFifoFull();
       virtual void flushReceiveFifo();
 
-      virtual size_t writeTransmitPayload(uint8_t* pData, size_t pSize);
+      virtual size_t writeTransmitPayload(uint8_t* iData, size_t iSize);
 
       virtual size_t availableReceivePayload();
-      virtual size_t readReceivePayload(RfPipe& pPipe, uint8_t* pData, size_t pSize);
+      virtual size_t readReceivePayload(RfPipe& oPipe, uint8_t* oData, size_t iSize);
 
       virtual bool dynamicPayloadFeatureEnabled();
-      virtual void dynamicPayloadFeatureEnabled(bool pValue);
+      virtual void dynamicPayloadFeatureEnabled(bool iValue);
 
-      virtual bool dynamicPayloadEnabled(RfPipe pPipe);
-      virtual void dynamicPayloadEnabled(RfPipe pPipe, bool pValue);
+      virtual bool dynamicPayloadEnabled(RfPipe iPipe);
+      virtual void dynamicPayloadEnabled(RfPipe iPipe, bool iValue);
 
 
    private:

@@ -29,15 +29,15 @@ namespace {
 
 
 
-   template<typename T> T readIn(uint8_t* buffer);
-
-   template<> uint8_t  readIn<uint8_t>(uint8_t* buffer) {
-      return *buffer;
-   }
-
-   template<> uint16_t readIn<uint16_t>(uint8_t* buffer) {
-      return Util::Endianness::networkToHost<uint16_t>(*reinterpret_cast<uint16_t*>(buffer));
-   }
+//   template<typename T> T readIn(uint8_t* buffer);
+//
+//   template<> uint8_t  readIn<uint8_t>(uint8_t* buffer) {
+//      return *buffer;
+//   }
+//
+//   template<> uint16_t readIn<uint16_t>(uint8_t* buffer) {
+//      return Util::Endianness::networkToHost<uint16_t>(*reinterpret_cast<uint16_t*>(buffer));
+//   }
 
 }
 

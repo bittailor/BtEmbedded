@@ -25,7 +25,7 @@ class I_InputPackage {
          virtual void readIn(uint8_t& oValue) = 0;
          virtual void readIn(uint32_t& oValue) = 0;
 
-         virtual void read(uint8_t* pData, size_t pSize) = 0;
+         virtual void read(uint8_t* oData, size_t iSize) = 0;
 
          template<typename T>
          T read() {

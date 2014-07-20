@@ -83,20 +83,20 @@ enum FiveByteRegister
 
 //-------------------------------------------------------------------------------------------------
 
-inline uint8_t calculateMask(uint8_t pBitSize, uint8_t pOffset) {
-   uint8_t mask = ((1 << pBitSize) - 1) << pOffset;
+inline uint8_t calculateMask(uint8_t iBitSize, uint8_t iOffset) {
+   uint8_t mask = ((1 << iBitSize) - 1) << iOffset;
    return mask;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t readRegister(Bt::Mcu::I_Spi& pSpi, OneByteRegister pRegister)
+uint8_t readRegister(Bt::Mcu::I_Spi& iSpi, OneByteRegister iRegister)
 {
-   uint8_t cmd = CMD_R_REGISTER | (pRegister & MASK_REGISTER_CMD);
+   uint8_t cmd = CMD_R_REGISTER | (iRegister & MASK_REGISTER_CMD);
    uint8_t txBuffer[2] = {cmd,CMD_NOP};
    uint8_t rxBuffer[2] = {0};
 
-   pSpi.transfer(txBuffer,rxBuffer,2);
+   iSpi.transfer(txBuffer,rxBuffer,2);
 
    return rxBuffer[1];
 }
@@ -105,27 +105,27 @@ uint8_t readRegister(Bt::Mcu::I_Spi& pSpi, OneByteRegister pRegister)
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t readSubRegister(Bt::Mcu::I_Spi& pSpi, OneByteRegister pRegister,
-                        uint8_t pBitSize, uint8_t pOffset)
+uint8_t readSubRegister(Bt::Mcu::I_Spi& iSpi, OneByteRegister iRegister,
+                        uint8_t iBitSize, uint8_t iOffset)
 {
-   uint8_t mask = calculateMask(pBitSize,pOffset);
-   uint8_t value = readRegister(pSpi, pRegister);
+   uint8_t mask = calculateMask(iBitSize,iOffset);
+   uint8_t value = readRegister(iSpi, iRegister);
    value &= mask;
-   value >>= pOffset;
+   value >>= iOffset;
    return value;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-Util::StaticArray<uint8_t,5> readRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister pRegister)
+Util::StaticArray<uint8_t,5> readRegister(Bt::Mcu::I_Spi& iSpi, FiveByteRegister iRegister)
 {
    Util::StaticArray<uint8_t,5> value;
-   uint8_t cmd = CMD_R_REGISTER | (pRegister & MASK_REGISTER_CMD);
+   uint8_t cmd = CMD_R_REGISTER | (iRegister & MASK_REGISTER_CMD);
 
    uint8_t txBuffer[6] = {cmd,CMD_NOP,CMD_NOP,CMD_NOP,CMD_NOP,CMD_NOP};
    uint8_t rxBuffer[6] = {0};
 
-   pSpi.transfer(txBuffer,rxBuffer,6);
+   iSpi.transfer(txBuffer,rxBuffer,6);
 
    for (size_t i = 0 ; i < value.size()  ; ++i) {
       value[i] = rxBuffer[i+1];
@@ -136,41 +136,41 @@ Util::StaticArray<uint8_t,5> readRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t writeRegister(Bt::Mcu::I_Spi& pSpi, OneByteRegister pRegister, uint8_t pValue)
+uint8_t writeRegister(Bt::Mcu::I_Spi& iSpi, OneByteRegister iRegister, uint8_t iValue)
 {
-   uint8_t cmd = CMD_W_REGISTER | (pRegister & MASK_REGISTER_CMD);
+   uint8_t cmd = CMD_W_REGISTER | (iRegister & MASK_REGISTER_CMD);
 
-   uint8_t txBuffer[2] = {cmd,pValue};
+   uint8_t txBuffer[2] = {cmd,iValue};
    uint8_t rxBuffer[2] = {0};
 
-   pSpi.transfer(txBuffer,rxBuffer,2);
+   iSpi.transfer(txBuffer,rxBuffer,2);
 
    return rxBuffer[0];
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t writeSubRegister(Bt::Mcu::I_Spi& pSpi, OneByteRegister pRegister, uint8_t pValue,
-                         uint8_t pBitSize, uint8_t pOffset)
+uint8_t writeSubRegister(Bt::Mcu::I_Spi& iSpi, OneByteRegister iRegister, uint8_t iValue,
+                         uint8_t iBitSize, uint8_t iOffset)
 {
-   uint8_t mask = calculateMask(pBitSize,pOffset);
-   uint8_t value = readRegister(pSpi, pRegister) ;
+   uint8_t mask = calculateMask(iBitSize,iOffset);
+   uint8_t value = readRegister(iSpi, iRegister) ;
    value = value & ~mask;
-   pValue = pValue << pOffset;
-   value = value | (pValue & mask) ;
-   return writeRegister(pSpi, pRegister, value);
+   iValue = iValue << iOffset;
+   value = value | (iValue & mask) ;
+   return writeRegister(iSpi, iRegister, value);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t writeRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister pRegister, Util::StaticArray<uint8_t,5> pValue)
+uint8_t writeRegister(Bt::Mcu::I_Spi& iSpi, FiveByteRegister iRegister, Util::StaticArray<uint8_t,5> iValue)
 {
-   uint8_t cmd = CMD_W_REGISTER | (pRegister & MASK_REGISTER_CMD);
+   uint8_t cmd = CMD_W_REGISTER | (iRegister & MASK_REGISTER_CMD);
 
-   uint8_t txBuffer[6] = {cmd,pValue[0],pValue[1],pValue[2],pValue[3],pValue[4]};
+   uint8_t txBuffer[6] = {cmd,iValue[0],iValue[1],iValue[2],iValue[3],iValue[4]};
    uint8_t rxBuffer[6] = {0};
 
-   pSpi.transfer(txBuffer,rxBuffer,6);
+   iSpi.transfer(txBuffer,rxBuffer,6);
 
    return rxBuffer[0];
 }
@@ -182,8 +182,8 @@ uint8_t writeRegister(Bt::Mcu::I_Spi& pSpi, FiveByteRegister pRegister, Util::St
 
 //-------------------------------------------------------------------------------------------------
 
-Rf24Device::Rf24Device(Mcu::I_Spi& pSpi, Mcu::I_Pin& pChipEnable)
-   : mSpi(&pSpi), mChipEnable(&pChipEnable)  {
+Rf24Device::Rf24Device(Mcu::I_Spi& iSpi, Mcu::I_Pin& iChipEnable)
+   : mSpi(&iSpi), mChipEnable(&iChipEnable)  {
    mChipEnable->write(false);
    Util::delayInMilliseconds(5);
 }
@@ -235,8 +235,8 @@ bool Rf24Device::powerUp() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::powerUp(bool pValue) {
-   writeSubRegister(*mSpi, REGISTER_CONFIG,pValue,1,1);
+void Rf24Device::powerUp(bool iValue) {
+   writeSubRegister(*mSpi, REGISTER_CONFIG,iValue,1,1);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -247,14 +247,14 @@ Rf24Device::TransceiverMode Rf24Device::transceiverMode() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::transceiverMode(TransceiverMode pMode) {
-   writeSubRegister(*mSpi, REGISTER_CONFIG,pMode == RX_MODE,1,0);
+void Rf24Device::transceiverMode(TransceiverMode iMode) {
+   writeSubRegister(*mSpi, REGISTER_CONFIG,iMode == RX_MODE,1,0);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::chipEnable(bool pValue) {
-   mChipEnable->write(pValue);
+void Rf24Device::chipEnable(bool iValue) {
+   mChipEnable->write(iValue);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -265,8 +265,8 @@ uint8_t Rf24Device::autoRetransmitDelay() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::autoRetransmitDelay(uint8_t pDelay) {
-   writeSubRegister(*mSpi, REGISTER_SETUP_RETR, pDelay, 4, 4);
+void Rf24Device::autoRetransmitDelay(uint8_t iDelay) {
+   writeSubRegister(*mSpi, REGISTER_SETUP_RETR, iDelay, 4, 4);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -277,8 +277,8 @@ uint8_t Rf24Device::autoRetransmitCount() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::autoRetransmitCount(uint8_t pCount) {
-   writeSubRegister(*mSpi, REGISTER_SETUP_RETR, pCount, 4, 0);
+void Rf24Device::autoRetransmitCount(uint8_t iCount) {
+   writeSubRegister(*mSpi, REGISTER_SETUP_RETR, iCount, 4, 0);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -296,8 +296,8 @@ uint8_t Rf24Device::channel() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::channel(uint8_t pChannel) {
-   uint8_t value = pChannel & MASK_RF_CH;
+void Rf24Device::channel(uint8_t iChannel) {
+   uint8_t value = iChannel & MASK_RF_CH;
    writeRegister(*mSpi, REGISTER_RF_CH, value);
 }
 
@@ -318,17 +318,17 @@ I_Rf24Device::DataRate Rf24Device::dataRate() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::dataRate(DataRate pDataRate) {
-   uint8_t low = (pDataRate == I_Rf24Device::DR_250_KBPS);
-   uint8_t high = (pDataRate == I_Rf24Device::DR_2_MBPS);
+void Rf24Device::dataRate(DataRate iDataRate) {
+   uint8_t low = (iDataRate == I_Rf24Device::DR_250_KBPS);
+   uint8_t high = (iDataRate == I_Rf24Device::DR_2_MBPS);
    writeSubRegister(*mSpi, REGISTER_RF_SETUP, low, 1, 5);
    writeSubRegister(*mSpi, REGISTER_RF_SETUP, high, 1, 3);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-RfAddress Rf24Device::receiveAddress(RfPipe pPipe) {
-   switch (pPipe) {
+RfAddress Rf24Device::receiveAddress(RfPipe iPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_0:
          return readRegister(*mSpi, REGISTER_RX_ADDR_P0);
       case RfPipe::PIPE_1:
@@ -340,7 +340,7 @@ RfAddress Rf24Device::receiveAddress(RfPipe pPipe) {
    RfAddress base = readRegister(*mSpi, REGISTER_RX_ADDR_P1);
 
    OneByteRegister oneByteRegister = REGISTER_RX_ADDR_P2;
-   switch (pPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_2 : oneByteRegister = REGISTER_RX_ADDR_P2; break;
       case RfPipe::PIPE_3 : oneByteRegister = REGISTER_RX_ADDR_P3; break;
       case RfPipe::PIPE_4 : oneByteRegister = REGISTER_RX_ADDR_P4; break;
@@ -355,20 +355,20 @@ RfAddress Rf24Device::receiveAddress(RfPipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::receiveAddress(RfPipe pPipe, RfAddress pAddress) {
-   switch (pPipe) {
+void Rf24Device::receiveAddress(RfPipe iPipe, RfAddress iAddress) {
+   switch (iPipe) {
       case RfPipe::PIPE_0:
-         writeRegister(*mSpi, REGISTER_RX_ADDR_P0, pAddress.raw());
+         writeRegister(*mSpi, REGISTER_RX_ADDR_P0, iAddress.raw());
          return;
       case RfPipe::PIPE_1:
-         writeRegister(*mSpi, REGISTER_RX_ADDR_P1, pAddress.raw());
+         writeRegister(*mSpi, REGISTER_RX_ADDR_P1, iAddress.raw());
          return;
       default:
          break;
    }
 
    OneByteRegister oneByteRegister = REGISTER_RX_ADDR_P2;
-   switch (pPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_2 : oneByteRegister = REGISTER_RX_ADDR_P2; break;
       case RfPipe::PIPE_3 : oneByteRegister = REGISTER_RX_ADDR_P3; break;
       case RfPipe::PIPE_4 : oneByteRegister = REGISTER_RX_ADDR_P4; break;
@@ -376,15 +376,15 @@ void Rf24Device::receiveAddress(RfPipe pPipe, RfAddress pAddress) {
       default     : oneByteRegister = REGISTER_RX_ADDR_P2; break;
    }
 
-   writeRegister(*mSpi, oneByteRegister, pAddress.raw()[0]);
+   writeRegister(*mSpi, oneByteRegister, iAddress.raw()[0]);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Device::receivePipeEnabled(RfPipe pPipe) {
+bool Rf24Device::receivePipeEnabled(RfPipe iPipe) {
    uint8_t offset = 0;
 
-   switch (pPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_0 : offset = 0; break;
       case RfPipe::PIPE_1 : offset = 1; break;
       case RfPipe::PIPE_2 : offset = 2; break;
@@ -399,10 +399,10 @@ bool Rf24Device::receivePipeEnabled(RfPipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::receivePipeEnabled(RfPipe pPipe, bool pValue) {
+void Rf24Device::receivePipeEnabled(RfPipe iPipe, bool iValue) {
    uint8_t offset = 0;
 
-   switch (pPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_0 : offset = 0; break;
       case RfPipe::PIPE_1 : offset = 1; break;
       case RfPipe::PIPE_2 : offset = 2; break;
@@ -412,14 +412,14 @@ void Rf24Device::receivePipeEnabled(RfPipe pPipe, bool pValue) {
       default     : offset = 0; break;
    }
 
-   writeSubRegister(*mSpi, REGISTER_EN_RXADDR, pValue, 1, offset);
+   writeSubRegister(*mSpi, REGISTER_EN_RXADDR, iValue, 1, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t Rf24Device::receivePayloadSize(RfPipe pPipe) {
+uint8_t Rf24Device::receivePayloadSize(RfPipe iPipe) {
    OneByteRegister oneByteRegister;
-   switch (pPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_0 : oneByteRegister = REGISTER_RX_PW_P0; break;
       case RfPipe::PIPE_1 : oneByteRegister = REGISTER_RX_PW_P1; break;
       case RfPipe::PIPE_2 : oneByteRegister = REGISTER_RX_PW_P2; break;
@@ -434,9 +434,9 @@ uint8_t Rf24Device::receivePayloadSize(RfPipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::receivePayloadSize(RfPipe pPipe, uint8_t pSize) {
+void Rf24Device::receivePayloadSize(RfPipe iPipe, uint8_t iSize) {
    OneByteRegister oneByteRegister;
-   switch (pPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_0 : oneByteRegister = REGISTER_RX_PW_P0; break;
       case RfPipe::PIPE_1 : oneByteRegister = REGISTER_RX_PW_P1; break;
       case RfPipe::PIPE_2 : oneByteRegister = REGISTER_RX_PW_P2; break;
@@ -445,7 +445,7 @@ void Rf24Device::receivePayloadSize(RfPipe pPipe, uint8_t pSize) {
       case RfPipe::PIPE_5 : oneByteRegister = REGISTER_RX_PW_P5; break;
       default     : oneByteRegister = REGISTER_RX_PW_P0; break;
    }
-   writeSubRegister(*mSpi,oneByteRegister,pSize,6,0);
+   writeSubRegister(*mSpi,oneByteRegister,iSize,6,0);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -457,8 +457,8 @@ RfAddress Rf24Device::transmitAddress() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::transmitAddress(RfAddress pAddress) {
-   writeRegister(*mSpi, REGISTER_TX_ADDR, pAddress.raw());
+void Rf24Device::transmitAddress(RfAddress iAddress) {
+   writeRegister(*mSpi, REGISTER_TX_ADDR, iAddress.raw());
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -499,12 +499,12 @@ void Rf24Device::flushReceiveFifo() {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24Device::writeTransmitPayload(uint8_t* pData, size_t pSize) {
+size_t Rf24Device::writeTransmitPayload(uint8_t* iData, size_t iSize) {
 
    size_t dataSize;
 
-   if (pSize <= MAX_PAYLOAD_SIZE) {
-      dataSize = pSize;
+   if (iSize <= MAX_PAYLOAD_SIZE) {
+      dataSize = iSize;
    } else {
       dataSize = MAX_PAYLOAD_SIZE;
    }
@@ -512,7 +512,7 @@ size_t Rf24Device::writeTransmitPayload(uint8_t* pData, size_t pSize) {
    uint8_t txBuffer[MAX_PAYLOAD_SIZE + 1] = {CMD_W_TX_PAYLOAD};
    uint8_t rxBuffer[MAX_PAYLOAD_SIZE + 1] = {0};
 
-   std::memcpy(txBuffer+1,pData,dataSize);
+   std::memcpy(txBuffer+1,iData,dataSize);
 
    mSpi->transfer(txBuffer,rxBuffer,dataSize+1);
 
@@ -533,25 +533,25 @@ size_t Rf24Device::availableReceivePayload() {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24Device::readReceivePayload(RfPipe& pPipe, uint8_t* pData, size_t pSize) {
+size_t Rf24Device::readReceivePayload(RfPipe& oPipe, uint8_t* oData, size_t iSize) {
 
    switch(readSubRegister(*mSpi,REGISTER_STATUS,3,1))
    {
-      case 0 : pPipe = RfPipe::PIPE_0 ; break;
-      case 1 : pPipe = RfPipe::PIPE_1 ; break;
-      case 2 : pPipe = RfPipe::PIPE_2 ; break;
-      case 3 : pPipe = RfPipe::PIPE_3 ; break;
-      case 4 : pPipe = RfPipe::PIPE_4 ; break;
-      case 5 : pPipe = RfPipe::PIPE_5 ; break;
+      case 0 : oPipe = RfPipe::PIPE_0 ; break;
+      case 1 : oPipe = RfPipe::PIPE_1 ; break;
+      case 2 : oPipe = RfPipe::PIPE_2 ; break;
+      case 3 : oPipe = RfPipe::PIPE_3 ; break;
+      case 4 : oPipe = RfPipe::PIPE_4 ; break;
+      case 5 : oPipe = RfPipe::PIPE_5 ; break;
    }
 
    size_t availableSize = availableReceivePayload();
    size_t dataSize;
 
-   if (pSize >= availableSize) {
+   if (iSize >= availableSize) {
       dataSize = availableSize;
    } else {
-      dataSize = pSize;
+      dataSize = iSize;
    }
 
    uint8_t txBuffer[MAX_PAYLOAD_SIZE + 1] = {CMD_R_RX_PAYLOAD};
@@ -560,7 +560,7 @@ size_t Rf24Device::readReceivePayload(RfPipe& pPipe, uint8_t* pData, size_t pSiz
 
    mSpi->transfer(txBuffer,rxBuffer,availableSize + 1);
 
-   std::memcpy(pData,rxBuffer+1,pSize);
+   std::memcpy(oData,rxBuffer+1,iSize);
 
    return dataSize;
 }
@@ -573,16 +573,16 @@ bool Rf24Device::dynamicPayloadFeatureEnabled() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::dynamicPayloadFeatureEnabled(bool pValue) {
-   writeSubRegister(*mSpi, REGISTER_FEATURE, pValue, 1, 2);
+void Rf24Device::dynamicPayloadFeatureEnabled(bool iValue) {
+   writeSubRegister(*mSpi, REGISTER_FEATURE, iValue, 1, 2);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24Device::dynamicPayloadEnabled(RfPipe pPipe) {
+bool Rf24Device::dynamicPayloadEnabled(RfPipe iPipe) {
    uint8_t offset = 0;
 
-   switch (pPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_0 : offset = 0; break;
       case RfPipe::PIPE_1 : offset = 1; break;
       case RfPipe::PIPE_2 : offset = 2; break;
@@ -597,10 +597,10 @@ bool Rf24Device::dynamicPayloadEnabled(RfPipe pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24Device::dynamicPayloadEnabled(RfPipe pPipe, bool pValue) {
+void Rf24Device::dynamicPayloadEnabled(RfPipe iPipe, bool iValue) {
    uint8_t offset = 0;
 
-   switch (pPipe) {
+   switch (iPipe) {
       case RfPipe::PIPE_0 : offset = 0; break;
       case RfPipe::PIPE_1 : offset = 1; break;
       case RfPipe::PIPE_2 : offset = 2; break;
@@ -610,7 +610,7 @@ void Rf24Device::dynamicPayloadEnabled(RfPipe pPipe, bool pValue) {
       default     : offset = 0; break;
    }
 
-   writeSubRegister(*mSpi, REGISTER_DYNPD, pValue, 1, offset);
+   writeSubRegister(*mSpi, REGISTER_DYNPD, iValue, 1, offset);
 }
 
 //-------------------------------------------------------------------------------------------------

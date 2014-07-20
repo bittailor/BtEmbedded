@@ -30,7 +30,7 @@ enum class StreamSocketRmiCommand : uint8_t {
 
 //-------------------------------------------------------------------------------------------------
 
-RmiProxyStreamSocket::RmiProxyStreamSocket(Rmi::I_RemoteClient& pRemoteClient) : mRemoteClient(&pRemoteClient) {
+RmiProxyStreamSocket::RmiProxyStreamSocket(Rmi::I_RemoteClient& iRemoteClient) : mRemoteClient(&iRemoteClient) {
 
 }
 
@@ -42,10 +42,10 @@ RmiProxyStreamSocket::~RmiProxyStreamSocket() {
 
 //-------------------------------------------------------------------------------------------------
 
-bool RmiProxyStreamSocket::connect(const char* pHost, uint16_t pPort) {
+bool RmiProxyStreamSocket::connect(const char* iHost, uint16_t iPort) {
    mRemoteClient->out() << static_cast<uint8_t>(StreamSocketRmiCommand::CONNECT)
-                        << pPort
-                        << pHost;
+                        << iPort
+                        << iHost;
    mRemoteClient->sendQueryRequest();
    return mRemoteClient->in().read<bool>();
 }
@@ -59,14 +59,14 @@ void RmiProxyStreamSocket::close() {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t RmiProxyStreamSocket::write(const uint8_t* pData, size_t pSize) {
-   if(0 == pSize){
+size_t RmiProxyStreamSocket::write(const uint8_t* iData, size_t iSize) {
+   if(0 == iSize){
       return 0;
    }
 
    size_t maxPayload = mRemoteClient->out().capacity() - sizeof(StreamSocketRmiCommand);
-   const uint8_t* data = pData;
-   size_t remaining = pSize;
+   const uint8_t* data = iData;
+   size_t remaining = iSize;
    size_t send = std::min(remaining,maxPayload);
 
    while(send>0) {
@@ -82,7 +82,7 @@ size_t RmiProxyStreamSocket::write(const uint8_t* pData, size_t pSize) {
       data = data + written;
       send = std::min(remaining,maxPayload);
    }
-   return pSize;
+   return iSize;
 
    return 0;
 }
@@ -104,10 +104,10 @@ size_t RmiProxyStreamSocket::available() {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t RmiProxyStreamSocket::read(uint8_t* pData, size_t pMaxSize) {
+size_t RmiProxyStreamSocket::read(uint8_t* oData, size_t iMaxSize) {
    size_t maxPayload = mRemoteClient->out().capacity() - sizeof(StreamSocketRmiCommand);
 
-   size_t maxReadSize = std::min(pMaxSize,maxPayload);
+   size_t maxReadSize = std::min(iMaxSize,maxPayload);
    mRemoteClient->out() << static_cast<uint8_t>(StreamSocketRmiCommand::READ);
    mRemoteClient->out() << static_cast<uint32_t>(maxReadSize);
 
@@ -120,7 +120,7 @@ size_t RmiProxyStreamSocket::read(uint8_t* pData, size_t pMaxSize) {
       received = maxReadSize;
    }
 
-   mRemoteClient->in().read(pData, received);
+   mRemoteClient->in().read(oData, received);
 
    return received;
 }

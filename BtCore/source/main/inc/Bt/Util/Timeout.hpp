@@ -22,7 +22,7 @@ class Timeout
 
 
    public:
-      Timeout(uint32_t pMilliseconds);
+      Timeout(uint32_t iMilliseconds);
       ~Timeout();
 
       bool check();

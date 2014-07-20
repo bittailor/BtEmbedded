@@ -100,12 +100,12 @@ class I_RfNetworkSocket::Packet {
          return mControllerPackage.buffer() + HEADER_SIZE;
       }
 
-      void source(uint8_t pSource) {
-         mControllerPackage.buffer()[0] = pSource;
+      void source(uint8_t iSource) {
+         mControllerPackage.buffer()[0] = iSource;
       }
 
-      void id(uint8_t pId) {
-         mControllerPackage.buffer()[2] = pId;
+      void id(uint8_t iId) {
+         mControllerPackage.buffer()[2] = iId;
       }
 
 
@@ -119,7 +119,7 @@ class I_RfNetworkSocket::I_Listener {
    public:
       virtual ~I_Listener() {}
 
-      virtual void packetReceived(Packet& pPacket) = 0;
+      virtual void packetReceived(Packet& iPacket) = 0;
 
 };
 

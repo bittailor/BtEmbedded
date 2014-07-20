@@ -16,7 +16,7 @@ namespace Util {
 
 //-------------------------------------------------------------------------------------------------
 
-ByteBuffer::ByteBuffer(uint8_t* pRaw, size_t pSize): mRaw(pRaw), mSize(pSize) {
+ByteBuffer::ByteBuffer(uint8_t* iRaw, size_t iSize): mRaw(iRaw), mSize(iSize) {
 
 }
 

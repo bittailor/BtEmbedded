@@ -21,14 +21,14 @@ class I_StreamSocket {
    public:
       virtual ~I_StreamSocket() {}
       
-      virtual bool connect(const char* pHost, uint16_t pPort) = 0;
+      virtual bool connect(const char* iHost, uint16_t iPort) = 0;
       virtual void close() =0;
 
-      virtual size_t write(const uint8_t* pData, size_t pSize) = 0;
+      virtual size_t write(const uint8_t* iData, size_t iSize) = 0;
       virtual void flush() = 0;
 
       virtual size_t available() = 0;
-      virtual size_t read(uint8_t* pData, size_t pMaxSize) = 0;
+      virtual size_t read(uint8_t* oData, size_t iMaxSize) = 0;
 
 
 };

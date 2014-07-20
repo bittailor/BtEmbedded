@@ -19,13 +19,13 @@ namespace Rf24 {
 class RfNode 
 {
    public:
-      RfNode(uint8_t pId);
+      RfNode(uint8_t iId);
 
       uint8_t id() const { return mId; }
       uint8_t level() const { return mLevel; }
 
    private:
-      static uint8_t calculateLevel(uint8_t pId);
+      static uint8_t calculateLevel(uint8_t iId);
 
       uint8_t mId;
       uint8_t mLevel;

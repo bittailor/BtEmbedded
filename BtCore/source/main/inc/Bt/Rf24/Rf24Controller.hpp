@@ -27,24 +27,25 @@ class Rf24DeviceController : public I_Rf24DeviceController
 {
    public:
 
-      Rf24DeviceController(I_Rf24Device& pDevice);
+      Rf24DeviceController(I_Rf24Device& iDevice);
       ~Rf24DeviceController();
 
-      virtual void configure(const Configuration& pConfiguration);
+      virtual void configure(const Configuration& iConfiguration);
 
-      virtual bool write(RfPipe pPipe, Packet& pPacket);
+      virtual bool write(RfPipe iPipe, Packet& iPacket);
 
-      virtual size_t write(RfPipe pPipe, uint8_t* pData, size_t pSize);
+      virtual size_t write(RfPipe iPipe, uint8_t* iData, size_t iSize);
 
       virtual void startListening();
       virtual void stopListening();
       virtual bool isDataAvailable();
-      virtual bool read(Packet& pPacket);
-      virtual bool read(Packet& pPacket, RfPipe& pPipe);
+
+      virtual bool read(Packet& oPacket);
+      virtual bool read(Packet& oPacket, RfPipe& oPipe);
 
 
-      virtual size_t read(uint8_t* pBuffer, size_t pSize);
-      virtual size_t read(uint8_t* pBuffer, size_t pSize, RfPipe& pPipe);
+      virtual size_t read(uint8_t* oBuffer, size_t iSize);
+      virtual size_t read(uint8_t* oBuffer, size_t iSize, RfPipe& oPipe);
 
 
 
@@ -53,7 +54,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
 
       class StateBase {
          public:
-         StateBase(Rf24DeviceController& pController) : mController(&pController){}
+         StateBase(Rf24DeviceController& iController) : mController(&iController){}
          virtual ~StateBase(){}
          virtual void ApplyTo(StateBase& other)= 0;
          virtual void ToPowerDown(){};
@@ -66,7 +67,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
 
       class PowerDown : public StateBase {
          public:
-            PowerDown(Rf24DeviceController& pController) : StateBase(pController){}
+            PowerDown(Rf24DeviceController& iController) : StateBase(iController){}
             virtual void ApplyTo(StateBase& other) {other.ToPowerDown();};
             virtual void ToStandbyI();
             virtual void ToRxMode();
@@ -75,7 +76,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
 
       class StandbyI : public StateBase {
          public:
-            StandbyI(Rf24DeviceController& pController) : StateBase(pController){}
+            StandbyI(Rf24DeviceController& iController) : StateBase(iController){}
             virtual void ApplyTo(StateBase& other) {other.ToStandbyI();};
             virtual void ToPowerDown();
             virtual void ToRxMode();
@@ -84,7 +85,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
 
       class RxMode : public StateBase {
          public:
-            RxMode(Rf24DeviceController& pController) : StateBase(pController){}
+            RxMode(Rf24DeviceController& iController) : StateBase(iController){}
             virtual void ApplyTo(StateBase& other) {other.ToRxMode();};
             virtual void ToPowerDown();
             virtual void ToStandbyI();
@@ -93,7 +94,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
 
       class TxMode : public StateBase {
          public:
-            TxMode(Rf24DeviceController& pController) : StateBase(pController){}
+            TxMode(Rf24DeviceController& iController) : StateBase(iController){}
             virtual void ApplyTo(StateBase& other) {other.ToTxMode();};
             virtual void ToPowerDown();
             virtual void ToStandbyI();

@@ -17,11 +17,11 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-::testing::AssertionResult checkLevel(const RfNode& pNodeId, uint8_t level) {
-  if (pNodeId.level() == level)
+::testing::AssertionResult checkLevel(const RfNode& iNodeId, uint8_t level) {
+  if (iNodeId.level() == level)
     return ::testing::AssertionSuccess();
   else
-    return ::testing::AssertionFailure() << "level() of " << (int)pNodeId.id() << " returned " <<  (int)pNodeId.level() << " and not " << (int)level ;
+    return ::testing::AssertionFailure() << "level() of " << (int)iNodeId.id() << " returned " <<  (int)iNodeId.level() << " and not " << (int)level ;
 }
 
 

@@ -30,8 +30,8 @@ class StaticArray {
       : mData() {
       }
 
-      StaticArray(const T(& pArray)[SIZE])
-      : mData(pArray) {
+      StaticArray(const T(& iArray)[SIZE])
+      : mData(iArray) {
       }
 
       ~StaticArray() {

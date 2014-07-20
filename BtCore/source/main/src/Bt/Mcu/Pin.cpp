@@ -16,7 +16,7 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-Pin::Pin(uint8_t pPinId, Mode pInitialMode) : PinPlatform(pPinId, pInitialMode) {
+Pin::Pin(uint8_t iPinId, Mode iInitialMode) : PinPlatform(iPinId, iInitialMode) {
 
 }
 
@@ -28,14 +28,14 @@ Pin::~Pin() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Pin::mode(Mode pMode) {
-   PinPlatform::mode(pMode);
+void Pin::mode(Mode iMode) {
+   PinPlatform::mode(iMode);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void Pin::write(bool gHigh) {
-   PinPlatform::write(gHigh);
+void Pin::write(bool iHigh) {
+   PinPlatform::write(iHigh);
 }
 
 //-------------------------------------------------------------------------------------------------

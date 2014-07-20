@@ -34,15 +34,15 @@ namespace Rf24 {
 
 //namespace {
 //
-//void waitForFlag(RfNetworkSocket& pSocket, bool& pFlag) {
+//void waitForFlag(RfNetworkSocket& iSocket, bool& iFlag) {
 //   int counter = 0;
-//   pSocket.workcycle();
+//   iSocket.workcycle();
 //   while(!pFlag && counter < 200) {
 //      Util::delayInMilliseconds(5);
 //      counter++;
-//      pSocket.workcycle();
+//      iSocket.workcycle();
 //   }
-//   ASSERT_TRUE(pFlag);
+//   ASSERT_TRUE(iFlag);
 //}
 //
 //
@@ -115,8 +115,8 @@ namespace Rf24 {
 //   RfNetworkSocketListenerGMock listenerMock;
 //   bool callback = false;
 //   EXPECT_CALL(listenerMock, packetReceived(_))
-//      .WillOnce(Invoke([&receivedPayload,&callback](I_RfNetworkSocket::Packet& pPacket) {
-//         receivedPayload = (char*)pPacket.payload();
+//      .WillOnce(Invoke([&receivedPayload,&callback](I_RfNetworkSocket::Packet& iPacket) {
+//         receivedPayload = (char*)iPacket.payload();
 //         callback = true;
 //      }));
 //

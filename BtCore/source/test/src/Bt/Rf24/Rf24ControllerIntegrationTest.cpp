@@ -61,17 +61,17 @@ namespace Rf24 {
 //
 //namespace {
 //
-//template<typename T> T* asArray(std::vector<T>& pVector) {
-//   return &pVector[0];
+//template<typename T> T* asArray(std::vector<T>& iVector) {
+//   return &iVector[0];
 //}
 //
-//void waitForDataAvailable(Rf24DeviceController& pController) {
+//void waitForDataAvailable(Rf24DeviceController& iController) {
 //   int counter = 0;
-//   while(!pController.isDataAvailable() && counter < 200) {
+//   while(!iController.isDataAvailable() && counter < 200) {
 //      Util::delayInMilliseconds(5);
 //      counter++;
 //   }
-//   ASSERT_TRUE(pController.isDataAvailable());
+//   ASSERT_TRUE(iController.isDataAvailable());
 //}
 //
 //}

@@ -21,15 +21,15 @@ class RfAddress {
       RfAddress(){
       }
 
-      RfAddress(Util::StaticArray<uint8_t,5> pRaw) : mRaw(pRaw){
+      RfAddress(Util::StaticArray<uint8_t,5> iRaw) : mRaw(iRaw){
       }
 
-      RfAddress(uint8_t pByte4, uint8_t pByte3, uint8_t pByte2, uint8_t pByte1, uint8_t pByte0) {
-         mRaw[0] = pByte0;
-         mRaw[1] = pByte1;
-         mRaw[2] = pByte2;
-         mRaw[3] = pByte3;
-         mRaw[4] = pByte4;
+      RfAddress(uint8_t iByte4, uint8_t iByte3, uint8_t iByte2, uint8_t iByte1, uint8_t iByte0) {
+         mRaw[0] = iByte0;
+         mRaw[1] = iByte1;
+         mRaw[2] = iByte2;
+         mRaw[3] = iByte3;
+         mRaw[4] = iByte4;
       }
 
       Util::StaticArray<uint8_t,5>& raw() {

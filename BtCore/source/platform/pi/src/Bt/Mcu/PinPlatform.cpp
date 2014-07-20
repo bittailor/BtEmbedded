@@ -19,8 +19,8 @@ using Bt::Mcu::I_Pin;
 
 
 namespace {
-   bcm2835FunctionSelect translateMode(I_Pin::Mode pMode) {
-      switch (pMode) {
+   bcm2835FunctionSelect translateMode(I_Pin::Mode iMode) {
+      switch (iMode) {
          case I_Pin::MODE_INPUT : return BCM2835_GPIO_FSEL_INPT;
          case I_Pin::MODE_OUTPUT : return BCM2835_GPIO_FSEL_OUTP;
          default : return BCM2835_GPIO_FSEL_OUTP;
@@ -34,21 +34,21 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-PinPlatform::PinPlatform(uint8_t pPinId, I_Pin::Mode pInitialMode) : mPinId(pPinId) {
+PinPlatform::PinPlatform(uint8_t iPinId, I_Pin::Mode iInitialMode) : mPinId(iPinId) {
    GpioLibrary::ensureIsInitialized();
-   mode(pInitialMode);
+   mode(iInitialMode);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void PinPlatform::mode(I_Pin::Mode pMode) {
-   bcm2835_gpio_fsel(mPinId, translateMode(pMode));
+void PinPlatform::mode(I_Pin::Mode iMode) {
+   bcm2835_gpio_fsel(mPinId, translateMode(iMode));
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void PinPlatform::write(bool gHigh) {
-   bcm2835_gpio_write(mPinId,gHigh);
+void PinPlatform::write(bool iHigh) {
+   bcm2835_gpio_write(mPinId,iHigh);
 }
 
 //-------------------------------------------------------------------------------------------------

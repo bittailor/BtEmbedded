@@ -26,8 +26,8 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-Rf24DeviceController::Rf24DeviceController(I_Rf24Device& pDevice)
-: mDevice(&pDevice), mInterruptPin(24, Mcu::I_InterruptPin::Edge::FALLING) , mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this),
+Rf24DeviceController::Rf24DeviceController(I_Rf24Device& iDevice)
+: mDevice(&iDevice), mInterruptPin(24, Mcu::I_InterruptPin::Edge::FALLING) , mPowerDown(*this), mStandbyI(*this), mRxMode(*this), mTxMode(*this),
   mCurrentState(&mPowerDown), mLogTimer(Bt::Util::milliseconds() + 1000){
 }
 
@@ -39,39 +39,39 @@ Rf24DeviceController::~Rf24DeviceController() {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24DeviceController::configure(const Configuration& pConfiguration) {
+void Rf24DeviceController::configure(const Configuration& iConfiguration) {
 
    StateBase* originalState = mCurrentState;
    mCurrentState->ToPowerDown();
-   mConfiguration = pConfiguration;
+   mConfiguration = iConfiguration;
    originalState->ApplyTo(*mCurrentState);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24DeviceController::write(RfPipe pPipe, Packet& pPacket) {
-   size_t size = write(pPipe, pPacket.buffer(), pPacket.size());
+bool Rf24DeviceController::write(RfPipe iPipe, Packet& iPacket) {
+   size_t size = write(iPipe, iPacket.buffer(), iPacket.size());
    return size != 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
+size_t Rf24DeviceController::write(RfPipe iPipe, uint8_t* iData, size_t iSize) {
    StateBase* originalState = mCurrentState;
    BT_LOG(DEBUG) << "transceiverMode " << mDevice->transceiverMode() ;
    BT_LOG(DEBUG) << "write current state is " << typeid(*mCurrentState).name() ;
    mCurrentState->ToStandbyI();
 
    RfAddress backupPipe0 = mDevice->receiveAddress(RfPipe::PIPE_0);
-   RfAddress transmitPipeAddress = mDevice->receiveAddress(pPipe);
+   RfAddress transmitPipeAddress = mDevice->receiveAddress(iPipe);
    mDevice->transmitAddress(transmitPipeAddress);
    mDevice->receiveAddress(RfPipe::PIPE_0, transmitPipeAddress);
 
-   mDevice->writeTransmitPayload(pData, pSize);
+   mDevice->writeTransmitPayload(iData, iSize);
 
    while(mDevice->isTransmitFifoEmpty()) {
       BT_LOG(WARNING) << "transmit FIFO empty after sending payload ==> try again " ;
-      mDevice->writeTransmitPayload(pData, pSize);
+      mDevice->writeTransmitPayload(iData, iSize);
    }
 
    if(!mInterruptPin.read()) {
@@ -89,7 +89,7 @@ size_t Rf24DeviceController::write(RfPipe pPipe, uint8_t* pData, size_t pSize) {
    I_Rf24Device::Status status = mDevice->status();
    BT_LOG(DEBUG) << "status after IRQ " << status;
 
-   size_t sentSize = pSize;
+   size_t sentSize = iSize;
    bool flushTransmitFifo = false;
 
    if (status.retransmitsExceeded()) {
@@ -164,32 +164,32 @@ bool Rf24DeviceController::isDataAvailable() {
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24DeviceController::read(Packet& pPacket) {
+bool Rf24DeviceController::read(Packet& oPacket) {
    RfPipe pipe;
-   return read(pPacket, pipe);
+   return read(oPacket, pipe);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24DeviceController::read(Packet& pPacket, RfPipe& pPipe) {
+bool Rf24DeviceController::read(Packet& oPacket, RfPipe& oPipe) {
    if (mDevice->isReceiveFifoEmpty())
    {
       return false;
    }
-   size_t size = mDevice->readReceivePayload(pPipe, pPacket.buffer(), Packet::BUFFER_CAPACITY);
-   pPacket.size(size);
+   size_t size = mDevice->readReceivePayload(oPipe, oPacket.buffer(), Packet::BUFFER_CAPACITY);
+   oPacket.size(size);
 
    std::stringstream message;
    for (size_t i = 0 ; i < 3 ; i++) {
-      message << (int)pPacket.buffer()[i];
+      message << (int)oPacket.buffer()[i];
       message << ",";
    }
 
-   for (size_t i = 0 ; i < pPacket.size() ; i++) {
-      if(isprint((char) pPacket.buffer()[i])) {
-         message << (char) pPacket.buffer()[i];
+   for (size_t i = 0 ; i < oPacket.size() ; i++) {
+      if(isprint((char) oPacket.buffer()[i])) {
+         message << (char) oPacket.buffer()[i];
       } else {
-         message << (int)pPacket.buffer()[i];
+         message << (int)oPacket.buffer()[i];
       }
       message << ",";
    }
@@ -207,20 +207,20 @@ bool Rf24DeviceController::read(Packet& pPacket, RfPipe& pPipe) {
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24DeviceController::read(uint8_t* pBuffer, size_t pSize)
+size_t Rf24DeviceController::read(uint8_t* oBuffer, size_t iSize)
 {
    RfPipe pipe;
-   return read(pBuffer, pSize, pipe);
+   return read(oBuffer, iSize, pipe);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24DeviceController::read(uint8_t* pData, size_t pSize, RfPipe& pPipe) {
+size_t Rf24DeviceController::read(uint8_t* oData, size_t iSize, RfPipe& oPipe) {
    if (mDevice->isReceiveFifoEmpty())
    {
       return 0;
    }
-   return mDevice->readReceivePayload(pPipe, pData, pSize);
+   return mDevice->readReceivePayload(oPipe, oData, iSize);
 }
 
 //-------------------------------------------------------------------------------------------------

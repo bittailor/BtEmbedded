@@ -18,7 +18,7 @@ namespace Util {
 
 //-------------------------------------------------------------------------------------------------
 
-Timeout::Timeout(uint32_t pMilliseconds) : mTimedOut(false),  mMilliseconds(pMilliseconds), mStart(milliseconds()){
+Timeout::Timeout(uint32_t iMilliseconds) : mTimedOut(false),  mMilliseconds(iMilliseconds), mStart(milliseconds()){
 
 
 }

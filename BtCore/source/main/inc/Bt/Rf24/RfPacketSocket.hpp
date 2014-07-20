@@ -25,7 +25,7 @@ namespace Rf24 {
 class RfPacketSocket : public I_RfPacketSocket
 {
    public:
-      RfPacketSocket(I_RfNetworkSocket& pNetworkSocket);
+      RfPacketSocket(I_RfNetworkSocket& iNetworkSocket);
       ~RfPacketSocket();
 
       virtual size_t payloadCapacity() const;

@@ -21,10 +21,10 @@ namespace Rf24 {
 class RfProxySocketSlave 
 {
    public:
-      RfProxySocketSlave(I_Rf24DeviceController& pController);
+      RfProxySocketSlave(I_Rf24DeviceController& iController);
       ~RfProxySocketSlave();
 
-      virtual bool connect(char* pHost, int16_t pPort);
+      virtual bool connect(char* iHost, int16_t iPort);
 
    
    private:

@@ -22,12 +22,12 @@ class PinPlatform
 {
    public:
 
-      PinPlatform(uint8_t pPinId, I_Pin::Mode pInitialMode);
+      PinPlatform(uint8_t iPinId, I_Pin::Mode iInitialMode);
 
 
-      virtual void mode(I_Pin::Mode pMode);
+      virtual void mode(I_Pin::Mode iMode);
 
-      virtual void write(bool gHigh);
+      virtual void write(bool iHigh);
 
       virtual bool read();
 

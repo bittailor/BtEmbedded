@@ -20,11 +20,11 @@ namespace Rf24 {
 class RfNetworkRoutingAlgorithm 
 {
    public:
-      RfPipe calculateRoutingPipe(RfNode pSelf, RfNode pDestination);
-      void configurePipe(RfNode pSelf, RfPipe pPipe, I_Rf24DeviceController::Configuration::PipeConfiguration& pPipeConfiguration);
+      RfPipe calculateRoutingPipe(RfNode iSelf, RfNode iDestination);
+      void configurePipe(RfNode iSelf, RfPipe iPipe, I_Rf24DeviceController::Configuration::PipeConfiguration& oPipeConfiguration);
 
-      RfAddress calculatePipeAddress(RfNode pSelf, RfPipe pPipe);
-      bool isLeafNode(RfNode pSelf);
+      RfAddress calculatePipeAddress(RfNode iSelf, RfPipe iPipe);
+      bool isLeafNode(RfNode iSelf);
 };
 
 } // namespace Rf24

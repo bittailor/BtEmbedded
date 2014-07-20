@@ -21,9 +21,9 @@ namespace Mcu {
 class PinPlatform 
 {
    public:
-      PinPlatform(uint8_t pPinId, I_Pin::Mode pInitialMode);
+      PinPlatform(uint8_t iPinId, I_Pin::Mode iInitialMode);
 
-      void mode(I_Pin::Mode pMode);
+      void mode(I_Pin::Mode iMode);
 
       void write(bool gHigh);
 

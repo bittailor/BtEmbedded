@@ -15,22 +15,22 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfPipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode pSelf, RfNode pDestination) {
-   if (pSelf.level() >= pDestination.level()){
+RfPipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode iSelf, RfNode iDestination) {
+   if (iSelf.level() >= iDestination.level()){
       return RfPipe::PIPE_0;
    }
 
    uint8_t idAtLevel[4] = {0};
-   idAtLevel[pDestination.level()] = pDestination.id();
-   for(uint8_t i = pDestination.level() ; i > pSelf.level() ; i-- ) {
+   idAtLevel[iDestination.level()] = iDestination.id();
+   for(uint8_t i = iDestination.level() ; i > iSelf.level() ; i-- ) {
       idAtLevel[i - 1] = (idAtLevel[i] - 1) / 5;
    }
 
-   if (idAtLevel[pSelf.level()] != pSelf.id()) {
+   if (idAtLevel[iSelf.level()] != iSelf.id()) {
       return RfPipe::PIPE_0;
    }
 
-   switch (idAtLevel[pSelf.level() + 1] % 5) {
+   switch (idAtLevel[iSelf.level() + 1] % 5) {
       case 1 : return RfPipe::PIPE_1;
       case 2 : return RfPipe::PIPE_2;
       case 3 : return RfPipe::PIPE_3;
@@ -43,23 +43,23 @@ RfPipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode pSelf, RfNode pDes
 
 //-------------------------------------------------------------------------------------------------
 
-void RfNetworkRoutingAlgorithm::configurePipe(RfNode pSelf, RfPipe pPipe, I_Rf24DeviceController::Configuration::PipeConfiguration& pPipeConfiguration) {
-   if(isLeafNode(pSelf) && pPipe != RfPipe::PIPE_0) {
-      pPipeConfiguration.mEnabled = false;
+void RfNetworkRoutingAlgorithm::configurePipe(RfNode iSelf, RfPipe iPipe, I_Rf24DeviceController::Configuration::PipeConfiguration& oPipeConfiguration) {
+   if(isLeafNode(iSelf) && iPipe != RfPipe::PIPE_0) {
+      oPipeConfiguration.mEnabled = false;
       return;
    }
 
-   pPipeConfiguration.mEnabled = true;
-   pPipeConfiguration.mAddress = calculatePipeAddress(pSelf,pPipe);
+   oPipeConfiguration.mEnabled = true;
+   oPipeConfiguration.mAddress = calculatePipeAddress(iSelf,iPipe);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-RfAddress RfNetworkRoutingAlgorithm::calculatePipeAddress(RfNode pSelf, RfPipe pPipe) {
-   uint8_t byte0 = pSelf.id();
-   uint8_t child = pSelf.id() * 5;
-   switch(pPipe) {
-      case RfPipe::PIPE_0 : byte0 = pSelf.id(); break;
+RfAddress RfNetworkRoutingAlgorithm::calculatePipeAddress(RfNode iSelf, RfPipe iPipe) {
+   uint8_t byte0 = iSelf.id();
+   uint8_t child = iSelf.id() * 5;
+   switch(iPipe) {
+      case RfPipe::PIPE_0 : byte0 = iSelf.id(); break;
       case RfPipe::PIPE_1 : byte0 = child + 1; break;
       case RfPipe::PIPE_2 : byte0 = child + 2; break;
       case RfPipe::PIPE_3 : byte0 = child + 3; break;
@@ -71,8 +71,8 @@ RfAddress RfNetworkRoutingAlgorithm::calculatePipeAddress(RfNode pSelf, RfPipe p
 
 //-------------------------------------------------------------------------------------------------
 
-bool RfNetworkRoutingAlgorithm::isLeafNode(RfNode pSelf) {
-   return pSelf.id() > 50;
+bool RfNetworkRoutingAlgorithm::isLeafNode(RfNode iSelf) {
+   return iSelf.id() > 50;
 }
 
 //-------------------------------------------------------------------------------------------------

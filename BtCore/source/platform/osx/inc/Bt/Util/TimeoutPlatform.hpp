@@ -19,7 +19,7 @@ namespace Util {
 class TimeoutPlatform 
 {
    public:
-      TimeoutPlatform(unsigned int pMilliseconds);
+      TimeoutPlatform(unsigned int iMilliseconds);
       ~TimeoutPlatform();
    
    protected:

@@ -16,17 +16,17 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfNode::RfNode(uint8_t pId) : mId(pId), mLevel(calculateLevel(pId)) {
+RfNode::RfNode(uint8_t iId) : mId(iId), mLevel(calculateLevel(iId)) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-uint8_t RfNode::calculateLevel(uint8_t pId) {
-   if (pId <   1) return 0;
-   if (pId <   6) return 1;
-   if (pId <  31) return 2;
-   if (pId < 155) return 3;
+uint8_t RfNode::calculateLevel(uint8_t iId) {
+   if (iId <   1) return 0;
+   if (iId <   6) return 1;
+   if (iId <  31) return 2;
+   if (iId < 155) return 3;
    return 4;
 }
 

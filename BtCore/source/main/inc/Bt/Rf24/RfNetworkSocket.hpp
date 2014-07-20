@@ -28,10 +28,10 @@ class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
       enum { PACKAGE_STORAGE_SIZE = 6 };
 
    public:
-      RfNetworkSocket(RfNode pNodeId, I_Rf24DeviceController& pController);
+      RfNetworkSocket(RfNode iNodeId, I_Rf24DeviceController& iController);
 
-      virtual bool send(Packet& pPacket);
-      virtual bool receive(Packet& pPacket);
+      virtual bool send(Packet& iPacket);
+      virtual bool receive(Packet& oPacket);
       virtual bool available();
 
       virtual bool setListener(I_Listener& iListener);
@@ -50,8 +50,8 @@ class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
       // Operator= to prohibit copy assignment
       RfNetworkSocket& operator=(const RfNetworkSocket&);
 
-      bool sendInternal(Packet& pPacket);
-      void receiveInternal(Packet& pPacket);
+      bool sendInternal(Packet& iPacket);
+      void receiveInternal(Packet& oPacket);
 
 
       RfNode mNodeId;

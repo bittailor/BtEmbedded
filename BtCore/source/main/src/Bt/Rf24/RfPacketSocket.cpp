@@ -22,7 +22,7 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfPacketSocket::RfPacketSocket(I_RfNetworkSocket& pNetworkSocket) : mNetworkSocket(pNetworkSocket) {
+RfPacketSocket::RfPacketSocket(I_RfNetworkSocket& iNetworkSocket) : mNetworkSocket(iNetworkSocket) {
 
 }
 

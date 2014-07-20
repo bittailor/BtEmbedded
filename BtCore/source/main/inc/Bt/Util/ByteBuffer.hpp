@@ -20,7 +20,7 @@ namespace Util {
 class ByteBuffer 
 {
    public:
-      ByteBuffer(uint8_t* pRaw, size_t pSize);
+      ByteBuffer(uint8_t* iRaw, size_t iSize);
       ~ByteBuffer();
 
 

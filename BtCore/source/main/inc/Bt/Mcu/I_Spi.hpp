@@ -28,8 +28,8 @@ class I_Spi {
 
       virtual ~I_Spi() {}
       
-      virtual uint8_t transfer(uint8_t pData)=0;
-      virtual void transfer(uint8_t* pTransmitData, uint8_t* pReceiveData, size_t pSize) = 0;
+      virtual uint8_t transfer(uint8_t iData)=0;
+      virtual void transfer(uint8_t* iTransmitData, uint8_t* oReceiveData, size_t iSize) = 0;
 };
 
 } // namespace Mcu

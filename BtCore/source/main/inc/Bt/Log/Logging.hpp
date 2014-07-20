@@ -85,7 +85,7 @@ class LogStatement {
 
       bool mOnce;
       LoggingLevel mLevel;
-      timespec mTimestamp;
+      //timespec mTimestamp;
       std::stringstream message;
       
 

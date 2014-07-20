@@ -35,8 +35,8 @@
 class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
    public:
 
-      PingClient(Bt::Rf24::I_RfNetworkSocket& pSocket, uint8_t pPingId, int pDelay, std::string pMessage)
-      : mSocket(&pSocket), mPingId(pPingId), mDelay(pDelay), mMessage(pMessage), mCounter(0) {
+      PingClient(Bt::Rf24::I_RfNetworkSocket& iSocket, uint8_t iPingId, int iDelay, std::string iMessage)
+      : mSocket(&iSocket), mPingId(iPingId), mDelay(iDelay), mMessage(iMessage), mCounter(0) {
       }
 
       void start() {
@@ -51,10 +51,10 @@ class PingClient : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
          mSocket->send(packet);
       }
 
-      virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& pPacket) {
+      virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& iPacket) {
          std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-         std::cout << "Packet from " << (int)pPacket.source() << " => " << (int)pPacket.destination() << std::endl;
-         std::string message((char*)pPacket.payload(),(char*)pPacket.payload() + pPacket.size());
+         std::cout << "Packet from " << (int)iPacket.source() << " => " << (int)iPacket.destination() << std::endl;
+         std::string message((char*)iPacket.payload(),(char*)iPacket.payload() + iPacket.size());
          std::cout << "Message: " << message << std::endl;
 
          std::cout << "Ping took "
@@ -85,14 +85,6 @@ std::atomic<bool> sRunning(true);
 void signalCallbackHandler(int signum) {
    printf("\nstopping ...\n");
    sRunning.store(false);
-}
-
-
-//-------------------------------------------------------------------------------------------------
-
-void workcycle(uint8_t pNodeId, uint8_t pPingId, std::string message, std::atomic<bool>& pRunning) {
-
-
 }
 
 //-------------------------------------------------------------------------------------------------

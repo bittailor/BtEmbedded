@@ -27,14 +27,14 @@ class Buffer
       typedef T const *  const_iterator;
 
 
-      Buffer(T* pRaw, size_t pSize) : mRaw(pRaw), mSize(pSize)  {
+      Buffer(T* iRaw, size_t iSize) : mRaw(iRaw), mSize(iSize)  {
       }
 
-      Buffer(iterator pBegin, iterator pEnd) : mRaw(pBegin), mSize(pEnd-pBegin) {
+      Buffer(iterator iBegin, iterator iEnd) : mRaw(iBegin), mSize(iEnd-iBegin) {
       }
 
       template<size_t SIZE>
-      Buffer(StaticArray<T,SIZE>& pArray) : mRaw(pArray.begin()), mSize(pArray.size())   {
+      Buffer(StaticArray<T,SIZE>& iArray) : mRaw(iArray.begin()), mSize(iArray.size())   {
       }
 
       ~Buffer() {

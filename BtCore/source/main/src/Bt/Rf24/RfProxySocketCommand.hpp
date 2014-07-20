@@ -29,7 +29,7 @@ struct RfProxySocketConnect {
       int16_t mPort;
       char mHost[0];
 
-      void initialize(char* pHost, int16_t pPort) {
+      void initialize(char* iHost, int16_t iPort) {
          mHeader.mCommand = RfProxySocketCommand::CONNECT;
          //mPort
       }

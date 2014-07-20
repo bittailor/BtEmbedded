@@ -29,7 +29,7 @@ class I_OutputPackage {
         virtual I_OutputPackage& write(int32_t iValue) = 0;
         virtual I_OutputPackage& write(uint32_t iValue) = 0;
         virtual I_OutputPackage& write(const char* iValue) = 0;
-        virtual I_OutputPackage& write(const uint8_t* pData, size_t pSize) = 0;
+        virtual I_OutputPackage& write(const uint8_t* iData, size_t iSize) = 0;
 
 
         // TODO do it with traits !

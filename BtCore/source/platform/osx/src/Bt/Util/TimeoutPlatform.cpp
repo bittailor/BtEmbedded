@@ -16,7 +16,7 @@ namespace Util {
 
 //-------------------------------------------------------------------------------------------------
 
-TimeoutPlatform::TimeoutPlatform(unsigned int pMilliseconds) : mDuration(pMilliseconds), mStart(std::chrono::high_resolution_clock::now()) {
+TimeoutPlatform::TimeoutPlatform(unsigned int iMilliseconds) : mDuration(iMilliseconds), mStart(std::chrono::high_resolution_clock::now()) {
 
 }
 

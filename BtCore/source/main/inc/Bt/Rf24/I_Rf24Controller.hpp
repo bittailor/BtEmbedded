@@ -30,26 +30,26 @@ class I_Rf24DeviceController {
 
       virtual ~I_Rf24DeviceController() {}
 
-      virtual void configure(const Configuration& pConfiguration) = 0;
+      virtual void configure(const Configuration& iConfiguration) = 0;
 
-      virtual bool write(RfPipe pPipe, Packet& pPacket) = 0;
-      virtual size_t write(RfPipe pPipe, uint8_t* pData, size_t pSize) = 0;
+      virtual bool write(RfPipe iPipe, Packet& iPacket) = 0;
+      virtual size_t write(RfPipe iPipe, uint8_t* iData, size_t iSize) = 0;
 
       virtual void startListening() = 0;
       virtual void stopListening() = 0;
       virtual bool isDataAvailable() = 0;
 
-      virtual bool read(Packet& pPacket) = 0;
-      virtual bool read(Packet& pPacket, RfPipe& pPipe) = 0;
+      virtual bool read(Packet& oPacket) = 0;
+      virtual bool read(Packet& oPacket, RfPipe& oPipe) = 0;
 
-      virtual size_t read(uint8_t* pBuffer, size_t pSize) = 0;
-      virtual size_t read(uint8_t* pBuffer, size_t pSize, RfPipe& pPipe) = 0;
+      virtual size_t read(uint8_t* oBuffer, size_t iSize) = 0;
+      virtual size_t read(uint8_t* oBuffer, size_t iSize, RfPipe& oPipe) = 0;
 };
 
 class I_Rf24DeviceController::I_Listener {
       virtual ~I_Listener() {}
 
-      void received(Packet& pPacket, RfPipe& pPipe);
+      void received(Packet& iPacket, RfPipe& iPipe);
 
 };
 
@@ -73,8 +73,8 @@ class I_Rf24DeviceController::Packet {
          return mSize;
       }
 
-      void size(size_t pSize) {
-         mSize = pSize;
+      void size(size_t iSize) {
+         mSize = iSize;
       }
 
       void copy(I_Rf24DeviceController::Packet& iPacket) const {
@@ -111,8 +111,8 @@ class I_Rf24DeviceController::Configuration {
          return mAutoRetransmitDelay;
       }
 
-      PipeConfiguration& operator[](RfPipe pPipe) {
-         return mPipeConfigurations[static_cast<size_t>(pPipe)];
+      PipeConfiguration& operator[](RfPipe iPipe) {
+         return mPipeConfigurations[static_cast<size_t>(iPipe)];
       }
 
    private:

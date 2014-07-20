@@ -16,19 +16,19 @@ namespace Mcu {
 
 //-------------------------------------------------------------------------------------------------
 
-PinPlatform::PinPlatform(uint8_t pPinId, I_Pin::Mode pInitialMode) {
+PinPlatform::PinPlatform(uint8_t iPinId, I_Pin::Mode iInitialMode) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void PinPlatform::mode(I_Pin::Mode pMode) {
+void PinPlatform::mode(I_Pin::Mode iMode) {
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void PinPlatform::write(bool gHigh) {
+void PinPlatform::write(bool iHigh) {
 
 }
 

@@ -24,11 +24,11 @@ class Spi : public I_Spi , private SpiPlatform
    public:
 
 
-      Spi(BitOrder pBitOrder, Mode pSpiMode, Speed pSpeed, ChipSelect pChipSelect);
+      Spi(BitOrder iBitOrder, Mode iSpiMode, Speed iSpeed, ChipSelect iChipSelect);
       virtual ~Spi();
 
-      virtual uint8_t transfer(uint8_t pData);
-      virtual void transfer(uint8_t* pTransmitData, uint8_t* pReceiveData, size_t pSize);
+      virtual uint8_t transfer(uint8_t iData);
+      virtual void transfer(uint8_t* iTransmitData, uint8_t* oReceiveData, size_t iSize);
    
    private:
    	  // Constructor to prohibit copy construction.

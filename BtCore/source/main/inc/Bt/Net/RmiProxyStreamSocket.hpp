@@ -20,17 +20,17 @@ namespace Net {
 class RmiProxyStreamSocket : I_StreamSocket
 {
    public:
-      RmiProxyStreamSocket(Rmi::I_RemoteClient& pRemoteClient);
+      RmiProxyStreamSocket(Rmi::I_RemoteClient& iRemoteClient);
       ~RmiProxyStreamSocket();
 
-      virtual bool connect(const char* pHost, uint16_t pPort);
+      virtual bool connect(const char* iHost, uint16_t iPort);
       virtual void close();
 
-      virtual size_t write(const uint8_t* pData, size_t pSize);
+      virtual size_t write(const uint8_t* iData, size_t iSize);
       virtual void flush();
 
       virtual size_t available();
-      virtual size_t read(uint8_t* pData, size_t pMaxSize);
+      virtual size_t read(uint8_t* oData, size_t iMaxSize);
 
    private:
    	  // Constructor to prohibit copy construction.

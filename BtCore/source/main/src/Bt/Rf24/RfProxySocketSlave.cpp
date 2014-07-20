@@ -17,7 +17,7 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfProxySocketSlave::RfProxySocketSlave(I_Rf24DeviceController& pController) : mController(&pController) {
+RfProxySocketSlave::RfProxySocketSlave(I_Rf24DeviceController& iController) : mController(&iController) {
 
 }
 
@@ -29,7 +29,7 @@ RfProxySocketSlave::~RfProxySocketSlave() {
 
 //-------------------------------------------------------------------------------------------------
 
-bool RfProxySocketSlave::connect(char* pHost, int16_t pPort) {
+bool RfProxySocketSlave::connect(char* iHost, int16_t iPort) {
    //I_Rf24Controller::Packet packet;
    //RfProxySocketConnect* connect = static_cast<RfProxySocketConnect*>(packet.rawBuffer());
    //connect->initialize(connect);

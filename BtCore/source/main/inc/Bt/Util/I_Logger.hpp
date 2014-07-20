@@ -19,8 +19,8 @@ class I_Logger {
       virtual ~I_Logger() {}
       
       virtual I_Logger& operator<<(I_Logger& (*pManuipulator)(I_Logger&)) = 0;
-      virtual I_Logger& operator<<(const char* pCString) = 0;
-      virtual I_Logger& operator<<(int pInteger) = 0;
+      virtual I_Logger& operator<<(const char* iCString) = 0;
+      virtual I_Logger& operator<<(int iInteger) = 0;
 
       virtual void flush() = 0;
       virtual void endl() = 0;

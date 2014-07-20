@@ -19,8 +19,8 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24DeviceController& pController)
-: mNodeId(pNodeId), mController(&pController), mIdCounter(0), mListener(nullptr)  {
+RfNetworkSocket::RfNetworkSocket(RfNode iNodeId, I_Rf24DeviceController& iController)
+: mNodeId(iNodeId), mController(&iController), mIdCounter(0), mListener(nullptr)  {
 
    for(StoredPackage& package : mPackages) {
       mFree.pushBack(package);
@@ -41,20 +41,20 @@ RfNetworkSocket::RfNetworkSocket(RfNode pNodeId, I_Rf24DeviceController& pContro
 
 //-------------------------------------------------------------------------------------------------
 
-bool RfNetworkSocket::send(Packet& pPacket) {
-  pPacket.source(mNodeId.id());
-  pPacket.id(mIdCounter++);
-  if (pPacket.destination() == mNodeId.id()) {
-     receiveInternal(pPacket);
+bool RfNetworkSocket::send(Packet& iPacket) {
+  iPacket.source(mNodeId.id());
+  iPacket.id(mIdCounter++);
+  if (iPacket.destination() == mNodeId.id()) {
+     receiveInternal(iPacket);
      return true;
   }
-  return sendInternal(pPacket);
+  return sendInternal(iPacket);
 
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool RfNetworkSocket::receive(Packet& pPacket) {
+bool RfNetworkSocket::receive(Packet& oPacket) {
    while(mReceived.empty()) {
       workcycle();
    }
@@ -62,7 +62,7 @@ bool RfNetworkSocket::receive(Packet& pPacket) {
    StoredPackage& received = *mReceived.begin();
    mReceived.remove(received);
 
-   received.copy(pPacket);
+   received.copy(oPacket);
 
    mFree.pushBack(received);
    return true;
@@ -127,11 +127,11 @@ bool RfNetworkSocket::resetListener() {
 
 //-------------------------------------------------------------------------------------------------
 
-bool RfNetworkSocket::sendInternal(Packet& pPacket) {
-   RfPipe pipe = mRouting.calculateRoutingPipe(mNodeId, pPacket.destination());
+bool RfNetworkSocket::sendInternal(Packet& iPacket) {
+   RfPipe pipe = mRouting.calculateRoutingPipe(mNodeId, iPacket.destination());
 
    int counter = 0;
-   while(!mController->write(pipe, pPacket.mControllerPackage)) {
+   while(!mController->write(pipe, iPacket.mControllerPackage)) {
       counter++;
       if (counter >= 5) {
          return false;
@@ -146,9 +146,9 @@ bool RfNetworkSocket::sendInternal(Packet& pPacket) {
 
 //-------------------------------------------------------------------------------------------------
 
-void RfNetworkSocket::receiveInternal(Packet& pPacket) {
+void RfNetworkSocket::receiveInternal(Packet& oPacket) {
    if(mListener != nullptr) {
-      mListener->packetReceived(pPacket);
+      mListener->packetReceived(oPacket);
       return;
    }
 
@@ -159,7 +159,7 @@ void RfNetworkSocket::receiveInternal(Packet& pPacket) {
 
    StoredPackage& storage = *mFree.begin();
    mFree.remove(storage);
-   pPacket.copy(storage);
+   oPacket.copy(storage);
    mReceived.pushBack(storage);
 
 }

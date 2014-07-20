@@ -33,17 +33,17 @@
 class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
    public:
 
-      PingServer(Bt::Rf24::I_RfNetworkSocket& pSocket) : mSocket(&pSocket) {
+      PingServer(Bt::Rf24::I_RfNetworkSocket& iSocket) : mSocket(&iSocket) {
 
       }
 
-      virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& pPacket) {
-         printf("Packet from %i => %i [%i]\n", (int)pPacket.source(), (int)pPacket.destination(), (int) pPacket.size());
-         std::string message((char*)pPacket.payload(),(char*)pPacket.payload() + pPacket.size());
+      virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& iPacket) {
+         printf("Packet from %i => %i [%i]\n", (int)iPacket.source(), (int)iPacket.destination(), (int) iPacket.size());
+         std::string message((char*)iPacket.payload(),(char*)iPacket.payload() + iPacket.size());
          std::cout << "Message: " << message << std::endl;
          Bt::Rf24::I_RfNetworkSocket::Packet packet;
-         packet.destination(pPacket.source());
-         packet.writePayload(pPacket.payload(),pPacket.size());
+         packet.destination(iPacket.source());
+         packet.writePayload(iPacket.payload(),iPacket.size());
          mSocket->send(packet);
       }
 

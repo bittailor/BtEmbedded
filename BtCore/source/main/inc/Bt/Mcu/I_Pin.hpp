@@ -24,9 +24,9 @@ class I_Pin {
 
       virtual ~I_Pin() {}
       
-      virtual void mode(Mode pMode) = 0;
+      virtual void mode(Mode iMode) = 0;
 
-      virtual void write(bool pHigh) = 0;
+      virtual void write(bool iHigh) = 0;
 
       virtual bool read() = 0;
 

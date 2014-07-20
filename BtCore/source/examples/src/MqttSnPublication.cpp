@@ -30,15 +30,15 @@ using Bt::Workcycle::MainWorkcycle;
 class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
    public:
 
-      PingServer(Bt::Rf24::I_RfNetworkSocket& pSocket) : mSocket(&pSocket) {
+      PingServer(Bt::Rf24::I_RfNetworkSocket& iSocket) : mSocket(&iSocket) {
 
       }
 
-      virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& pPacket) {
-         printf("Packet from %i => %i [%i]\n", (int)pPacket.source(), (int)pPacket.destination(), (int) pPacket.size());
+      virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& iPacket) {
+         printf("Packet from %i => %i [%i]\n", (int)iPacket.source(), (int)iPacket.destination(), (int) iPacket.size());
          Bt::Rf24::I_RfNetworkSocket::Packet packet;
-         packet.destination(pPacket.source());
-         packet.writePayload(pPacket.payload(),pPacket.size());
+         packet.destination(iPacket.source());
+         packet.writePayload(iPacket.payload(),iPacket.size());
          mSocket->send(packet);
       }
 

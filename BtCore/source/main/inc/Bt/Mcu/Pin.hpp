@@ -21,12 +21,12 @@ namespace Mcu {
 class Pin : public I_Pin, private PinPlatform
 {
    public:
-      Pin(uint8_t pPinId, Mode pInitialMode);
+      Pin(uint8_t iPinId, Mode iInitialMode);
       ~Pin();
 
-      virtual void mode(Mode pMode);
+      virtual void mode(Mode iMode);
 
-      virtual void write(bool pHigh);
+      virtual void write(bool iHigh);
 
       virtual bool read();
 
