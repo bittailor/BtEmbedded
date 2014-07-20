@@ -15,8 +15,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <Bt/Concurrency/I_ExecutionContext.hpp>
 #include <Bt/Rf24/I_Rf24Controller.hpp>
-#include "Bt/Rf24/I_Rf24Device.hpp"
+#include <Bt/Rf24/I_Rf24Device.hpp>
 #include <Bt/Mcu/InterruptPin.hpp>
 #include <Bt/Mcu/Pin.hpp>
 
@@ -27,7 +28,8 @@ class Rf24DeviceController : public I_Rf24DeviceController
 {
    public:
 
-      Rf24DeviceController(I_Rf24Device& iDevice);
+      Rf24DeviceController(I_Rf24Device& iDevice, Mcu::I_InterruptPin& iInterruptPin,
+                           Concurrency::I_ExecutionContext& iExecutionContext);
       ~Rf24DeviceController();
 
       virtual void configure(const Configuration& iConfiguration);
@@ -46,9 +48,6 @@ class Rf24DeviceController : public I_Rf24DeviceController
 
       virtual size_t read(uint8_t* oBuffer, size_t iSize);
       virtual size_t read(uint8_t* oBuffer, size_t iSize, RfPipe& oPipe);
-
-
-
 
    private:
 
@@ -111,9 +110,10 @@ class Rf24DeviceController : public I_Rf24DeviceController
       void configureDevice();
       void onInterrupt();
 
+      I_Rf24Device& mDevice;
+      Mcu::I_InterruptPin& mInterruptPin;
+      Concurrency::I_ExecutionContext& mExecutionContext;
       Configuration mConfiguration;
-      I_Rf24Device* mDevice;
-      Mcu::InterruptPin mInterruptPin;
       PowerDown mPowerDown;
       StandbyI mStandbyI;
       RxMode mRxMode;

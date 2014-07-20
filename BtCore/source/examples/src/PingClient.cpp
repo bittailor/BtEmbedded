@@ -18,12 +18,14 @@
 
 #include <Bt/Util/Timing.hpp>
 #include <Bt/CoreInitializer.hpp>
-#include "Bt/Mcu/Pin.hpp"
-#include "Bt/Mcu/Spi.hpp"
-#include "Bt/Rf24/Rf24Device.hpp"
-#include "Bt/Rf24/Rf24Controller.hpp"
-#include "Bt/Rf24/RfNetworkSocket.hpp"
-#include "Bt/Rf24/I_RfNetworkSocket.hpp"
+#include <Bt/Mcu/Pin.hpp>
+#include <Bt/Mcu/Spi.hpp>
+#include <Bt/Mcu/InterruptPin.hpp>
+#include <Bt/Rf24/Rf24Device.hpp>
+#include <Bt/Rf24/Rf24Controller.hpp>
+#include <Bt/Rf24/RfNetworkSocket.hpp>
+#include <Bt/Rf24/I_RfNetworkSocket.hpp>
+#include <Bt/Concurrency/ExecutionContext.hpp>
 
 //-------------------------------------------------------------------------------------------------
 
@@ -113,9 +115,11 @@ int main(int argc, const char* argv[]) {
                     Bt::Mcu::I_Spi::MODE_0,
                     Bt::Mcu::I_Spi::SPEED_8_MHZ,
                     Bt::Mcu::I_Spi::CHIP_SELECT_0);
+   Bt::Mcu::InterruptPin irq(24, Bt::Mcu::I_InterruptPin::Edge::FALLING);
+   Bt::Concurrency::ExecutionContext executionContext;
 
    Bt::Rf24::Rf24Device device(spi,chipEnable);
-   Bt::Rf24::Rf24DeviceController controller(device);
+   Bt::Rf24::Rf24DeviceController controller(device,irq,executionContext);
    Bt::Rf24::RfNetworkSocket socket(nodeId, controller);
 
    PingClient pingClient(socket, pingId, delay, message);
