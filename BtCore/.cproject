@@ -141,16 +141,10 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="host_debug">
-			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
-		</configuration>
-		<configuration configurationName="HostDebug">
+		<configuration configurationName="PiCrossDebug">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
 		<configuration configurationName="arduino_uno">
-			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
-		</configuration>
-		<configuration configurationName="pi_cross_debug">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
 		<configuration configurationName="MacOSX GCC">
@@ -159,7 +153,13 @@
 		<configuration configurationName="Cross GCC">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
-		<configuration configurationName="PiCrossDebug">
+		<configuration configurationName="host_debug">
+			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
+		</configuration>
+		<configuration configurationName="HostDebug">
+			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
+		</configuration>
+		<configuration configurationName="pi_cross_debug">
 			<resource resourceType="PROJECT" workspacePath="/BtCore"/>
 		</configuration>
 	</storageModule>
@@ -224,4 +224,5 @@
 			</profile>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
