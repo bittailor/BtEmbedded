@@ -44,9 +44,7 @@ class LogStatement {
       LogStatement& operator=(const LogStatement&) = delete;
 
 
-      LogStatement(LoggingLevel iLevel) : mOnce(iLevel > LoggingLevel::DEBUG) ,mLevel(iLevel) {
-//         clock_gettime(CLOCK_REALTIME, &mTimestamp);
-      }
+      LogStatement(LoggingLevel iLevel);
 
       ~LogStatement() {
          {

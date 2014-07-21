@@ -13,6 +13,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <sstream>
+#include <memory>
 
 #include <Bt/Log/Logging.hpp>
 
@@ -30,7 +31,7 @@ Rf24DeviceController::Rf24DeviceController(I_Rf24Device& iDevice, Mcu::I_Interru
                                            Concurrency::I_ExecutionContext& iExecutionContext)
 : mDevice(iDevice), mInterruptPin(iInterruptPin), mExecutionContext(iExecutionContext) , mPowerDown(*this),
   mStandbyI(*this), mRxMode(*this), mTxMode(*this), mCurrentState(&mPowerDown),
-  mLogTimer(Bt::Util::milliseconds() + 1000){
+  mInterruptState(InterruptState::Ignore){
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -52,13 +53,13 @@ void Rf24DeviceController::configure(const Configuration& iConfiguration) {
 //-------------------------------------------------------------------------------------------------
 
 bool Rf24DeviceController::write(RfPipe iPipe, Packet& iPacket) {
-   size_t size = write(iPipe, iPacket.buffer(), iPacket.size());
+   size_t size = transmitPacket(iPipe, iPacket);
    return size != 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-size_t Rf24DeviceController::write(RfPipe iPipe, uint8_t* iData, size_t iSize) {
+size_t Rf24DeviceController::transmitPacket(RfPipe iPipe, Packet& iPacket) {
    StateBase* originalState = mCurrentState;
    BT_LOG(DEBUG) << "transceiverMode " << mDevice.transceiverMode() ;
    BT_LOG(DEBUG) << "write current state is " << typeid(*mCurrentState).name() ;
@@ -69,11 +70,11 @@ size_t Rf24DeviceController::write(RfPipe iPipe, uint8_t* iData, size_t iSize) {
    mDevice.transmitAddress(transmitPipeAddress);
    mDevice.receiveAddress(RfPipe::PIPE_0, transmitPipeAddress);
 
-   mDevice.writeTransmitPayload(iData, iSize);
+   mDevice.writeTransmitPayload(iPacket.buffer(), iPacket.size());
 
    while(mDevice.isTransmitFifoEmpty()) {
       BT_LOG(WARNING) << "transmit FIFO empty after sending payload ==> try again " ;
-      mDevice.writeTransmitPayload(iData, iSize);
+      mDevice.writeTransmitPayload(iPacket.buffer(), iPacket.size());
    }
 
    if(!mInterruptPin.read()) {
@@ -91,7 +92,7 @@ size_t Rf24DeviceController::write(RfPipe iPipe, uint8_t* iData, size_t iSize) {
    I_Rf24Device::Status status = mDevice.status();
    BT_LOG(DEBUG) << "status after IRQ " << status;
 
-   size_t sentSize = iSize;
+   size_t sentSize = iPacket.size();
    bool flushTransmitFifo = false;
 
    if (status.retransmitsExceeded()) {
@@ -132,7 +133,8 @@ size_t Rf24DeviceController::write(RfPipe iPipe, uint8_t* iData, size_t iSize) {
 
 //-------------------------------------------------------------------------------------------------
 
-void Rf24DeviceController::startListening() {
+void Rf24DeviceController::startListening(std::function<void(RfPipe iPipe, Packet& iPacket)> iCallback) {
+   mCallback = iCallback;
    mCurrentState->ToRxMode();
 }
 
@@ -140,90 +142,49 @@ void Rf24DeviceController::startListening() {
 
 void Rf24DeviceController::stopListening() {
    mCurrentState->ToStandbyI();
+   mCallback = std::function<void(RfPipe iPipe, Packet& iPacket)>();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool Rf24DeviceController::isDataAvailable() {
-//   if (mLogTimer < Bt::Util::milliseconds()) {
-//      BT_LOG(DEBUG) << "isDataAvailable: transceiverMode " << mDevice.transceiverMode() ;
-//      BT_LOG(DEBUG) << "isDataAvailable: current state is " << typeid(*mCurrentState).name() ;
-//      mLogTimer = Bt::Util::milliseconds() + 1000;
+
+//-------------------------------------------------------------------------------------------------
+
+//bool Rf24DeviceController::read(Packet& oPacket, RfPipe& oPipe) {
+//   if (mDevice.isReceiveFifoEmpty())
+//   {
+//      return false;
 //   }
-
-
-   if (mDevice.status().receiveFifoEmpty()) {
-      return false;
-   }
-
-   if (mDevice.availableReceivePayload() > MAX_PAYLOAD_SIZE) {
-      mDevice.flushReceiveFifo();
-      return false;
-   }
-
-   return true;
-}
-
-//-------------------------------------------------------------------------------------------------
-
-bool Rf24DeviceController::read(Packet& oPacket) {
-   RfPipe pipe;
-   return read(oPacket, pipe);
-}
-
-//-------------------------------------------------------------------------------------------------
-
-bool Rf24DeviceController::read(Packet& oPacket, RfPipe& oPipe) {
-   if (mDevice.isReceiveFifoEmpty())
-   {
-      return false;
-   }
-   size_t size = mDevice.readReceivePayload(oPipe, oPacket.buffer(), Packet::BUFFER_CAPACITY);
-   oPacket.size(size);
-
-   std::stringstream message;
-   for (size_t i = 0 ; i < 3 ; i++) {
-      message << (int)oPacket.buffer()[i];
-      message << ",";
-   }
-
-   for (size_t i = 0 ; i < oPacket.size() ; i++) {
-      if(isprint((char) oPacket.buffer()[i])) {
-         message << (char) oPacket.buffer()[i];
-      } else {
-         message << (int)oPacket.buffer()[i];
-      }
-      message << ",";
-   }
-   message << " end";
-
-
-   BT_LOG(DEBUG) << "read: " << message.str();
-
-
-   if(mDevice.isReceiveFifoEmpty()) {
-      mDevice.clearDataReady();
-   }
-   return true;
-}
+//   size_t size = mDevice.readReceivePayload(oPipe, oPacket.buffer(), Packet::BUFFER_CAPACITY);
+//   oPacket.size(size);
+//
+//   std::stringstream message;
+//   for (size_t i = 0 ; i < 3 ; i++) {
+//      message << (int)oPacket.buffer()[i];
+//      message << ",";
+//   }
+//
+//   for (size_t i = 0 ; i < oPacket.size() ; i++) {
+//      if(isprint((char) oPacket.buffer()[i])) {
+//         message << (char) oPacket.buffer()[i];
+//      } else {
+//         message << (int)oPacket.buffer()[i];
+//      }
+//      message << ",";
+//   }
+//   message << " end";
+//
+//
+//   BT_LOG(DEBUG) << "read: " << message.str();
+//
+//
+//   if(mDevice.isReceiveFifoEmpty()) {
+//      mDevice.clearDataReady();
+//   }
+//   return true;
+//}
 
 //-------------------------------------------------------------------------------------------------
-
-size_t Rf24DeviceController::read(uint8_t* oBuffer, size_t iSize)
-{
-   RfPipe pipe;
-   return read(oBuffer, iSize, pipe);
-}
-
-//-------------------------------------------------------------------------------------------------
-
-size_t Rf24DeviceController::read(uint8_t* oData, size_t iSize, RfPipe& oPipe) {
-   if (mDevice.isReceiveFifoEmpty())
-   {
-      return 0;
-   }
-   return mDevice.readReceivePayload(oPipe, oData, iSize);
-}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -254,9 +215,42 @@ void Rf24DeviceController::configureDevice() {
 
 void Rf24DeviceController::onInterrupt() {
    BT_LOG(INFO) << " --- onInterrupt ----";
+   switch(mInterruptState.load()) {
+      case InterruptState::Ignore : {
+         return;
+      }
+      case InterruptState::Rx     : {
+         mExecutionContext.invoke(std::bind(&Rf24DeviceController::readReceiveData,this));
+         return;
+      }
+      case InterruptState::Tx     : {
+         return;
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
+
+void Rf24DeviceController::readReceiveData() {
+   while(!mDevice.isReceiveFifoEmpty()) {
+      RfPipe pipe;
+      Packet packet;
+      size_t size = mDevice.readReceivePayload(pipe,packet.buffer(),Packet::CAPACITY);
+      packet.size(size);
+      std::function<void()> handle = std::bind(&Rf24DeviceController::handleReceiveData,this,pipe,packet);
+      mExecutionContext.invoke(handle);
+      mDevice.clearDataReady();
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void Rf24DeviceController::handleReceiveData(RfPipe iPipe, Packet& iPacket) {
+   if(mCallback) {
+      mCallback(iPipe,iPacket);
+   }
+}
+
 //-------------------------------------------------------------------------------------------------
 
 void Rf24DeviceController::PowerDown::ToStandbyI() {
@@ -301,6 +295,8 @@ void Rf24DeviceController::StandbyI::ToRxMode() {
    mController->mDevice.clearDataSent();
    mController->mDevice.clearRetransmitsExceeded();
 
+   mController->mInterruptState.store(InterruptState::Rx);
+
    mController->mDevice.transceiverMode(I_Rf24Device::RX_MODE);
    mController->mDevice.chipEnable(true);
    Util::delayInMicroseconds(130);
@@ -317,10 +313,14 @@ void Rf24DeviceController::StandbyI::ToTxMode() {
       return;
    }
 
-   mController->mDevice.clearDataReady();
-   mController->mDevice.clearDataSent();
-   mController->mDevice.clearRetransmitsExceeded();
+   if(!mController->mInterruptPin.read()){
+      BT_LOG(WARNING) << "StandbyI::ToTxMode: InterruptPin still set => clear all !";
+      mController->mDevice.clearDataReady();
+      mController->mDevice.clearDataSent();
+      mController->mDevice.clearRetransmitsExceeded();
+   }
 
+   mController->mInterruptState.store(InterruptState::Tx);
    mController->mDevice.transceiverMode(I_Rf24Device::TX_MODE);
    mController->mDevice.chipEnable(true);
    Util::delayInMicroseconds(140);
@@ -341,6 +341,15 @@ void Rf24DeviceController::RxMode::ToPowerDown() {
 void Rf24DeviceController::RxMode::ToStandbyI() {
    mController->mDevice.chipEnable(false);
    mController->mDevice.transceiverMode(I_Rf24Device::TX_MODE);
+
+   mController->mInterruptState.store(InterruptState::Ignore);
+   if(!mController->mInterruptPin.read()){
+      mController->readReceiveData();
+      mController->mDevice.clearDataReady();
+      mController->mDevice.clearDataSent();
+      mController->mDevice.clearRetransmitsExceeded();
+   }
+
    Util::delayInMicroseconds(10);
    mController->mCurrentState = &mController->mStandbyI;
 }

@@ -24,6 +24,7 @@
 #include <Bt/Rf24/RfNetworkSocket.hpp>
 #include <Bt/Rf24/I_RfNetworkSocket.hpp>
 #include <Bt/Concurrency/ExecutionContext.hpp>
+#include <Bt/Concurrency/CountdownLatch.hpp>
 
 //-------------------------------------------------------------------------------------------------
 
@@ -32,11 +33,15 @@
 
 //-------------------------------------------------------------------------------------------------
 
-class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
+class PingServer {
    public:
 
-      PingServer(Bt::Rf24::I_RfNetworkSocket& iSocket) : mSocket(&iSocket) {
+      PingServer(Bt::Rf24::I_RfNetworkSocket& iSocket) : mSocket(iSocket) {
+         mSocket.startListening(std::bind(&PingServer::packetReceived,this,std::placeholders::_1));
+      }
 
+      ~PingServer() {
+         mSocket.stopListening();
       }
 
       virtual void packetReceived(Bt::Rf24::I_RfNetworkSocket::Packet& iPacket) {
@@ -46,23 +51,23 @@ class PingServer : public Bt::Rf24::I_RfNetworkSocket::I_Listener  {
          Bt::Rf24::I_RfNetworkSocket::Packet packet;
          packet.destination(iPacket.source());
          packet.writePayload(iPacket.payload(),iPacket.size());
-         mSocket->send(packet);
+         mSocket.send(packet);
       }
 
 
    private:
-      Bt::Rf24::I_RfNetworkSocket* mSocket;
+      Bt::Rf24::I_RfNetworkSocket& mSocket;
 };
 
 //-------------------------------------------------------------------------------------------------
 
-std::atomic<bool> sRunning(true);
+Bt::Concurrency::CountdownLatch sStopLatch(1);
 
 //-------------------------------------------------------------------------------------------------
 
 void signalCallbackHandler(int signum) {
    printf("\nstopping ...\n");
-   sRunning.store(false);
+   sStopLatch.countDown();
 }
 
 
@@ -81,24 +86,26 @@ int main(int argc, const char* argv[]) {
    printf("power on\n");
    power.write(true);
 
-   Bt::Mcu::Pin chipEnable(PIN_CHIP_ENABLE, Bt::Mcu::I_Pin::MODE_OUTPUT);
-   Bt::Mcu::Spi spi(Bt::Mcu::I_Spi::BIT_ORDER_MSBFIRST,
-                    Bt::Mcu::I_Spi::MODE_0,
-                    Bt::Mcu::I_Spi::SPEED_8_MHZ,
-                    Bt::Mcu::I_Spi::CHIP_SELECT_0);
-   Bt::Mcu::InterruptPin irq(24, Bt::Mcu::I_InterruptPin::Edge::FALLING);
-   Bt::Concurrency::ExecutionContext executionContext;
+   {
+      Bt::Mcu::Pin chipEnable(PIN_CHIP_ENABLE, Bt::Mcu::I_Pin::MODE_OUTPUT);
+      Bt::Mcu::Spi spi(Bt::Mcu::I_Spi::BIT_ORDER_MSBFIRST,
+                       Bt::Mcu::I_Spi::MODE_0,
+                       Bt::Mcu::I_Spi::SPEED_8_MHZ,
+                       Bt::Mcu::I_Spi::CHIP_SELECT_0);
+      Bt::Mcu::InterruptPin irq(24, Bt::Mcu::I_InterruptPin::Edge::FALLING);
+      Bt::Concurrency::ExecutionContext executionContext;
 
-   Bt::Rf24::Rf24Device device(spi,chipEnable);
-   Bt::Rf24::Rf24DeviceController controller(device,irq,executionContext);
-   Bt::Rf24::RfNetworkSocket socket(nodeId, controller);
+      Bt::Rf24::Rf24Device device(spi,chipEnable);
+      Bt::Rf24::Rf24DeviceController controller(device,irq,executionContext);
+      Bt::Rf24::RfNetworkSocket socket(nodeId, controller);
 
-   PingServer pingServer(socket);
-   socket.setListener(pingServer);
+      PingServer pingServer(socket);
 
-   printf("enter ping server workcycle for node %i\n",(int) nodeId);
-   while(sRunning.load()) {
-      socket.workcycle();
+      printf("ping server running for node %i\n",(int) nodeId);
+      printf("wait for stop latch (CTR-C)\n");
+
+      sStopLatch.wait();
+      printf("... stopping ...\n");
    }
 
    printf("power off\n");
@@ -107,8 +114,3 @@ int main(int argc, const char* argv[]) {
 }
 
 //-------------------------------------------------------------------------------------------------
-
-
-
-//-------------------------------------------------------------------------------------------------
-

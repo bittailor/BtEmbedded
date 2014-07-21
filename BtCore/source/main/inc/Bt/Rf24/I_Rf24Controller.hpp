@@ -11,6 +11,7 @@
 #ifndef INC__Bt_Device_I_RfController__hpp
 #define INC__Bt_Device_I_RfController__hpp
 
+#include <functional>
 #include <stddef.h>
 #include <string.h>
 
@@ -24,7 +25,7 @@ class I_Rf24DeviceController {
 
       class Packet;
       class Configuration;
-      class I_Listener;
+
 
       enum { MAX_PAYLOAD_SIZE = I_Rf24Device::MAX_PAYLOAD_SIZE };
 
@@ -33,66 +34,43 @@ class I_Rf24DeviceController {
       virtual void configure(const Configuration& iConfiguration) = 0;
 
       virtual bool write(RfPipe iPipe, Packet& iPacket) = 0;
-      virtual size_t write(RfPipe iPipe, uint8_t* iData, size_t iSize) = 0;
 
-      virtual void startListening() = 0;
+      virtual void startListening(std::function<void(RfPipe iPipe, Packet& iPacket)> iCallback) = 0;
       virtual void stopListening() = 0;
-      virtual bool isDataAvailable() = 0;
-
-      virtual bool read(Packet& oPacket) = 0;
-      virtual bool read(Packet& oPacket, RfPipe& oPipe) = 0;
-
-      virtual size_t read(uint8_t* oBuffer, size_t iSize) = 0;
-      virtual size_t read(uint8_t* oBuffer, size_t iSize, RfPipe& oPipe) = 0;
-};
-
-class I_Rf24DeviceController::I_Listener {
-      virtual ~I_Listener() {}
-
-      void received(Packet& iPacket, RfPipe& iPipe);
 
 };
 
 class I_Rf24DeviceController::Packet {
    public:
-      enum { BUFFER_CAPACITY = I_Rf24Device::MAX_PAYLOAD_SIZE };
+      enum { CAPACITY = I_Rf24Device::MAX_PAYLOAD_SIZE };
 
-      Packet() : mBuffer(), mSize(0) {
-
+      Packet() : mBuffer(std::make_shared<Buffer>()) {
       }
 
       uint8_t* buffer() {
-         return mBuffer;
+         return mBuffer->second;
       }
 
       void* rawBuffer() {
-         return mBuffer;
+         return mBuffer->second;
       }
 
-      size_t size() {
-         return mSize;
+      size_t size() const {
+         return mBuffer->first;
       }
 
       void size(size_t iSize) {
-         mSize = iSize;
+         mBuffer->first = iSize;
       }
 
       void copy(I_Rf24DeviceController::Packet& iPacket) const {
-         memcpy(iPacket.mBuffer, mBuffer, BUFFER_CAPACITY);
-         iPacket.mSize = mSize;
+         memcpy(iPacket.mBuffer->second, mBuffer->second, CAPACITY);
+         iPacket.mBuffer->first = mBuffer->first;
       }
 
    private:
-      // Constructor to prohibit copy construction.
-      Packet(const Packet&);
-
-      // Operator= to prohibit copy assignment
-      Packet& operator=(const Packet&);
-
-
-
-      uint8_t mBuffer[BUFFER_CAPACITY] ;
-      size_t mSize;
+      typedef std::pair<size_t,uint8_t[CAPACITY]> Buffer;
+      std::shared_ptr<Buffer> mBuffer;
 };
 
 class I_Rf24DeviceController::Configuration {

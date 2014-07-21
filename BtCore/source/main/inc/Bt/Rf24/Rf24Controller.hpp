@@ -12,6 +12,7 @@
 #define INC__Bt_Device_Rf24Controller__hpp
 
 #include <random>
+#include <vector>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -36,20 +37,16 @@ class Rf24DeviceController : public I_Rf24DeviceController
 
       virtual bool write(RfPipe iPipe, Packet& iPacket);
 
-      virtual size_t write(RfPipe iPipe, uint8_t* iData, size_t iSize);
-
-      virtual void startListening();
+      virtual void startListening(std::function<void(RfPipe iPipe, Packet& iPacket)> iCallback);
       virtual void stopListening();
-      virtual bool isDataAvailable();
-
-      virtual bool read(Packet& oPacket);
-      virtual bool read(Packet& oPacket, RfPipe& oPipe);
-
-
-      virtual size_t read(uint8_t* oBuffer, size_t iSize);
-      virtual size_t read(uint8_t* oBuffer, size_t iSize, RfPipe& oPipe);
 
    private:
+
+      enum class InterruptState {
+         Ignore,
+         Rx,
+         Tx
+      };
 
       class StateBase {
          public:
@@ -107,19 +104,25 @@ class Rf24DeviceController : public I_Rf24DeviceController
       // Operator= to prohibit copy assignment
       Rf24DeviceController& operator=(const Rf24DeviceController&);
 
+
       void configureDevice();
+      size_t transmitPacket(RfPipe iPipe, Packet& iPacket);
       void onInterrupt();
+      void readReceiveData();
+      void handleReceiveData(RfPipe iPipe, Packet& iPacket);
 
       I_Rf24Device& mDevice;
       Mcu::I_InterruptPin& mInterruptPin;
       Concurrency::I_ExecutionContext& mExecutionContext;
       Configuration mConfiguration;
+      std::function<void(RfPipe iPipe, Packet& iPacket)> mCallback;
       PowerDown mPowerDown;
       StandbyI mStandbyI;
       RxMode mRxMode;
       TxMode mTxMode;
       StateBase* mCurrentState;
-      uint32_t mLogTimer;
+      std::atomic<InterruptState> mInterruptState;
+
 
 #include <random>
 

@@ -37,17 +37,12 @@ class RfPacketSocketWrapper : public I_RfPacketSocket {
       , mDevice(mSpi,mChipEnable)
       , mController(mDevice,mIrq,mExecutionContext)
       , mNetworkSocket(iNodeId, mController)
-      , mPacketSocket(mNetworkSocket)
-      , mRunning(true)
-      , mWorkcycle(&RfPacketSocketWrapper::workcycle,this){
+      , mPacketSocket(mNetworkSocket,mExecutionContext) {
 
       }
 
       ~RfPacketSocketWrapper() {
-         mRunning.store(false);
-         mWorkcycle.join();
       }
-
 
       virtual size_t payloadCapacity() const {
          return mPacketSocket.payloadCapacity();
@@ -69,13 +64,6 @@ class RfPacketSocketWrapper : public I_RfPacketSocket {
          return mPacketSocket.receive(oPayload, iMaxSize, oNodeId);
       }
 
-      void workcycle() {
-         while(mRunning.load()) {
-            mPacketSocket.workcycle();
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-         }
-      }
-
    private:
       Mcu::Pin mChipEnable;
       Mcu::Spi mSpi;
@@ -85,8 +73,6 @@ class RfPacketSocketWrapper : public I_RfPacketSocket {
       Rf24DeviceController mController;
       RfNetworkSocket mNetworkSocket;
       RfPacketSocket mPacketSocket;
-      std::atomic<bool> mRunning;
-      std::thread mWorkcycle;
 };
 
 } // namespace

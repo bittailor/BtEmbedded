@@ -23,15 +23,12 @@ class I_RfNetworkSocket {
    public:
 
       class Packet;
-      class I_Listener;
       virtual ~I_RfNetworkSocket() {}
       
       virtual bool send(Packet& iPacket) = 0;
-      virtual bool receive(Packet& oPacket) = 0;
-      virtual bool available() = 0;
 
-      virtual bool setListener(I_Listener& iListener) = 0;
-      virtual bool resetListener() = 0;
+      virtual void startListening(std::function<void(Packet& iPacket)> iCallback) = 0;
+      virtual void stopListening() = 0;
 
 
 };
@@ -41,10 +38,14 @@ class I_RfNetworkSocket {
 class I_RfNetworkSocket::Packet {
    public:
       enum { HEADER_SIZE = 3 };
-      enum { PAYLOAD_CAPACITY = I_Rf24DeviceController::Packet::BUFFER_CAPACITY - HEADER_SIZE };
+      enum { PAYLOAD_CAPACITY = I_Rf24DeviceController::Packet::CAPACITY - HEADER_SIZE };
 
       Packet() {
          mControllerPackage.size(HEADER_SIZE);
+      }
+
+      explicit Packet(I_Rf24DeviceController::Packet& iControllerPackage) {
+         mControllerPackage = iControllerPackage;
       }
 
       uint8_t source() {
@@ -67,7 +68,7 @@ class I_RfNetworkSocket::Packet {
          return payloadBuffer();
       }
 
-      size_t size() {
+      size_t size() const {
          return mControllerPackage.size() - HEADER_SIZE;
       }
 
@@ -108,24 +109,10 @@ class I_RfNetworkSocket::Packet {
          mControllerPackage.buffer()[2] = iId;
       }
 
-
-
       I_Rf24DeviceController::Packet mControllerPackage;
 };
 
 //-------------------------------------------------------------------------------------------------
-
-class I_RfNetworkSocket::I_Listener {
-   public:
-      virtual ~I_Listener() {}
-
-      virtual void packetReceived(Packet& iPacket) = 0;
-
-};
-
-//-------------------------------------------------------------------------------------------------
-
-
 
 } // namespace Rf24
 } // namespace Bt

@@ -20,7 +20,7 @@
 namespace Bt {
 namespace Rf24 {
 
-class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
+class RfNetworkSocket : public I_RfNetworkSocket
 {
    private:
       enum { FRAME_BUFFER_SIZE = I_Rf24DeviceController::MAX_PAYLOAD_SIZE };
@@ -31,18 +31,11 @@ class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
       RfNetworkSocket(RfNode iNodeId, I_Rf24DeviceController& iController);
 
       virtual bool send(Packet& iPacket);
-      virtual bool receive(Packet& oPacket);
-      virtual bool available();
 
-      virtual bool setListener(I_Listener& iListener);
-      virtual bool resetListener();
-
-      virtual void workcycle();
+      virtual void startListening(std::function<void(Packet& iPacket)> iCallback);
+      virtual void stopListening();
 
    private:
-      class StoredPackage : public Packet, public Util::IntrusiveList<StoredPackage>::Element {
-      };
-
 
    	  // Constructor to prohibit copy construction.
       RfNetworkSocket(const RfNetworkSocket&);
@@ -51,18 +44,15 @@ class RfNetworkSocket : public I_RfNetworkSocket, public Workcycle::I_Runnable
       RfNetworkSocket& operator=(const RfNetworkSocket&);
 
       bool sendInternal(Packet& iPacket);
-      void receiveInternal(Packet& oPacket);
+      void receiveInternal(Packet& iPacket);
+      void onPacketReceived(RfPipe iPipe, I_Rf24DeviceController::Packet& iPacket);
 
 
       RfNode mNodeId;
       I_Rf24DeviceController* mController;
       RfNetworkRoutingAlgorithm mRouting;
       uint8_t mIdCounter;
-      I_Listener* mListener;
-      StoredPackage mPackages[PACKAGE_STORAGE_SIZE];
-      Util::IntrusiveList<StoredPackage> mFree;
-      Util::IntrusiveList<StoredPackage> mReceived;
-
+      std::function<void(Packet& iPacket)> mCallback;
 
 };
 

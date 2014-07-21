@@ -14,9 +14,10 @@
 #include <future>
 #include <memory>
 
-#include "Bt/Rf24/I_RfPacketSocket.hpp"
-#include "Bt/Rf24/I_RfNetworkSocket.hpp"
-#include "Bt/Concurrency/BlockingQueue.hpp"
+#include <Bt/Rf24/I_RfPacketSocket.hpp>
+#include <Bt/Rf24/I_RfNetworkSocket.hpp>
+#include <Bt/Concurrency/BlockingQueue.hpp>
+#include <Bt/Concurrency/I_ExecutionContext.hpp>
 
 
 namespace Bt {
@@ -25,7 +26,7 @@ namespace Rf24 {
 class RfPacketSocket : public I_RfPacketSocket
 {
    public:
-      RfPacketSocket(I_RfNetworkSocket& iNetworkSocket);
+      RfPacketSocket(I_RfNetworkSocket& iNetworkSocket, Concurrency::I_ExecutionContext& iExecutionContext);
       ~RfPacketSocket();
 
       virtual size_t payloadCapacity() const;
@@ -36,8 +37,6 @@ class RfPacketSocket : public I_RfPacketSocket
       virtual int32_t send(const uint8_t* iPayload, size_t iSize, uint8_t iNodeId);
       virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oNodeId);
 
-      virtual void workcycle();
-
    private:
    	  // Constructor to prohibit copy construction.
       RfPacketSocket(const RfPacketSocket&);
@@ -45,12 +44,13 @@ class RfPacketSocket : public I_RfPacketSocket
       // Operator= to prohibit copy assignment
       RfPacketSocket& operator=(const RfPacketSocket&);
 
-      typedef std::pair<std::promise<bool>,std::shared_ptr<I_RfNetworkSocket::Packet>> SendMessage;
-      typedef std::shared_ptr<I_RfNetworkSocket::Packet> ReceiveMessage;
+      void onPacketReceived(I_RfNetworkSocket::Packet& iPacket);
+
 
       I_RfNetworkSocket& mNetworkSocket;
-      Concurrency::BlockingQueue<ReceiveMessage> mReceivedQueue;
-      Concurrency::BlockingQueue<SendMessage> mSendQueue;
+      Concurrency::I_ExecutionContext& mExecutionContext;
+      Concurrency::BlockingQueue<I_RfNetworkSocket::Packet> mReceivedQueue;
+
 };
 
 } // namespace Rf24

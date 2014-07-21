@@ -18,7 +18,7 @@
 namespace Bt {
 namespace Rf24 {
 
-class RfNetworkSocketListenerGMock : public I_RfNetworkSocket::I_Listener {
+class RfNetworkSocketListenerGMock {
    public:
       
       MOCK_METHOD1(packetReceived, void(I_RfNetworkSocket::Packet&));
