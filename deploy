@@ -9,8 +9,8 @@ puts
 artefacts =
 [
    "BtCore/target/pi_cross_debug/PingClient",
-   "BtCore/target/pi_cross_debug/PingServer"
-   #"BtMqttSnGateway/target/pi_cross_debug/BtMqttSnGateway"
+   "BtCore/target/pi_cross_debug/PingServer",
+   "BtMqttSnGateway/target/pi_cross_debug/BtMqttSnGateway"
 ]
 
 pis.each do |pi|
