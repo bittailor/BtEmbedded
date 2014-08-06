@@ -90,13 +90,16 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Connect& iMessage) {
       mTopicStorage.clear();
    }
 
-   mBrokerClient = mFactory->createClient(*this, iMessage.clientId);
-
-   bool result = mBrokerClient->connect(mFactory->createDefaultOptions());
-
    Bt::Net::MqttSn::ReturnCode returnCode = Bt::Net::MqttSn::ReturnCode::ACCEPTED;
 
-   if(!result){
+   try {
+      mBrokerClient = mFactory->createClient(*this, iMessage.clientId);
+      bool result = mBrokerClient->connect(mFactory->createDefaultOptions());
+      if(!result){
+         returnCode = Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED;
+      }
+   } catch (std::exception& exception) {
+      BT_LOG(WARNING) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "create MqttClient failed : " << exception.what() ;
       returnCode = Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED;
    }
 

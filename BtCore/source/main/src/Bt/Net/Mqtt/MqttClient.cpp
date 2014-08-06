@@ -13,6 +13,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <string>
 
 #include <Bt/Log/Logging.hpp>
 
@@ -54,13 +55,20 @@ MqttClient::MqttClient(I_Listener& iListener, std::string iAddress, std::string 
    int result = MQTTClient_create(&mClient, const_cast<char*>(mAddress.c_str()), const_cast<char*>(mClientId.c_str()), MQTTCLIENT_PERSISTENCE_NONE, nullptr);
    if (result != MQTTCLIENT_SUCCESS)
    {
-      BT_LOG(WARNING) << "MQTTClient_create: failed with " << result ;
+      std::stringstream message;
+      message << "MQTTClient_create: failed with " << result;
+      BT_LOG(WARNING) << message.str() ;
+      throw std::domain_error(message.str());
    }
 
    result = MQTTClient_setCallbacks(mClient, this, &connectionLostCallback, &messageArrivedCallback, &deliveryCompleteCallback);
    if (result != MQTTCLIENT_SUCCESS)
    {
-      BT_LOG(WARNING) << "MQTTClient_setCallbacks: failed with " << result ;
+      MQTTClient_destroy(&mClient);
+      std::stringstream message;
+      message << "MQTTClient_setCallbacks: failed with " << result;
+      BT_LOG(WARNING) << message.str() ;
+      throw std::domain_error(message.str());
    }
 
 }
