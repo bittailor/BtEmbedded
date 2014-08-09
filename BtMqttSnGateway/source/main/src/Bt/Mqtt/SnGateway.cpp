@@ -74,7 +74,14 @@ int SnGateway::run() {
             gatewayConnection = std::make_shared<GatewayConnection>(nodeId,
                                                                     mSocket,
                                                                     mMqttFactory,
-                                                                    std::bind(&Bt::Util::Repository<GatewayConnection>::remove, &mConnections, std::placeholders::_1));
+                                                                    [=](int id){
+               this->mWorker.invoke([=](){
+                  this->mConnections.remove(id);
+               });
+            });
+
+
+
             mConnections.add(gatewayConnection);
          }
          gatewayConnection->handle(message);

@@ -18,6 +18,11 @@
 class Listener : public Bt::Net::Mqtt::MqttClient::I_Listener {
    public:
 
+      virtual void connectionLost(const std::string& iCause) {
+         std::cout << "connectionLost: " << iCause << std::endl;
+      }
+
+
       virtual bool messageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::MqttClient::Message> iMessage) {
          std::cout << "messageArrived: "
                    << iTopicName

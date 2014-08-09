@@ -35,7 +35,9 @@ class I_MqttClient {
       class I_Listener {
          public:
             virtual ~I_Listener() {}
+            virtual void connectionLost(const std::string& iCause) = 0;
             virtual bool messageArrived(const std::string& iTopicName, std::shared_ptr<Message> iMessage) = 0;
+
       };
 
       virtual ~I_MqttClient() {}

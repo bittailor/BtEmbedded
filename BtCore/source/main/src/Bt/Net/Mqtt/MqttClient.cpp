@@ -146,6 +146,11 @@ bool MqttClient::subscribe(const std::string& iTopic, int iQos) {
 
 void MqttClient::connectionLost(char* iCause) {
    BT_LOG(DEBUG) << "MqttClient::connectionLost: " << iCause ;
+   std::string cause;
+   if(iCause != nullptr) {
+      cause = iCause;
+   }
+   mListener.connectionLost(cause);
 }
 
 //-------------------------------------------------------------------------------------------------

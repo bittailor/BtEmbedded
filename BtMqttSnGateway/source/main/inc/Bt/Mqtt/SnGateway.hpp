@@ -11,12 +11,11 @@
 #ifndef INC__Bt_Mqtt_SnGateway__hpp
 #define INC__Bt_Mqtt_SnGateway__hpp
 
+#include <Bt/Concurrency/ExecutionContext.hpp>
 #include <Bt/Rf24/RfPacketSocket.hpp>
-
-#include "Bt/Mqtt/I_MqttFactory.hpp"
-#include "Bt/Util/Repository.hpp"
-
-#include "Bt/Mqtt/GatewayConnection.hpp"
+#include <Bt/Mqtt/I_MqttFactory.hpp>
+#include <Bt/Util/Repository.hpp>
+#include <Bt/Mqtt/GatewayConnection.hpp>
 
 
 namespace Bt {
@@ -41,6 +40,7 @@ class SnGateway
       std::shared_ptr<Rf24::I_RfPacketSocket> mSocket;
       std::shared_ptr<I_MqttFactory> mMqttFactory;
       Bt::Util::Repository<GatewayConnection> mConnections;
+      Bt::Concurrency::ExecutionContext mWorker;
 
       volatile bool mRunning;
 

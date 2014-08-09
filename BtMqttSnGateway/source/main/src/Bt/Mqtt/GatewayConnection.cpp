@@ -23,7 +23,7 @@ namespace Mqtt {
 GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
                                      std::shared_ptr<Rf24::I_RfPacketSocket> iSocket,
                                      std::shared_ptr<I_MqttFactory> iFactory,
-                                     std::function<bool(int)> iDispose)
+                                     std::function<void(int)> iDispose)
 : mRunning(true), mRfNodeId(iRfNodeId), mSocket(iSocket)
 , mFactory(iFactory), mDispose(iDispose)
 , mMsgIdCounter(1), mThread(&GatewayConnection::workcycle,this)
@@ -34,7 +34,13 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
 //-------------------------------------------------------------------------------------------------
 
 GatewayConnection::~GatewayConnection() {
-   mThread.detach();
+   BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << " send stop workcycle.";
+   mQueue.push([=]() {
+      this->mRunning = false;
+      BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << " workcycle stopped.";
+   });
+   BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << " join workcycle thread.";
+   mThread.join();
    BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "~GatewayConnection() " ;
 }
 
@@ -52,11 +58,26 @@ void GatewayConnection::handle(std::shared_ptr<Bt::Net::MqttSn::I_Message> iMess
 
 //-------------------------------------------------------------------------------------------------
 
+void GatewayConnection::connectionLost(const std::string& iCause) {
+   std::string cause = iCause;
+   mQueue.push([=](){this->connectionLostInternal(cause);});
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::connectionLostInternal(const std::string& iCause) {
+   BT_LOG(WARNING) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "ConnectionLostFromBroker: " << iCause ;
+   dispose(true);
+}
+
+//-------------------------------------------------------------------------------------------------
+
 bool GatewayConnection::messageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
    std::string topicName = iTopicName;
    mQueue.push([=](){this->messageArrivedInternal(topicName,iMessage);});
    return true;
 }
+
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::messageArrivedInternal(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
@@ -168,14 +189,19 @@ void GatewayConnection::disconnect(bool iSendDisconnectToClient) {
       BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "DisconnectFromClient : disconnect to broker failed" ;
    }
 
+   dispose(iSendDisconnectToClient);
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::dispose(bool iSendDisconnectToClient) {
    mBrokerClient.reset();
 
    if (iSendDisconnectToClient) {
       Bt::Net::MqttSn::Disconnect disconnect;
       send(disconnect);
    }
-
-   mRunning = false;
    mDispose(id());
 }
 

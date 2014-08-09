@@ -34,11 +34,10 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       GatewayConnection(uint8_t iRfNodeId,
                         std::shared_ptr<Rf24::I_RfPacketSocket> iSocket,
                         std::shared_ptr<I_MqttFactory> iFactory,
-                        std::function<bool(int)> iDispose);
+                        std::function<void(int)> iDispose);
       ~GatewayConnection();
 
       int id();
-
       void handle(std::shared_ptr<Bt::Net::MqttSn::I_Message> iMessage);
 
 
@@ -49,6 +48,8 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       // Operator= to prohibit copy assignment
       GatewayConnection& operator=(const GatewayConnection&);
 
+      virtual void connectionLost(const std::string& iCause);
+      virtual void connectionLostInternal(const std::string& iCause);
       virtual bool messageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
       virtual void messageArrivedInternal(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
 
@@ -63,10 +64,11 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       virtual void visit(Bt::Net::MqttSn::Pingreq& iMessage);
       virtual void visit(Bt::Net::MqttSn::Pingresp& iMessage);
 
-      void disconnect(bool iSendDisconnectToClient);
       void send(Bt::Net::MqttSn::I_Message& iMessage);
-
       bool containsWildcardCharacters(const std::string& iTopicName);
+      void disconnect(bool iSendDisconnectToClient);
+      void dispose(bool iSendDisconnectToClient);
+
 
       void workcycle();
 
@@ -75,7 +77,7 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       Bt::Concurrency::BlockingQueue<std::function<void()>> mQueue;
       std::shared_ptr<Rf24::I_RfPacketSocket> mSocket;
       std::shared_ptr<I_MqttFactory> mFactory;
-      std::function<bool(int)> mDispose;
+      std::function<void(int)> mDispose;
       std::shared_ptr<Net::Mqtt::I_MqttClient> mBrokerClient;
       TopicStorage mTopicStorage;
       uint16_t mMsgIdCounter;

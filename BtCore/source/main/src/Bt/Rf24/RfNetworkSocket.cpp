@@ -66,6 +66,7 @@ bool RfNetworkSocket::sendInternal(Packet& iPacket) {
    while(!mController->write(pipe, iPacket.mControllerPackage)) {
       counter++;
       if (counter >= 5) {
+         BT_LOG(WARNING) << "NetworkSocket send failed after " << counter <<  " retries";
          return false;
       }
       BT_LOG(WARNING) << "send failed do retry " << counter <<  " after delay";
