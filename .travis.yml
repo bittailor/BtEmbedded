@@ -1,0 +1,13 @@
+language: cpp
+os:
+    - osx
+
+before_install:
+    - git submodule update --init --recursive
+    - brew update
+
+install:
+    - brew install ninja
+    - brew install boost
+
+script: rake configuration=host_debug project=3rdParty,BtCore,BtMqttSnGateway
