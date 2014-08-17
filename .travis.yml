@@ -1,15 +1,23 @@
 language: objective-c
 os: osx
 before_install:
-    - git submodule update --init --recursive
-    - gem install net-ssh
-    - gem install net-scp
-    - brew update
-    - brew install wget
+- git submodule update --init --recursive
+- gem install net-ssh
+- gem install net-scp
+- brew update
+- brew install wget
 install:
-    - brew install ninja
-    - brew install boost
-    - wget https://github.com/bittailor/PiCrossTool/releases/download/v0.1.0/CrosstoolImage_0_1_0.dmg
-    - hdiutil attach CrosstoolImage_0_1_0.dmg
-    - ls /Volumes
+- brew install ninja
+- brew install boost
+- brew brew list --versions
+- wget https://github.com/bittailor/PiCrossTool/releases/download/v0.1.0/CrosstoolImage_0_1_0.dmg
+- hdiutil attach CrosstoolImage_0_1_0.dmg
+- ls /Volumes
 script: ruby build_travis
+deploy:
+  provider: releases
+  api_key:
+    secure: BnAW2C1nMJuoIPJqrbvd7N7T5msRMUDCeUeonvomD4l1L4u6g5JYMmW6LVpLu5ODFxEV6sg00rO+w7rGEZrRnxIPtz5TEEz/mV9m9hI7pL8oyORqn9/LVjRya0Bgd6bs2E9hlxwDYLcCcx2LPxgylZ1ey3iOVL32AZykMWo4zbU=
+  file: BtMqttSnGateway/target/pi_cross_debug/BtMqttSnGateway
+  on:
+    repo: bittailor/BtEmbedded
