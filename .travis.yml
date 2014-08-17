@@ -22,3 +22,5 @@ deploy:
   file: BtMqttSnGateway/target/pi_cross_debug/BtMqttSnGateway
   on:
     repo: bittailor/BtEmbedded
+    tags: true
+    all_branches: true
