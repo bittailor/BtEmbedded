@@ -28,7 +28,7 @@ namespace {
          if(levelName == "DEBUG")   return LoggingLevel::DEBUG;
       }
       std::cout << "BT_CORE_LOGGING_LEVEL is not set => ERROR" << std::endl;
-      return LoggingLevel::DEBUG;
+      return LoggingLevel::ERROR;
    }
 
    LoggingLevel sLevel = getLoggingLevel();

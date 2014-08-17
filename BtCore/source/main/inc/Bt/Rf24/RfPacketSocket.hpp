@@ -37,6 +37,8 @@ class RfPacketSocket : public I_RfPacketSocket
       virtual int32_t send(const uint8_t* iPayload, size_t iSize, uint8_t iNodeId);
       virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oNodeId);
 
+      virtual void close();
+
    private:
    	  // Constructor to prohibit copy construction.
       RfPacketSocket(const RfPacketSocket&);
@@ -46,10 +48,11 @@ class RfPacketSocket : public I_RfPacketSocket
 
       void onPacketReceived(I_RfNetworkSocket::Packet& iPacket);
 
+      typedef std::pair<bool,I_RfNetworkSocket::Packet> Item;
 
       I_RfNetworkSocket& mNetworkSocket;
       Concurrency::I_ExecutionContext& mExecutionContext;
-      Concurrency::BlockingQueue<I_RfNetworkSocket::Packet> mReceivedQueue;
+      Concurrency::BlockingQueue<Item> mReceivedQueue;
 
 };
 

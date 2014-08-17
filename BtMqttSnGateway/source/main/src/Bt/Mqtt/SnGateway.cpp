@@ -47,9 +47,9 @@ SnGateway::~SnGateway() {
 //-------------------------------------------------------------------------------------------------
 
 int SnGateway::run() {
-   mRunning = true;
+   mRunning.store(true);
    BT_LOG(DEBUG) << "enter loop " ;
-   while(mRunning) {
+   while(mRunning.load()) {
       //BT_LOG(DEBUG) << "loop (" << mRunning << ")";
       uint8_t nodeId = 0;
       Net::MqttSn::MessageBuffer buffer(mSocket->payloadCapacity());
@@ -97,7 +97,8 @@ int SnGateway::run() {
 
 void SnGateway::stop() {
    BT_LOG(DEBUG) << "SnGateway::stop" ;
-   mRunning = false;
+   mRunning.store(false);
+   mSocket->close();
 }
 
 //-------------------------------------------------------------------------------------------------

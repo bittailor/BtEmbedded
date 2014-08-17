@@ -32,6 +32,8 @@ class I_RfPacketSocket {
       virtual int32_t send(const uint8_t* iPayload, size_t iSize, uint8_t iNodeId) = 0;
       virtual int32_t receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oNodeId) = 0;
 
+      virtual void close() = 0;
+
 
 };
 

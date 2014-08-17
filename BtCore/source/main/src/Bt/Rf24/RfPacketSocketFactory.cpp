@@ -64,6 +64,10 @@ class RfPacketSocketWrapper : public I_RfPacketSocket {
          return mPacketSocket.receive(oPayload, iMaxSize, oNodeId);
       }
 
+      virtual void close() {
+         mPacketSocket.close();
+      }
+
    private:
       Mcu::Pin mChipEnable;
       Mcu::Spi mSpi;

@@ -48,11 +48,11 @@ bool RfPacketSocket::hasPendingPacket() const {
 //-------------------------------------------------------------------------------------------------
 
 size_t RfPacketSocket::pendingPacketSize() const {
-   const I_RfNetworkSocket::Packet* packet = mReceivedQueue.peek();
-   if (packet == nullptr) {
+   const Item* item = mReceivedQueue.peek();
+   if (item == nullptr) {
       return -1;
    }
-   return packet->size();
+   return item->second.size();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -79,20 +79,31 @@ int32_t RfPacketSocket::send(const uint8_t* iPayload, size_t iSize, uint8_t iNod
 //-------------------------------------------------------------------------------------------------
 
 int32_t RfPacketSocket::receive(uint8_t* oPayload, size_t iMaxSize, uint8_t* oNodeId) {
-   I_RfNetworkSocket::Packet packet;
-   mReceivedQueue.pop(packet);
-   size_t readSize = std::min(iMaxSize,packet.size());
-   memcpy(oPayload, packet.payload(), readSize);
+   Item item;
+   mReceivedQueue.pop(item);
+   if(!item.first) {
+      return -1;
+   }
+
+   size_t readSize = std::min(iMaxSize,item.second.size());
+   memcpy(oPayload, item.second.payload(), readSize);
    if(oNodeId != nullptr) {
-      *oNodeId = packet.source();
+      *oNodeId = item.second.source();
    }
    return readSize;
 }
 
 //-------------------------------------------------------------------------------------------------
 
+void RfPacketSocket::close() {
+   mNetworkSocket.stopListening();
+   mReceivedQueue.push(Item(false,I_RfNetworkSocket::Packet()));
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void RfPacketSocket::onPacketReceived(I_RfNetworkSocket::Packet& iPacket) {
-   mReceivedQueue.push(iPacket);
+   mReceivedQueue.push(Item(true,iPacket));
 }
 
 //-------------------------------------------------------------------------------------------------

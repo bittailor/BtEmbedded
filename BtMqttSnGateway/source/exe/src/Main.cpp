@@ -23,17 +23,14 @@
 using Bt::Mcu::Pin;
 
 namespace {
-   Bt::Mcu::Pin* volatile sPower;
+   std::promise<void> sQuitPromise;
+   std::future<void> sQuitFuture = sQuitPromise.get_future();
 }
 
 void signalHandler(int signal)
 {
    BT_LOG(INFO) << "Hanlde SIGNAL " << signal ;
-   if (sPower != nullptr ) {
-      BT_LOG(INFO) << "Power off" ;
-      sPower->write(false);
-      std::exit(0);
-   }
+   sQuitPromise.set_value();
 }
 
 
@@ -50,7 +47,6 @@ int main(int argc, char* argv[]) {
 
    Bt::CoreInitializer coreInitializer;
    Bt::Mcu::Pin power(27, Bt::Mcu::Pin::MODE_OUTPUT);
-   sPower = &power;
    power.write(false);
    Bt::Util::delayInMilliseconds(10);
    power.write(true);
@@ -61,16 +57,29 @@ int main(int argc, char* argv[]) {
    std::signal(SIGINT, signalHandler);
 
    BT_LOG(INFO) << "gateway run ..." ;
-   int result = gateway.run();
+
+   std::thread gatewayThread([&gateway](){
+      try {
+         gateway.run();
+      } catch(std::exception& exception) {
+         BT_LOG(ERROR) << "gateway.run() failed with: " << exception.what();
+      } catch(...) {
+         BT_LOG(ERROR) << "gateway.run() failed with unknown exception ";
+      }
+   });
+
+   sQuitFuture.get();
+   gateway.stop();
+   gatewayThread.join();
+
    BT_LOG(INFO) << "... gateway end" ;
 
+   BT_LOG(INFO) << "Power off" ;
    power.write(false);
-
-   sPower = nullptr;
 
    BT_LOG(INFO) << "bye" ;
 
-   return result;
+   return 0;
 }
 
 
