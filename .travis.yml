@@ -5,7 +5,11 @@ before_install:
     - gem install net-ssh
     - gem install net-scp
     - brew update
+    - brew install wget
 install:
     - brew install ninja
     - brew install boost
+    - wget https://github.com/bittailor/PiCrossTool/releases/download/v0.1.0/CrosstoolImage_0_1_0.dmg
+    - hdiutil attach CrosstoolImage_0_1_0.dmg
+    - ls /Volumes
 script: rake configuration=host_debug project=3rdParty,BtCore,BtMqttSnGateway
