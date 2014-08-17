@@ -2,6 +2,8 @@ language: objective-c
 os: osx
 before_install:
     - git submodule update --init --recursive
+    - gem install net-ssh
+    - gem install net-scp
     - brew update
 install:
     - brew install ninja
