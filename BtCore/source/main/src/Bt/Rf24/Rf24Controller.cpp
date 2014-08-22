@@ -78,7 +78,7 @@ size_t Rf24DeviceController::transmitPacket(RfPipe iPipe, Packet& iPacket) {
    }
 
    if(!mInterruptPin.read()) {
-      BT_LOG(ERROR) << " **** IRQ already set before transmit - status " << mDevice.status();
+      BT_LOG(ERROR) << "**** IRQ already set before transmit - status " << mDevice.status();
    }
 
    mCurrentState->ToTxMode();
@@ -115,7 +115,7 @@ size_t Rf24DeviceController::transmitPacket(RfPipe iPipe, Packet& iPacket) {
    mCurrentState->ToStandbyI();
 
    if(!mInterruptPin.read()) {
-      BT_LOG(ERROR) << " **** IRQ still set after clean - status =  " << mDevice.status();
+      BT_LOG(ERROR) << "**** IRQ still set after clean - status =  " << mDevice.status();
    }
 
 
@@ -214,7 +214,7 @@ void Rf24DeviceController::configureDevice() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24DeviceController::onInterrupt() {
-   BT_LOG(INFO) << " --- onInterrupt ----";
+   BT_LOG(INFO) << "--- onInterrupt ----";
    switch(mInterruptState.load()) {
       case InterruptState::Ignore : {
          return;

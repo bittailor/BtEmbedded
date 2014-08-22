@@ -12,12 +12,18 @@
 #define INC__Bt_Mqtt_I_SnGatewaySettings__hpp
 
 #include <Bt/Mcu/I_Spi.hpp>
+#include <Bt/Log/Logging.hpp>
 
 namespace Bt {
 namespace Mqtt {
 
 class I_SnGatewaySettings {
    public:
+
+      struct Logging {
+         Log::LoggingLevel level;
+      };
+
       struct Broker {
          std::string url;
          boost::optional<std::string> user;
@@ -37,6 +43,7 @@ class I_SnGatewaySettings {
 
       virtual ~I_SnGatewaySettings() {}
       
+      virtual const Logging& logging() const = 0;
       virtual const Broker& broker() const = 0;
       virtual const Rf24& rf24() const = 0;
       virtual const Socket& socket() const = 0;

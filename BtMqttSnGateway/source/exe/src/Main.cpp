@@ -19,6 +19,7 @@
 #include <Bt/Mcu/Pin.hpp>
 #include <Bt/Util/Timing.hpp>
 
+using Bt::Log::setLoggingLevel;
 using Bt::Mcu::Pin;
 
 namespace {
@@ -37,13 +38,16 @@ void signalHandler(int signal)
 
 int main(int argc, char* argv[]) {
    std::string settingsFile = "settings.xml";
+   if(argc > 1) {
+      settingsFile = argv[1];
+   }
+   std::cout << "Start MQTT-SN Gateway reading settings from " << settingsFile << std::endl;
+
    try {
 
-      if(argc > 1) {
-         settingsFile = argv[1];
-      }
+      Bt::Mqtt::SnGatewaySettings settings(settingsFile);
 
-      BT_LOG(INFO) << "Main" ;
+      Bt::Log::setLoggingLevel(settings.logging().level);
 
       Bt::CoreInitializer coreInitializer;
       Bt::Mcu::Pin power(27, Bt::Mcu::Pin::MODE_OUTPUT);
@@ -52,7 +56,6 @@ int main(int argc, char* argv[]) {
       power.write(true);
       Bt::Util::delayInMilliseconds(10);
 
-      Bt::Mqtt::SnGatewaySettings settings(settingsFile);
       Bt::Mqtt::SnGateway gateway(settings);
 
       std::signal(SIGINT, signalHandler);

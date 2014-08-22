@@ -13,7 +13,8 @@
 #include <functional>
 
 #include <Bt/Log/Logging.hpp>
-#include "Bt/Rf24/RfNetworkSocket.hpp"
+#include <Bt/Rf24/RfNetworkSocket.hpp>
+#include <Bt/Util/Timing.hpp>
 
 namespace Bt {
 namespace Rf24 {
@@ -89,11 +90,11 @@ void RfNetworkSocket::receiveInternal(Packet& iPacket) {
 void RfNetworkSocket::onPacketReceived(RfPipe iPipe, I_Rf24DeviceController::Packet& iPacket) {
    Packet packet(iPacket);
    if (packet.destination() != mNodeId.id()) {
-      BT_LOG(DEBUG) << " - route  " << (int)packet.source() << " => " << (int)packet.destination();
+      BT_LOG(DEBUG) << "route  " << (int)packet.source() << " => " << (int)packet.destination();
       sendInternal(packet);
       return;
    }
-   BT_LOG(DEBUG) << " - receive  " << (int)packet.source() << " => " << (int)packet.destination();
+   BT_LOG(DEBUG) << "receive  " << (int)packet.source() << " => " << (int)packet.destination();
    receiveInternal(packet);
 }
 

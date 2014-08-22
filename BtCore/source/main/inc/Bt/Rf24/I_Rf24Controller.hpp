@@ -12,6 +12,7 @@
 #define INC__Bt_Device_I_RfController__hpp
 
 #include <functional>
+#include <memory>
 #include <stddef.h>
 #include <string.h>
 
