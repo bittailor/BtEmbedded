@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Settings>
+    <Broker>
+        <Url>iot.eclipse.org</Url>
+		<!-- <User>mqtt</User> -->
+        <!-- <Password>password</Password> -->       
+    </Broker>
+    <Socket>
+    	<!-- <NodeId>0</<NodeId> -->	
+    </Socket>
+    <Rf24>
+    	<!-- <ChipSelect>0</ChipSelect> -->
+        <!-- <ChipEnablePin>25</ChipEnablePin> -->
+    	<!-- <IrqPin>24</IrqPin> -->		
+    </Rf24>
+</Settings>
+

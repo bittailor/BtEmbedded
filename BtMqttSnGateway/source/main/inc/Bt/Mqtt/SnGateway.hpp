@@ -19,15 +19,17 @@
 #include <Bt/Util/Repository.hpp>
 
 #include <Bt/Mqtt/GatewayConnection.hpp>
+#include <Bt/Mqtt/SnGatewaySettings.hpp>
+#include <Bt/Mqtt/I_SnGatewaySettings.hpp>
 
 
 namespace Bt {
 namespace Mqtt {
 
-class SnGateway 
+class SnGateway
 {
    public:
-      SnGateway(const std::string& iAddress, const std::string& iUser, const std::string& iPassword);
+      SnGateway(const I_SnGatewaySettings& iSettings);
       ~SnGateway();
    
       int run();
@@ -40,6 +42,8 @@ class SnGateway
       // Operator= to prohibit copy assignment
       SnGateway& operator=(const SnGateway&);
 
+
+      const I_SnGatewaySettings& mSettings;
       std::shared_ptr<Rf24::I_RfPacketSocket> mSocket;
       std::shared_ptr<I_MqttFactory> mMqttFactory;
       Bt::Util::Repository<GatewayConnection> mConnections;

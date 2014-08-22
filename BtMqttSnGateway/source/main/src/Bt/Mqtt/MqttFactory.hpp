@@ -13,13 +13,15 @@
 
 #include "Bt/Mqtt/I_MqttFactory.hpp"
 
+#include <boost/optional.hpp>
+
 namespace Bt {
 namespace Mqtt {
 
 class MqttFactory : public I_MqttFactory
 {
    public:
-      MqttFactory(const std::string& iAddress, const std::string& iUser, const std::string& iPassword);
+      MqttFactory(const std::string& iAddress, const boost::optional<std::string>& iUser, const boost::optional<std::string>& iPassword);
       ~MqttFactory();
    
       virtual std::shared_ptr<Bt::Net::Mqtt::I_MqttClient> createClient(Bt::Net::Mqtt::I_MqttClient::I_Listener& iListener, std::string iClientId);
@@ -33,8 +35,8 @@ class MqttFactory : public I_MqttFactory
       MqttFactory& operator=(const MqttFactory&);
 
       std::string mAddress;
-      std::string mUser;
-      std::string mPassword;
+      boost::optional<std::string> mUser;
+      boost::optional<std::string> mPassword;
 };
 
 } // namespace Mqtt

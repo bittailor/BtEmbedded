@@ -31,10 +31,14 @@ namespace Mqtt {
 
 //-------------------------------------------------------------------------------------------------
 
-SnGateway::SnGateway(const std::string& iAddress, const std::string& iUser, const std::string& iPassword)
-: mSocket(RfPacketSocketFactory().createPacketSocket(25,Mcu::I_Spi::CHIP_SELECT_0,24,0))
-//: mSocket(RfPacketSocketFactory().createPacketSocket(24,7,0))
-, mMqttFactory(std::make_shared<MqttFactory>(iAddress, iUser, iPassword)) {
+SnGateway::SnGateway(const I_SnGatewaySettings& iSettings)
+: mSettings(iSettings), mSocket(RfPacketSocketFactory().createPacketSocket(mSettings.rf24().chipEnablePin,
+                                                                           mSettings.rf24().chipSelect,
+                                                                           mSettings.rf24().irqPin,
+                                                                           mSettings.socket().nodeId))
+, mMqttFactory(std::make_shared<MqttFactory>(mSettings.broker().url,
+                                             mSettings.broker().user,
+                                             mSettings.broker().password)) {
    BT_LOG(DEBUG) << "SnGateway::SnGateway()";
 }
 
@@ -48,7 +52,7 @@ SnGateway::~SnGateway() {
 
 int SnGateway::run() {
    mRunning.store(true);
-   BT_LOG(DEBUG) << "enter loop " ;
+   BT_LOG(DEBUG) << "SnGateway enter 'run' loop" ;
    while(mRunning.load()) {
       //BT_LOG(DEBUG) << "loop (" << mRunning << ")";
       uint8_t nodeId = 0;
@@ -56,7 +60,7 @@ int SnGateway::run() {
       int receivedSize = mSocket->receive(buffer.buffer(), buffer.bufferCapacity(), &nodeId);
       if (receivedSize > 0) {
          if (buffer.length() != receivedSize) {
-            BT_LOG(DEBUG) << "Missmatching length (" << buffer.length() <<") and received size (" << receivedSize << ")" ;
+            BT_LOG(ERROR) << "Missmatching length (" << buffer.length() <<") and received size (" << receivedSize << ")" ;
             continue;
          }
 
@@ -64,7 +68,7 @@ int SnGateway::run() {
 
          auto message = buffer.parse();
          if (!message) {
-            BT_LOG(DEBUG) << "Could not parse message" ;
+            BT_LOG(WARNING) << "Could not parse message";
             continue;
          }
 
@@ -88,8 +92,7 @@ int SnGateway::run() {
       }
    }
 
-   BT_LOG(DEBUG) << "SnGateway end of run loop" ;
-
+   BT_LOG(DEBUG) << "SnGateway end of 'run' loop" ;
    return 0;
 }
 

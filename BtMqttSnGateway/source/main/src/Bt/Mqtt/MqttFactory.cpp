@@ -18,7 +18,9 @@ namespace Mqtt {
 
 //-------------------------------------------------------------------------------------------------
 
-MqttFactory::MqttFactory(const std::string& iAddress, const std::string& iUser, const std::string& iPassword)
+MqttFactory::MqttFactory(const std::string& iAddress,
+                         const boost::optional<std::string>& iUser,
+                         const boost::optional<std::string>& iPassword)
 : mAddress(iAddress), mUser(iUser), mPassword(iPassword)  {
 
 }
@@ -38,11 +40,10 @@ std::shared_ptr<Bt::Net::Mqtt::I_MqttClient> MqttFactory::createClient(Bt::Net::
 //-------------------------------------------------------------------------------------------------
 
 Bt::Net::Mqtt::I_MqttClient::ConnectOptions MqttFactory::createDefaultOptions() {
-   if (mUser.empty()) {
+   if (!mUser) {
       return Bt::Net::Mqtt::I_MqttClient::ConnectOptions();
    }
-
-   return Bt::Net::Mqtt::I_MqttClient::ConnectOptions{mUser,mPassword};
+   return Bt::Net::Mqtt::I_MqttClient::ConnectOptions{*mUser, *mPassword};
 }
 
 //-------------------------------------------------------------------------------------------------
