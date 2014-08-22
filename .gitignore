@@ -6,3 +6,5 @@
 RemoteSystemsTempFiles/
 BtProtobufEmbedded/
 JavaPlayground/
+
+BtMqttSnGateway/bt_gw_settings.xml
