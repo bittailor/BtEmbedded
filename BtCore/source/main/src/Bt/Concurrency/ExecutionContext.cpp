@@ -13,6 +13,8 @@
 #include <future>
 #include <iostream>
 
+#include <Bt/Log/Logging.hpp>
+
 namespace Bt {
 namespace Concurrency {
 
@@ -52,10 +54,10 @@ void ExecutionContext::workcycle() {
    try {
       function();
    } catch(const std::exception& exception) {
-      std::cerr << "ExecutionContext caught a std exception (" << typeid(exception).name() << ") : "
+      BT_LOG(ERROR) << "ExecutionContext caught a std exception (" << typeid(exception).name() << ") : "
                 << exception.what() << std::endl;
    } catch (...) {
-      std::cerr << "ExecutionContext caught a non-std exception!" <<  std::endl;
+      BT_LOG(ERROR) << "ExecutionContext caught a non-std exception!" <<  std::endl;
    }
 }
 
