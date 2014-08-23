@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include <Bt/Log/Logging.hpp>
+#include <Bt/Util/Demangling.hpp>
 
 namespace Bt {
 namespace Mqtt {
@@ -27,7 +28,9 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
 : mRunning(true), mRfNodeId(iRfNodeId), mSocket(iSocket)
 , mFactory(iFactory), mDispose(iDispose)
 , mMsgIdCounter(1), mThread(&GatewayConnection::workcycle,this)
-, mTimeTillNextKeepAlive(0){
+, mKeepAliveTimeout(0)
+, mAsleepTimeout(0)
+, mActiveState(*this), mAsleepState(*this), mCurrentState(&mActiveState){
    BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "GatewayConnection() ";
 }
 
@@ -82,7 +85,12 @@ bool GatewayConnection::messageArrived(const std::string& iTopicName, std::share
 
 void GatewayConnection::messageArrivedInternal(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
    BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PublishFromBroker: " << iTopicName << " " << iMessage->data ;
+   mCurrentState->handleMessageArrived(iTopicName, iMessage);
+}
 
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::forwardMessageToClient(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
    uint16_t topicId = mTopicStorage.getTopicId(iTopicName);
 
    if(topicId == TopicStorage::NO_TOPIC_ID) {
@@ -100,10 +108,16 @@ void GatewayConnection::messageArrivedInternal(const std::string& iTopicName, st
 
 //-------------------------------------------------------------------------------------------------
 
+void GatewayConnection::storeMessage(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   mBufferedMessages.push_back(BufferedMessage{iTopicName,iMessage});
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void GatewayConnection::visit(Bt::Net::MqttSn::Connect& iMessage) {
    BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "ConnectFromClient: " << iMessage.clientId ;
 
-   mTimeTillNextKeepAlive = std::chrono::seconds(iMessage.duration + (iMessage.duration / 2));
+   mKeepAliveTimeout = std::chrono::seconds(iMessage.duration + (iMessage.duration / 2));
 
    if(mBrokerClient) {
       BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "Reconnect without disconnect => flush topic storage" ;
@@ -173,7 +187,21 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Publish& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
+   if (iMessage.withDuration) {
+      handleSleep(iMessage.duration);
+      return;
+   }
+
    disconnect(true);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::handleSleep(uint16_t iDuration) {
+   mAsleepTimeout = std::chrono::seconds(iDuration);
+   changeState(mAsleepState);
+   Bt::Net::MqttSn::Disconnect disconnect;
+   send(disconnect);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -202,6 +230,7 @@ void GatewayConnection::dispose(bool iSendDisconnectToClient) {
       Bt::Net::MqttSn::Disconnect disconnect;
       send(disconnect);
    }
+
    mDispose(id());
 }
 
@@ -274,10 +303,11 @@ void GatewayConnection::workcycle() {
    while (mRunning) {
       std::function<void()> action;
       bool validAction = true;
-      if(mTimeTillNextKeepAlive == std::chrono::seconds(0)) {
+      std::chrono::seconds timeout = mCurrentState->timeout();
+      if(timeout == std::chrono::seconds(0)) {
          mQueue.pop(action);
       } else {
-         validAction = mQueue.tryPop(action, mTimeTillNextKeepAlive);
+         validAction = mQueue.tryPop(action, mKeepAliveTimeout);
       }
 
       if (validAction) {
@@ -289,6 +319,13 @@ void GatewayConnection::workcycle() {
    }
    BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "end of workcycle" ;
 
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::changeState(State& iState) {
+   BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "state change " << Util::demangle(typeid(*mCurrentState)) << " => " << Util::demangle(typeid(iState));
+   mCurrentState = &iState;
 }
 
 //-------------------------------------------------------------------------------------------------
