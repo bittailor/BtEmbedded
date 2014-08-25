@@ -84,10 +84,7 @@ class RfPacketSocketWrapper : public I_RfPacketSocket {
 //-------------------------------------------------------------------------------------------------
 
 std::shared_ptr<I_RfPacketSocket> RfPacketSocketFactory::createPacketSocket(uint8_t iChipEnable, Mcu::I_Spi::ChipSelect iChipSelect, uint8_t iIrq, uint8_t iNodeId) {
-
-   std::shared_ptr<I_RfPacketSocket> socket(new RfPacketSocketWrapper(iChipEnable,iChipSelect,iIrq,iNodeId));
-
-
+   std::shared_ptr<I_RfPacketSocket> socket = std::make_shared<RfPacketSocketWrapper>(iChipEnable,iChipSelect,iIrq,iNodeId);
    return socket;
 }
 
