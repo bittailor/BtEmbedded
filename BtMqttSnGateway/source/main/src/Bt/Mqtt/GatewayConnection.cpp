@@ -30,7 +30,7 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
 , mMsgIdCounter(1), mThread(&GatewayConnection::workcycle,this)
 , mKeepAliveTimeout(0)
 , mAsleepTimeout(0)
-, mActiveState(*this), mAsleepState(*this), mCurrentState(&mActiveState){
+, mDisconnectedState(*this), mActiveState(*this), mAsleepState(*this), mCurrentState(&mDisconnectedState){
    BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "GatewayConnection() ";
 }
 
@@ -114,16 +114,24 @@ void GatewayConnection::storeMessage(const std::string& iTopicName, std::shared_
 
 //-------------------------------------------------------------------------------------------------
 
+void GatewayConnection::sendPingresp() {
+   Bt::Net::MqttSn::Pingresp response;
+   send(response);
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void GatewayConnection::visit(Bt::Net::MqttSn::Connect& iMessage) {
    BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "ConnectFromClient: " << iMessage.clientId ;
 
-   mKeepAliveTimeout = std::chrono::seconds(iMessage.duration + (iMessage.duration / 2));
+   mCurrentState->handleConnect(iMessage);
+}
 
-   if(mBrokerClient) {
-      BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "Reconnect without disconnect => flush topic storage" ;
-      mBrokerClient->disconnect(1000);
-      mTopicStorage.clear();
-   }
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::connectToBroker(Bt::Net::MqttSn::Connect& iMessage) {
+
+   mKeepAliveTimeout = std::chrono::seconds(iMessage.duration + (iMessage.duration / 2));
 
    Bt::Net::MqttSn::ReturnCode returnCode = Bt::Net::MqttSn::ReturnCode::ACCEPTED;
 
@@ -139,6 +147,34 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Connect& iMessage) {
    }
 
    Bt::Net::MqttSn::Connack connack(returnCode);
+   if (returnCode == Bt::Net::MqttSn::ReturnCode::ACCEPTED) {
+      changeState(mActiveState);
+   } else {
+      changeState(mDisconnectedState);
+   }
+
+   send(connack);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::reconnectToBroker(Bt::Net::MqttSn::Connect& iMessage) {
+   BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "Reconnect without disconnect => flush topic storage" ;
+   mBrokerClient->disconnect(1000);
+   mTopicStorage.clear();
+   connectToBroker(iMessage);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::connectFromSleep(Bt::Net::MqttSn::Connect& iMessage) {
+   changeState(mActiveState);
+   std::vector<BufferedMessage> messages = mBufferedMessages;
+   mBufferedMessages.clear();
+   for(BufferedMessage message : messages) {
+      forwardMessageToClient(message.first, message.second);
+   }
+   Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::ACCEPTED);
    send(connack);
 }
 
@@ -267,6 +303,10 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Suback& iMessage) {
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Pingreq& iMessage) {
    BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "PingreqFromClient: " ;
+   mCurrentState->handlePingreq(iMessage);
+
+
+
    if(!mBrokerClient) {
       BT_LOG(DEBUG) << "GWC[" << static_cast<int>(mRfNodeId) << "]" << "BrokerClient is null !" ;
       return;
@@ -328,6 +368,85 @@ void GatewayConnection::changeState(State& iState) {
    mCurrentState = &iState;
 }
 
+//-------------------------------------------------------------------------------------------------
+// GatewayConnection::Disconnected
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Disconnected::handleConnect(Bt::Net::MqttSn::Connect& iMessage) {
+   mGatewayConnection.connectToBroker(iMessage);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Disconnected::handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   BT_LOG(WARNING) << "GWC[" << static_cast<int>(mGatewayConnection.mRfNodeId) << "] drop message from broker since in Disconnected state";
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Disconnected::handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) {
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::chrono::seconds GatewayConnection::Disconnected::timeout() {
+   return std::chrono::seconds(0);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// GatewayConnection::Active
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Active::handleConnect(Bt::Net::MqttSn::Connect& iMessage) {
+   mGatewayConnection.reconnectToBroker(iMessage);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Active::handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   mGatewayConnection.forwardMessageToClient(iTopicName, iMessage);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Active::handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) {
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::chrono::seconds GatewayConnection::Active::timeout() {
+   return mGatewayConnection.mKeepAliveTimeout;
+}
+
+//-------------------------------------------------------------------------------------------------
+// Asleep
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Asleep::handleConnect(Bt::Net::MqttSn::Connect& iMessage) {
+   mGatewayConnection.connectFromSleep(iMessage);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Asleep::handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   mGatewayConnection.storeMessage(iTopicName, iMessage);
+}
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::Asleep::handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) {
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::chrono::seconds GatewayConnection::Asleep::timeout() {
+   return mGatewayConnection.mAsleepTimeout;
+}
+
+//-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 
 } // namespace Mqtt

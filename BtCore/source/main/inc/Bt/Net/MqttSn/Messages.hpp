@@ -621,7 +621,16 @@ class Suback : public I_Message {
 
 class Pingreq : public I_Message {
    public:
-      Pingreq(I_PacketReader& reader) {
+      bool withClientId;
+      std::string clientId;
+
+      Pingreq(I_PacketReader& iReader) {
+         if (iReader.size() == 0) {
+            withClientId = false;
+            return;
+         }
+         withClientId = true;
+         clientId = iReader.read<std::string>();
       }
 
       virtual void write(I_PacketWriter& iWriter) const {
