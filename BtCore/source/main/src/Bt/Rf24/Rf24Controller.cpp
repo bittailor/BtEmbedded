@@ -90,6 +90,8 @@ size_t Rf24DeviceController::transmitPacket(RfPipe iPipe, Packet& iPacket) {
       Util::delayInMicroseconds(1);
    }
 
+   mCurrentState->ToStandbyI();
+
    I_Rf24Device::Status status = mDevice.status();
    BT_LOG(DEBUG) << "status after IRQ " << status;
 
@@ -113,12 +115,9 @@ size_t Rf24DeviceController::transmitPacket(RfPipe iPipe, Packet& iPacket) {
       mDevice.clearDataSent();
    }
 
-   mCurrentState->ToStandbyI();
-
    if(!mInterruptPin.read()) {
       BT_LOG(ERROR) << "**** IRQ still set after clean - status =  " << mDevice.status();
    }
-
 
    if (flushTransmitFifo) {
       mDevice.flushTransmitFifo();
