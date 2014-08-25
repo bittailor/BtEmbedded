@@ -58,6 +58,7 @@ int main(int argc, char* argv[]) {
 
       Bt::Mqtt::SnGateway gateway(settings);
 
+      std::signal(SIGTERM, signalHandler);
       std::signal(SIGINT, signalHandler);
 
       BT_LOG(INFO) << "gateway run ..." ;

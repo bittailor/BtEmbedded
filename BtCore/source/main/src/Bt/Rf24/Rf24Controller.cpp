@@ -239,9 +239,13 @@ void Rf24DeviceController::readReceiveData() {
       Packet packet;
       size_t size = mDevice.readReceivePayload(pipe,packet.buffer(),Packet::CAPACITY);
       packet.size(size);
-      BT_LOG(DEBUG) << "... payload received of size " << size << " with " << std::accumulate(packet.buffer(), packet.buffer() + size, std::string() , [](std::string m, uint8_t v) -> std::string {
-         return m +","+ boost::lexical_cast<std::string>(static_cast<int>(v)) + "("+ static_cast<char>(v) +")" ;
-      }) ;
+      BT_LOG(DEBUG) << "... payload received of size " << size << " with " << std::accumulate(packet.buffer(), packet.buffer() + size, std::string() , [](std::string s, uint8_t c) -> std::string {
+         std::string result = s +" "+ boost::lexical_cast<std::string>(static_cast<int>(c));
+         if (0x20 <= c && c <= 0x7E) {
+            result = result + "["+ static_cast<char>(c) +"]";
+         }
+         return result;
+      });
       std::function<void()> handle = std::bind(&Rf24DeviceController::handleReceiveData,this,pipe,packet);
       mExecutionContext.invoke(handle);
       mDevice.clearDataReady();
