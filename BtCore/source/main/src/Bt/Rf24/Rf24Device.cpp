@@ -546,6 +546,12 @@ size_t Rf24Device::readReceivePayload(RfPipe& oPipe, uint8_t* oData, size_t iSiz
    }
 
    size_t availableSize = availableReceivePayload();
+   if (availableSize > MAX_PAYLOAD_SIZE) {
+      BT_LOG(ERROR) << "availableSize " << availableSize << " > MAX_PAYLOAD_SIZE "<< MAX_PAYLOAD_SIZE << " => flush the RX FIFO!";
+      flushReceiveFifo();
+      return 0;
+   }
+
    size_t dataSize;
 
    if (iSize >= availableSize) {
@@ -560,7 +566,7 @@ size_t Rf24Device::readReceivePayload(RfPipe& oPipe, uint8_t* oData, size_t iSiz
 
    mSpi->transfer(txBuffer,rxBuffer,availableSize + 1);
 
-   std::memcpy(oData,rxBuffer+1,iSize);
+   std::memcpy(oData, rxBuffer+1, dataSize);
 
    return dataSize;
 }

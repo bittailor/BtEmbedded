@@ -9,18 +9,19 @@
 //  
 //*************************************************************************************************
 
+#include "Bt/Rf24/Rf24Controller.hpp"
+
 #include <stdio.h>
 #include <iostream>
 #include <typeinfo>
 #include <sstream>
 #include <memory>
+#include <numeric>
 
+#include <boost/lexical_cast.hpp>
 #include <Bt/Log/Logging.hpp>
-
-#include "Bt/Rf24/Rf24Controller.hpp"
-
-#include "Bt/Util/Timing.hpp"
-#include "Bt/Util/Timeout.hpp"
+#include <Bt/Util/Timing.hpp>
+#include <Bt/Util/Timeout.hpp>
 
 namespace Bt {
 namespace Rf24 {
@@ -233,10 +234,14 @@ void Rf24DeviceController::onInterrupt() {
 
 void Rf24DeviceController::readReceiveData() {
    while(!mDevice.isReceiveFifoEmpty()) {
+      BT_LOG(DEBUG) << "receive payload ...";
       RfPipe pipe;
       Packet packet;
       size_t size = mDevice.readReceivePayload(pipe,packet.buffer(),Packet::CAPACITY);
       packet.size(size);
+      BT_LOG(DEBUG) << "... payload received of size " << size << " with " << std::accumulate(packet.buffer(), packet.buffer() + size, std::string() , [](std::string m, uint8_t v) -> std::string {
+         return m +","+ boost::lexical_cast<std::string>(static_cast<int>(v)) + "("+ static_cast<char>(v) +")" ;
+      }) ;
       std::function<void()> handle = std::bind(&Rf24DeviceController::handleReceiveData,this,pipe,packet);
       mExecutionContext.invoke(handle);
       mDevice.clearDataReady();
