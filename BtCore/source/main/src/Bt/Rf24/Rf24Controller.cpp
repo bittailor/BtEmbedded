@@ -237,6 +237,10 @@ void Rf24DeviceController::readReceiveData() {
       RfPipe pipe;
       Packet packet;
       size_t size = mDevice.readReceivePayload(pipe,packet.buffer(),Packet::CAPACITY);
+      if (size <= 0) {
+         BT_LOG(ERROR) << "invalid read size of " << size << " => drop packet" ;
+         continue;
+      }
       packet.size(size);
       BT_LOG(DEBUG) << "... payload received of size " << size << " with " << std::accumulate(packet.buffer(), packet.buffer() + size, std::string() , [](std::string s, uint8_t c) -> std::string {
          std::string result = s +" "+ boost::lexical_cast<std::string>(static_cast<int>(c));

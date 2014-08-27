@@ -29,7 +29,7 @@ namespace {
 
 void signalHandler(int signal)
 {
-   BT_LOG(INFO) << "Hanlde SIGNAL " << signal ;
+   std::cout << "Hanlde SIGNAL " << signal << std::endl ;
    sQuitPromise.set_value();
 }
 
@@ -60,8 +60,10 @@ int main(int argc, char* argv[]) {
 
       std::signal(SIGTERM, signalHandler);
       std::signal(SIGINT, signalHandler);
+      std::signal(SIGHUP, signalHandler);
+      std::signal(SIGQUIT, signalHandler);
 
-      BT_LOG(INFO) << "gateway run ..." ;
+      std::cout    << "gateway run ..."  << std::endl;
 
       std::thread gatewayThread([&gateway](){
          try {
@@ -74,15 +76,17 @@ int main(int argc, char* argv[]) {
       });
 
       sQuitFuture.get();
+      std::cout << "start shutdown of gateway ..." << std::endl;
+
       gateway.stop();
       gatewayThread.join();
 
-      BT_LOG(INFO) << "... gateway end" ;
+      std::cout << "... gateway down" << std::endl;
 
-      BT_LOG(INFO) << "Power off" ;
+      std::cout << "power off ... " << std::endl;
       power.write(false);
 
-      BT_LOG(INFO) << "bye" ;
+      std::cout << "... bye" << std::endl;
 
    } catch (boost::property_tree::ptree_error failure) {
       std::cerr << std::endl <<  "Problem loading settings from (" << settingsFile << "): \n" << "   " << failure.what() << std::endl << std::endl;

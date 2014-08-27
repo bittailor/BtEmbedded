@@ -60,11 +60,9 @@ int SnGateway::run() {
       int receivedSize = mSocket->receive(buffer.buffer(), buffer.bufferCapacity(), &nodeId);
       if (receivedSize > 0) {
          if (buffer.length() != receivedSize) {
-            BT_LOG(ERROR) << "Missmatching length (" << buffer.length() <<") and received size (" << receivedSize << ")" ;
+            BT_LOG(ERROR) << "mismatching length (" << static_cast<int>(buffer.length()) <<") and received size (" << receivedSize << ") => drop message";
             continue;
          }
-
-         //BT_LOG(DEBUG) << "Raw message : " << buffer ;
 
          auto message = buffer.parse();
          if (!message) {
