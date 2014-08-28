@@ -84,7 +84,6 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
             virtual std::chrono::seconds timeout();
       };
 
-
    	// Constructor to prohibit copy construction.
       GatewayConnection(const GatewayConnection&);
 
@@ -93,7 +92,6 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
 
       virtual void connectionLost(const std::string& iCause);
       virtual bool messageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
-
 
       void connectionLostInternal(const std::string& iCause);
       void messageArrivedInternal(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
@@ -119,6 +117,7 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
 
       void sendPingresp();
 
+      void sendBufferedMessages();
 
       void handleSleep(uint16_t iDuration);
       void send(Bt::Net::MqttSn::I_Message& iMessage);
