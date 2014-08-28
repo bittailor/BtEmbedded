@@ -169,14 +169,21 @@ void GatewayConnection::reconnectToBroker(Bt::Net::MqttSn::Connect& iMessage) {
 
 void GatewayConnection::connectFromSleep(Bt::Net::MqttSn::Connect& iMessage) {
    changeState(mActiveState);
+   sendBufferedMessages();
+   Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::ACCEPTED);
+   send(connack);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::sendBufferedMessages() {
    std::vector<BufferedMessage> messages = mBufferedMessages;
    mBufferedMessages.clear();
    for(BufferedMessage message : messages) {
       forwardMessageToClient(message.first, message.second);
    }
-   Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::ACCEPTED);
-   send(connack);
 }
+
 
 //-------------------------------------------------------------------------------------------------
 
