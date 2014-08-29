@@ -10,7 +10,10 @@
 
 #include "Bt/Mqtt/GatewayConnection.hpp"
 
+
 #include <iostream>
+
+#include <boost/lexical_cast.hpp>
 
 #include <Bt/Log/Logging.hpp>
 #include <Bt/Util/Demangling.hpp>
@@ -92,39 +95,8 @@ void GatewayConnection::messageArrivedInternal(const std::string& iTopicName, st
 
 //-------------------------------------------------------------------------------------------------
 
-void GatewayConnection::forwardMessageToClient(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
-   uint16_t topicId = mTopicStorage.getTopicId(iTopicName);
-
-   if(topicId == TopicStorage::NO_TOPIC_ID) {
-      topicId = mTopicStorage.getOrCreateTopicId(iTopicName);
-      uint16_t msgId = mMsgIdCounter++;
-      Bt::Net::MqttSn::Register registerMessage(topicId, msgId, iTopicName);
-      send(registerMessage);
-   }
-
-   uint16_t msgId = mMsgIdCounter++;
-
-   Bt::Net::MqttSn::Publish publish(iMessage->qos, iMessage->retained, topicId, msgId, iMessage->data);
-   send(publish);
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void GatewayConnection::storeMessage(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
-   mBufferedMessages.push_back(BufferedMessage{iTopicName,iMessage});
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void GatewayConnection::sendPingresp() {
-   Bt::Net::MqttSn::Pingresp response;
-   send(response);
-}
-
-//-------------------------------------------------------------------------------------------------
-
 void GatewayConnection::visit(Bt::Net::MqttSn::Connect& iMessage) {
-   BT_LOG_GWC(DEBUG) << "ConnectFromClient: " << iMessage.clientId;
+   BT_LOG_GWC(DEBUG) << "CONNECT from client - " << iMessage.clientId;
    mCurrentState->handleConnect(iMessage);
 }
 
@@ -137,107 +109,57 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Connack& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Register& iMessage) {
-   BT_LOG_GWC(DEBUG) << "RegisterFromClient: " << iMessage.topicName ;
+   BT_LOG_GWC(DEBUG) << "REGISTER from client: -" << iMessage.topicName ;
    mCurrentState->handleRegister(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Regack& iMessage) {
-   BT_LOG_GWC(DEBUG) << "RegackFromClient: " << iMessage.topicId;
+   BT_LOG_GWC(DEBUG) << "REGACK from client - " << iMessage.topicId;
+   mCurrentState->handleRegack(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Publish& iMessage) {
-   BT_LOG_GWC(DEBUG) << "PublishFromClient: " << iMessage.topicId << " "  << iMessage.data ;
-   if(!mBrokerClient) {
-      BT_LOG_GWC(DEBUG) << "BrokerClient is null !" ;
-      return;
-   }
-
-
-   std::string topicName = mTopicStorage.getTopicName(iMessage.topicId);
-   if (topicName.empty()) {
-      BT_LOG_GWC(DEBUG) << "PublishFromClient: could not find topic name for id " << iMessage.topicId ;
-   }
-
-   if(!mBrokerClient->publish(topicName, iMessage.data, iMessage.flags.bits.qos, iMessage.flags.bits.retain).get()) {
-      BT_LOG_GWC(DEBUG) << "PublishFromClient : publish to broker failed ";
-   }
+   BT_LOG_GWC(DEBUG) << "PUBLISH from client - " << iMessage.topicId << " "  << iMessage.data ;
+   mCurrentState->handlePublish(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Disconnect& iMessage) {
-   if (iMessage.withDuration) {
-      handleSleep(iMessage.duration);
-      return;
-   }
-
-   disconnect(true);
+   BT_LOG_GWC(DEBUG) << "DISCONNECT from client - " << (iMessage.withDuration ? boost::lexical_cast<std::string>(iMessage.duration) : "");
+   mCurrentState->handleDisconnect(iMessage);
 }
-
-//-------------------------------------------------------------------------------------------------
-
-void GatewayConnection::handleSleep(uint16_t iDuration) {
-   mAsleepTimeout = std::chrono::seconds(iDuration);
-   changeState(mAsleepState);
-   Bt::Net::MqttSn::Disconnect disconnect;
-   send(disconnect);
-}
-
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Subscribe& iMessage) {
-   BT_LOG_GWC(DEBUG) << "SubscribeFromClient: " << iMessage.topicName ;
-   if(!mBrokerClient) {
-      BT_LOG_GWC(DEBUG) << "BrokerClient is null !" ;
-      return;
-   }
-
-   uint16_t topicId = 0x0000;
-   if(!containsWildcardCharacters(iMessage.topicName)) {
-      topicId = mTopicStorage.getOrCreateTopicId(iMessage.topicName);
-   }
-
-   Bt::Net::MqttSn::ReturnCode returnCode = Bt::Net::MqttSn::ReturnCode::ACCEPTED;
-   if (!mBrokerClient->subscribe(iMessage.topicName,iMessage.flags.bits.qos)) {
-      returnCode = Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED;
-   }
-
-   Bt::Net::MqttSn::Suback suback(iMessage.flags.bits.qos, topicId, iMessage.msgId, returnCode);
-   send(suback);
+   BT_LOG_GWC(DEBUG) << "SUBSCRIBE from client - " << iMessage.topicName;
+   mCurrentState->handleSubscribe(iMessage);
 }
+
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Suback& iMessage) {
-   BT_LOG_GWC(DEBUG) << "SubackFromClient: " << iMessage.topicId ;
+   BT_LOG_GWC(WARNING) << "drop SUBACK message since since this should not be sent by a client";
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Pingreq& iMessage) {
-   BT_LOG_GWC(DEBUG) << "PingreqFromClient: " ;
+   BT_LOG_GWC(DEBUG) << "PINGREQ from client -" << (iMessage.withClientId ? iMessage.clientId : "") ;
    mCurrentState->handlePingreq(iMessage);
-
-
-
-   if(!mBrokerClient) {
-      BT_LOG_GWC(DEBUG) << "BrokerClient is null !" ;
-      return;
-   }
-
-   Bt::Net::MqttSn::Pingresp response;
-   send(response);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Pingresp& iMessage) {
-   BT_LOG_GWC(DEBUG) << "PingrespFromClient: " ;
+   BT_LOG_GWC(DEBUG) << "PINGRESP from client -" ;
+   mCurrentState->handlePingresp(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -289,6 +211,45 @@ void GatewayConnection::connectFromSleep(Bt::Net::MqttSn::Connect& iMessage) {
 
 //-------------------------------------------------------------------------------------------------
 
+void GatewayConnection::awake() {
+   sendBufferedMessages();
+   Bt::Net::MqttSn::Pingresp pingresp;
+   send(pingresp);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::forwardMessageToClient(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   uint16_t topicId = mTopicStorage.getTopicId(iTopicName);
+
+   if(topicId == TopicStorage::NO_TOPIC_ID) {
+      topicId = mTopicStorage.getOrCreateTopicId(iTopicName);
+      uint16_t msgId = mMsgIdCounter++;
+      Bt::Net::MqttSn::Register registerMessage(topicId, msgId, iTopicName);
+      send(registerMessage);
+   }
+
+   uint16_t msgId = mMsgIdCounter++;
+
+   Bt::Net::MqttSn::Publish publish(iMessage->qos, iMessage->retained, topicId, msgId, iMessage->data);
+   send(publish);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::storeMessage(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
+   mBufferedMessages.push_back(BufferedMessage{iTopicName,iMessage});
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::sendPingresp() {
+   Bt::Net::MqttSn::Pingresp response;
+   send(response);
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void GatewayConnection::sendBufferedMessages() {
    std::vector<BufferedMessage> messages = mBufferedMessages;
    mBufferedMessages.clear();
@@ -310,23 +271,18 @@ void GatewayConnection::send(Bt::Net::MqttSn::I_Message& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::disconnect(bool iSendDisconnectToClient) {
-   BT_LOG_GWC(DEBUG) << "DisconnectFromClient : " ;
    if(!mBrokerClient) {
-      BT_LOG_GWC(DEBUG) << "BrokerClient is null !" ;
-      return;
+      if(!mBrokerClient->disconnect(1000)) {
+         BT_LOG_GWC(DEBUG) << "disconnect from broker failed" ;
+      }
    }
-
-   if(!mBrokerClient->disconnect(1000)) {
-      BT_LOG_GWC(DEBUG) << "DisconnectFromClient : disconnect to broker failed" ;
-   }
-
    dispose(iSendDisconnectToClient);
-
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::dispose(bool iSendDisconnectToClient) {
+   changeState(mDisconnectedState);
    mBrokerClient.reset();
 
    if (iSendDisconnectToClient) {
@@ -376,6 +332,55 @@ void GatewayConnection::changeState(State& iState) {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::registerTopic(Bt::Net::MqttSn::Register& iMessage) {
+   uint16_t topicId = mTopicStorage.getOrCreateTopicId(iMessage.topicName);
+   Bt::Net::MqttSn::Regack regack(topicId, iMessage.msgId , Bt::Net::MqttSn::ReturnCode::ACCEPTED);
+   send(regack);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::publishToBroker(Bt::Net::MqttSn::Publish& iMessage) {
+   std::string topicName = mTopicStorage.getTopicName(iMessage.topicId);
+   if (topicName.empty()) {
+      BT_LOG_GWC(WARNING) << "could not find topic name for id " << iMessage.topicId ;
+      return;
+   }
+
+   if(!mBrokerClient->publish(topicName, iMessage.data, iMessage.flags.bits.qos, iMessage.flags.bits.retain).get()) {
+      BT_LOG_GWC(WARNING) << "publish to broker failed";
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::handleSleep(uint16_t iDuration) {
+   mAsleepTimeout = std::chrono::seconds(iDuration);
+   changeState(mAsleepState);
+   Bt::Net::MqttSn::Disconnect disconnect;
+   send(disconnect);
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void GatewayConnection::subscribe(Bt::Net::MqttSn::Subscribe& iMessage) {
+
+   uint16_t topicId = 0x0000;
+   if(!containsWildcardCharacters(iMessage.topicName)) {
+      topicId = mTopicStorage.getOrCreateTopicId(iMessage.topicName);
+   }
+
+   Bt::Net::MqttSn::ReturnCode returnCode = Bt::Net::MqttSn::ReturnCode::ACCEPTED;
+   if (!mBrokerClient->subscribe(iMessage.topicName,iMessage.flags.bits.qos)) {
+      returnCode = Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED;
+   }
+
+   Bt::Net::MqttSn::Suback suback(iMessage.flags.bits.qos, topicId, iMessage.msgId, returnCode);
+   send(suback);
+}
+
+//-------------------------------------------------------------------------------------------------
 // GatewayConnection::Disconnected
 //-------------------------------------------------------------------------------------------------
 
@@ -386,55 +391,53 @@ void GatewayConnection::Disconnected::handleConnect(Bt::Net::MqttSn::Connect& iM
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Disconnected::handleRegister(Bt::Net::MqttSn::Register& iMessage) {
-
+   BT_LOG_GWC_STATE(WARNING) << "drop REGISTER message from client since in Disconnected state";
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Disconnected::handleRegack(Bt::Net::MqttSn::Regack& iMessage) {
-
+   BT_LOG_GWC_STATE(WARNING) << "drop REGACK message from client since in Disconnected state";
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Disconnected::handlePublish(Bt::Net::MqttSn::Publish& iMessage) {
-
+   if (iMessage.flags.bits.qos == 4 ) {
+      BT_LOG_GWC_STATE(WARNING) << "PUBLISH with QoS -1 not supported yet => drop PUBLISH message";
+      return;
+   }
+   BT_LOG_GWC_STATE(WARNING) << "drop PUBLISH message from client since in Disconnected state";
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Disconnected::handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage) {
-
+   mGatewayConnection.dispose(true);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Disconnected::handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage) {
-
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void GatewayConnection::Disconnected::handleSuback(Bt::Net::MqttSn::Suback& iMessage) {
-
+   BT_LOG_GWC_STATE(WARNING) << "drop SUBSCRIBE message from client since in Disconnected state";
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Disconnected::handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) {
-
+   // do not send a PINGRESP since we are Disconnected
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Disconnected::handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage) {
-
+   // currently nothing to do
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Disconnected::handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) {
-   BT_LOG_GWC_STATE(WARNING) << "drop message from broker since in Disconnected state";
+   BT_LOG_GWC_STATE(WARNING) << "drop publish message from broker since in Disconnected state";
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -455,51 +458,47 @@ void GatewayConnection::Active::handleConnect(Bt::Net::MqttSn::Connect& iMessage
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Active::handleRegister(Bt::Net::MqttSn::Register& iMessage) {
-   uint16_t topicId = mGatewayConnection.mTopicStorage.getOrCreateTopicId(iMessage.topicName);
-   Bt::Net::MqttSn::Regack regack(topicId, iMessage.msgId , Bt::Net::MqttSn::ReturnCode::ACCEPTED);
-   mGatewayConnection.send(regack);
+   mGatewayConnection.registerTopic(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Active::handleRegack(Bt::Net::MqttSn::Regack& iMessage) {
-
+   // currently nothing to do
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Active::handlePublish(Bt::Net::MqttSn::Publish& iMessage) {
-
+   mGatewayConnection.publishToBroker(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Active::handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage) {
-
+   if (iMessage.withDuration) {
+      mGatewayConnection.handleSleep(iMessage.duration);
+   } else {
+      mGatewayConnection.disconnect(true);
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Active::handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage) {
-
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void GatewayConnection::Active::handleSuback(Bt::Net::MqttSn::Suback& iMessage) {
-
+   mGatewayConnection.subscribe(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Active::handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) {
-
+   mGatewayConnection.sendPingresp();
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Active::handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage) {
-
+   // currently nothing to do
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -525,49 +524,46 @@ void GatewayConnection::Asleep::handleConnect(Bt::Net::MqttSn::Connect& iMessage
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handleRegister(Bt::Net::MqttSn::Register& iMessage) {
-
+   mGatewayConnection.registerTopic(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handleRegack(Bt::Net::MqttSn::Regack& iMessage) {
-
+   // currently nothing to do
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handlePublish(Bt::Net::MqttSn::Publish& iMessage) {
-
+   // we are in asleep, but lets do it anyway
+   mGatewayConnection.publishToBroker(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage) {
-
+   // we are in asleep, but lets do it anyway
+   mGatewayConnection.disconnect(true);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage) {
-
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void GatewayConnection::Asleep::handleSuback(Bt::Net::MqttSn::Suback& iMessage) {
-
+   // we are in asleep, but lets do it anyway
+   mGatewayConnection.subscribe(iMessage);
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) {
-
+   mGatewayConnection.awake();
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage) {
-
+   // currently nothing to do
 }
 
 //-------------------------------------------------------------------------------------------------
