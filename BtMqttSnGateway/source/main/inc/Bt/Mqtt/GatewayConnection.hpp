@@ -68,7 +68,7 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
 
       class Disconnected : public State {
          public:
-            using State::State;
+            Disconnected(GatewayConnection& iGatewayConnection) : State(iGatewayConnection) {}
 
             virtual void handleConnect(Bt::Net::MqttSn::Connect& iMessage);
             virtual void handleRegister(Bt::Net::MqttSn::Register& iMessage);
@@ -87,7 +87,7 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
 
       class Active : public State {
          public:
-            using State::State;
+            Active(GatewayConnection& iGatewayConnection) : State(iGatewayConnection) {}
 
             virtual void handleConnect(Bt::Net::MqttSn::Connect& iMessage);
             virtual void handleRegister(Bt::Net::MqttSn::Register& iMessage);
@@ -107,7 +107,7 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
 
       class Asleep : public State {
          public:
-            using State::State;
+            Asleep(GatewayConnection& iGatewayConnection) : State(iGatewayConnection) {}
 
             virtual void handleConnect(Bt::Net::MqttSn::Connect& iMessage);
             virtual void handleRegister(Bt::Net::MqttSn::Register& iMessage);
