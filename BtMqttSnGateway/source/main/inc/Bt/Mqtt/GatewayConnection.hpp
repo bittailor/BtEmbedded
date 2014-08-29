@@ -49,8 +49,17 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
             virtual ~State(){}
 
             virtual void handleConnect(Bt::Net::MqttSn::Connect& iMessage) = 0;
-            virtual void handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) = 0;
+            virtual void handleRegister(Bt::Net::MqttSn::Register& iMessage) = 0;
+            virtual void handleRegack(Bt::Net::MqttSn::Regack& iMessage) = 0;
+            virtual void handlePublish(Bt::Net::MqttSn::Publish& iMessage) = 0;
+            virtual void handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage) = 0;
+            virtual void handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage) = 0;
+            virtual void handleSuback(Bt::Net::MqttSn::Suback& iMessage) = 0;
             virtual void handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) = 0;
+            virtual void handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage) = 0;
+
+            virtual void handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage) = 0;
+
             virtual std::chrono::seconds timeout() = 0;
 
          protected:
@@ -60,27 +69,58 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       class Disconnected : public State {
          public:
             using State::State;
+
             virtual void handleConnect(Bt::Net::MqttSn::Connect& iMessage);
-            virtual void handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
+            virtual void handleRegister(Bt::Net::MqttSn::Register& iMessage);
+            virtual void handleRegack(Bt::Net::MqttSn::Regack& iMessage);
+            virtual void handlePublish(Bt::Net::MqttSn::Publish& iMessage);
+            virtual void handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage);
+            virtual void handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage);
+            virtual void handleSuback(Bt::Net::MqttSn::Suback& iMessage);
             virtual void handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage);
+            virtual void handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage);
+
+            virtual void handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
+
             virtual std::chrono::seconds timeout();
       };
 
       class Active : public State {
          public:
             using State::State;
+
             virtual void handleConnect(Bt::Net::MqttSn::Connect& iMessage);
-            virtual void handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
+            virtual void handleRegister(Bt::Net::MqttSn::Register& iMessage);
+            virtual void handleRegack(Bt::Net::MqttSn::Regack& iMessage);
+            virtual void handlePublish(Bt::Net::MqttSn::Publish& iMessage);
+            virtual void handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage);
+            virtual void handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage);
+            virtual void handleSuback(Bt::Net::MqttSn::Suback& iMessage);
             virtual void handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage);
+            virtual void handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage);
+
+
+            virtual void handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
+
             virtual std::chrono::seconds timeout();
       };
 
       class Asleep : public State {
          public:
             using State::State;
+
             virtual void handleConnect(Bt::Net::MqttSn::Connect& iMessage);
-            virtual void handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
+            virtual void handleRegister(Bt::Net::MqttSn::Register& iMessage);
+            virtual void handleRegack(Bt::Net::MqttSn::Regack& iMessage);
+            virtual void handlePublish(Bt::Net::MqttSn::Publish& iMessage);
+            virtual void handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage);
+            virtual void handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage);
+            virtual void handleSuback(Bt::Net::MqttSn::Suback& iMessage);
             virtual void handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage);
+            virtual void handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage);
+
+            virtual void handleMessageArrived(const std::string& iTopicName, std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message> iMessage);
+
             virtual std::chrono::seconds timeout();
       };
 
@@ -125,9 +165,9 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       void disconnect(bool iSendDisconnectToClient);
       void dispose(bool iSendDisconnectToClient);
 
-      void workcycle();
-
       void changeState(State& iState);
+
+      void workcycle();
 
       typedef std::pair<std::string,std::shared_ptr<Bt::Net::Mqtt::I_MqttClient::Message>> BufferedMessage;
 
