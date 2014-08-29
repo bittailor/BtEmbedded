@@ -144,7 +144,7 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Register& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::visit(Bt::Net::MqttSn::Regack& iMessage) {
-   BT_LOG_GWC(DEBUG) << "RegackFromClient: " << iMessage.topicId ;
+   BT_LOG_GWC(DEBUG) << "RegackFromClient: " << iMessage.topicId;
 }
 
 //-------------------------------------------------------------------------------------------------
