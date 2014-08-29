@@ -40,7 +40,6 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       int id();
       void handle(std::shared_ptr<Bt::Net::MqttSn::I_Message> iMessage);
 
-
    private:
 
       class State {
@@ -54,7 +53,6 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
             virtual void handlePublish(Bt::Net::MqttSn::Publish& iMessage) = 0;
             virtual void handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage) = 0;
             virtual void handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage) = 0;
-            virtual void handleSuback(Bt::Net::MqttSn::Suback& iMessage) = 0;
             virtual void handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) = 0;
             virtual void handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage) = 0;
 
@@ -76,7 +74,6 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
             virtual void handlePublish(Bt::Net::MqttSn::Publish& iMessage);
             virtual void handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage);
             virtual void handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage);
-            virtual void handleSuback(Bt::Net::MqttSn::Suback& iMessage);
             virtual void handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage);
             virtual void handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage);
 
@@ -95,7 +92,6 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
             virtual void handlePublish(Bt::Net::MqttSn::Publish& iMessage);
             virtual void handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage);
             virtual void handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage);
-            virtual void handleSuback(Bt::Net::MqttSn::Suback& iMessage);
             virtual void handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage);
             virtual void handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage);
 
@@ -115,7 +111,6 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
             virtual void handlePublish(Bt::Net::MqttSn::Publish& iMessage);
             virtual void handleDisconnect(Bt::Net::MqttSn::Disconnect& iMessage);
             virtual void handleSubscribe(Bt::Net::MqttSn::Subscribe& iMessage);
-            virtual void handleSuback(Bt::Net::MqttSn::Suback& iMessage);
             virtual void handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage);
             virtual void handlePingresp(Bt::Net::MqttSn::Pingresp& iMessage);
 
@@ -158,6 +153,10 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       void sendPingresp();
 
       void sendBufferedMessages();
+      void registerTopic(Bt::Net::MqttSn::Register& iMessage);
+      void publishToBroker(Bt::Net::MqttSn::Publish& iMessage);
+      void subscribe(Bt::Net::MqttSn::Subscribe& iMessage);
+      void awake();
 
       void handleSleep(uint16_t iDuration);
       void send(Bt::Net::MqttSn::I_Message& iMessage);
