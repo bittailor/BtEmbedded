@@ -557,7 +557,11 @@ void GatewayConnection::Asleep::handleSubscribe(Bt::Net::MqttSn::Subscribe& iMes
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handlePingreq(Bt::Net::MqttSn::Pingreq& iMessage) {
-   mGatewayConnection.awake();
+   if(iMessage.withClientId) {
+      mGatewayConnection.awake();
+   } else {
+      mGatewayConnection.sendPingresp();
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
