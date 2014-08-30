@@ -214,7 +214,7 @@ void Rf24DeviceController::configureDevice() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24DeviceController::onInterrupt() {
-   BT_LOG(INFO) << "--- onInterrupt ----";
+   BT_LOG(DEBUG) << "--- onInterrupt ----";
    switch(mInterruptState.load()) {
       case InterruptState::Ignore : {
          return;
