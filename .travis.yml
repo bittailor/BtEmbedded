@@ -20,6 +20,7 @@ deploy:
   api_key:
     secure: BnAW2C1nMJuoIPJqrbvd7N7T5msRMUDCeUeonvomD4l1L4u6g5JYMmW6LVpLu5ODFxEV6sg00rO+w7rGEZrRnxIPtz5TEEz/mV9m9hI7pL8oyORqn9/LVjRya0Bgd6bs2E9hlxwDYLcCcx2LPxgylZ1ey3iOVL32AZykMWo4zbU=
   file: BtMqttSnGateway/target/pi_cross_debug/BtMqttSnGateway
+  file: BtMqttSnGateway/default_settings.xml
   skip_cleanup: true
   on:
     repo: bittailor/BtEmbedded
