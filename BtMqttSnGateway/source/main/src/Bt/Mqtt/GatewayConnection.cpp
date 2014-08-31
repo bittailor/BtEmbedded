@@ -166,28 +166,35 @@ void GatewayConnection::visit(Bt::Net::MqttSn::Pingresp& iMessage) {
 
 void GatewayConnection::connectToBroker(Bt::Net::MqttSn::Connect& iMessage) {
 
-   mKeepAliveTimeout = std::chrono::seconds(iMessage.duration + (iMessage.duration / 2));
+   if(!iMessage.flags.bits.cleanSession) {
+      BT_LOG_GWC(WARNING) << "CONNECT with CleanSession=false not supported!";
+      changeState(mDisconnectedState);
+      send(Bt::Net::MqttSn::Connack(Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED));
+      return;
+   }
 
-   Bt::Net::MqttSn::ReturnCode returnCode = Bt::Net::MqttSn::ReturnCode::ACCEPTED;
+   mKeepAliveTimeout = std::chrono::seconds(iMessage.duration + (iMessage.duration / 2));
 
    try {
       mBrokerClient = mFactory->createClient(*this, iMessage.clientId);
       bool result = mBrokerClient->connect(mFactory->createDefaultOptions());
       if(!result){
-         returnCode = Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED;
+         changeState(mDisconnectedState);
+         Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED);
+         send(connack);
+         return;
       }
    } catch (std::exception& exception) {
       BT_LOG_GWC(WARNING) << "create MqttClient failed : " << exception.what() ;
-      returnCode = Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED;
-   }
-
-   Bt::Net::MqttSn::Connack connack(returnCode);
-   if (returnCode == Bt::Net::MqttSn::ReturnCode::ACCEPTED) {
-      changeState(mActiveState);
-   } else {
       changeState(mDisconnectedState);
+      Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED);
+      send(connack);
+      return;
    }
 
+   changeState(mActiveState);
+
+   Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::ACCEPTED);
    send(connack);
 }
 
@@ -205,16 +212,14 @@ void GatewayConnection::reconnectToBroker(Bt::Net::MqttSn::Connect& iMessage) {
 void GatewayConnection::connectFromSleep(Bt::Net::MqttSn::Connect& iMessage) {
    changeState(mActiveState);
    sendBufferedMessages();
-   Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::ACCEPTED);
-   send(connack);
+   send(Bt::Net::MqttSn::Connack(Bt::Net::MqttSn::ReturnCode::ACCEPTED));
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::awake() {
    sendBufferedMessages();
-   Bt::Net::MqttSn::Pingresp pingresp;
-   send(pingresp);
+   send(Bt::Net::MqttSn::Pingresp());
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -225,8 +230,7 @@ void GatewayConnection::forwardMessageToClient(const std::string& iTopicName, st
    if(topicId == TopicStorage::NO_TOPIC_ID) {
       topicId = mTopicStorage.getOrCreateTopicId(iTopicName);
       uint16_t msgId = mMsgIdCounter++;
-      Bt::Net::MqttSn::Register registerMessage(topicId, msgId, iTopicName);
-      send(registerMessage);
+      send(Bt::Net::MqttSn::Register(topicId, msgId, iTopicName));
    }
 
    uint16_t msgId = mMsgIdCounter++;
@@ -244,8 +248,7 @@ void GatewayConnection::storeMessage(const std::string& iTopicName, std::shared_
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::sendPingresp() {
-   Bt::Net::MqttSn::Pingresp response;
-   send(response);
+   send(Bt::Net::MqttSn::Pingresp());
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -261,7 +264,7 @@ void GatewayConnection::sendBufferedMessages() {
 
 //-------------------------------------------------------------------------------------------------
 
-void GatewayConnection::send(Bt::Net::MqttSn::I_Message& iMessage) {
+void GatewayConnection::send(const Bt::Net::MqttSn::I_Message& iMessage) {
    std::vector<uint8_t> buffer;
    Bt::Net::MqttSn::PacketWriter<std::vector> writer(buffer);
    iMessage.write(writer);
@@ -273,7 +276,7 @@ void GatewayConnection::send(Bt::Net::MqttSn::I_Message& iMessage) {
 void GatewayConnection::disconnect(bool iSendDisconnectToClient) {
    if(!mBrokerClient) {
       if(!mBrokerClient->disconnect(1000)) {
-         BT_LOG_GWC(DEBUG) << "disconnect from broker failed" ;
+         BT_LOG_GWC(WARNING) << "disconnect from broker failed" ;
       }
    }
    dispose(iSendDisconnectToClient);
@@ -282,12 +285,12 @@ void GatewayConnection::disconnect(bool iSendDisconnectToClient) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::dispose(bool iSendDisconnectToClient) {
+   BT_LOG_GWC(WARNING) << "dispose " ;
    changeState(mDisconnectedState);
    mBrokerClient.reset();
 
    if (iSendDisconnectToClient) {
-      Bt::Net::MqttSn::Disconnect disconnect;
-      send(disconnect);
+      send(Bt::Net::MqttSn::Disconnect());
    }
 
    mDispose(id());
@@ -316,7 +319,7 @@ void GatewayConnection::workcycle() {
       if (validAction) {
          action();
       } else {
-         BT_LOG_GWC(DEBUG) << "missing keep alive message => disconnect()" ;
+         BT_LOG_GWC(WARNING) << "missing keep alive message => disconnect()" ;
          disconnect(false);
       }
    }
@@ -335,8 +338,7 @@ void GatewayConnection::changeState(State& iState) {
 
 void GatewayConnection::registerTopic(Bt::Net::MqttSn::Register& iMessage) {
    uint16_t topicId = mTopicStorage.getOrCreateTopicId(iMessage.topicName);
-   Bt::Net::MqttSn::Regack regack(topicId, iMessage.msgId , Bt::Net::MqttSn::ReturnCode::ACCEPTED);
-   send(regack);
+   send(Bt::Net::MqttSn::Regack(topicId, iMessage.msgId , Bt::Net::MqttSn::ReturnCode::ACCEPTED));
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -358,8 +360,7 @@ void GatewayConnection::publishToBroker(Bt::Net::MqttSn::Publish& iMessage) {
 void GatewayConnection::handleSleep(uint16_t iDuration) {
    mAsleepTimeout = std::chrono::seconds(iDuration);
    changeState(mAsleepState);
-   Bt::Net::MqttSn::Disconnect disconnect;
-   send(disconnect);
+   send(Bt::Net::MqttSn::Disconnect());
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -376,8 +377,7 @@ void GatewayConnection::subscribe(Bt::Net::MqttSn::Subscribe& iMessage) {
       returnCode = Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED;
    }
 
-   Bt::Net::MqttSn::Suback suback(iMessage.flags.bits.qos, topicId, iMessage.msgId, returnCode);
-   send(suback);
+   send(Bt::Net::MqttSn::Suback(iMessage.flags.bits.qos, topicId, iMessage.msgId, returnCode));
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -518,7 +518,13 @@ std::chrono::seconds GatewayConnection::Active::timeout() {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::Asleep::handleConnect(Bt::Net::MqttSn::Connect& iMessage) {
-   mGatewayConnection.connectFromSleep(iMessage);
+   if(iMessage.flags.bits.cleanSession) {
+      BT_LOG_GWC_STATE(WARNING) << "connect from Asleep with clean session set => reconnect";
+      mGatewayConnection.reconnectToBroker(iMessage);
+   } else {
+      mGatewayConnection.connectFromSleep(iMessage);
+   }
+
 }
 
 //-------------------------------------------------------------------------------------------------

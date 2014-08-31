@@ -159,7 +159,7 @@ class GatewayConnection : private Bt::Net::MqttSn::I_MessageVisitor, private Bt:
       void awake();
 
       void handleSleep(uint16_t iDuration);
-      void send(Bt::Net::MqttSn::I_Message& iMessage);
+      void send(const Bt::Net::MqttSn::I_Message& iMessage);
       bool containsWildcardCharacters(const std::string& iTopicName);
       void disconnect(bool iSendDisconnectToClient);
       void dispose(bool iSendDisconnectToClient);
