@@ -74,10 +74,10 @@ LogStatement::~LogStatement() {
       auto time = std::chrono::system_clock::to_time_t(timestamp);
       auto localTime = std::localtime(&time);
 
-      std::cout << std::setfill('0') << std::setw(2)
-      << localTime->tm_mday << "." << localTime->tm_mon << "." << localTime->tm_year
-      << " " << localTime->tm_hour << ":" << localTime->tm_min << ":" << localTime->tm_sec << " "
-      << std::setfill(' ') << std::setw(10) << Bt::Util::microseconds()
+      std::cout << std::setfill('0')
+      << std::setw(2) << localTime->tm_mday << "."  << std::setw(2) << localTime->tm_mon << "." << std::setw(4) << (localTime->tm_year + 1900)
+      << " " << std::setw(2) << localTime->tm_hour << ":" << std::setw(2) << localTime->tm_min << ":" << std::setw(2) << localTime->tm_sec << " "
+      << std::setfill(' ') << std::setw(6) << (Bt::Util::microseconds() % (1000 * 1000) )
       << "[" << std::hex << std::setw(8) << std::this_thread::get_id() << "]" << std::dec
       << toMarkerString(mLevel) << message.str() << std::endl;
    }

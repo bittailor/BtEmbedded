@@ -310,6 +310,7 @@ void GatewayConnection::workcycle() {
       std::function<void()> action;
       bool validAction = true;
       std::chrono::seconds timeout = mCurrentState->timeout();
+      BT_LOG_GWC(DEBUG) << "wait for a message with a timeout of " << timeout.count() << "s" ;
       if(timeout == std::chrono::seconds(0)) {
          mQueue.pop(action);
       } else {
