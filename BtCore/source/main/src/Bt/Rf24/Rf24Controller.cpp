@@ -62,6 +62,14 @@ bool Rf24DeviceController::write(RfPipe iPipe, Packet& iPacket) {
 
 size_t Rf24DeviceController::transmitPacket(RfPipe iPipe, Packet& iPacket) {
    StateBase* originalState = mCurrentState;
+   BT_LOG(DEBUG) << "...send payload of size " << iPacket.size() << " with " << std::accumulate(iPacket.buffer(), iPacket.buffer() + iPacket.size(), std::string() , [](std::string s, uint8_t c) -> std::string {
+      std::string result = s +" "+ boost::lexical_cast<std::string>(static_cast<int>(c));
+      if (0x20 <= c && c <= 0x7E) {
+         result = result + "["+ static_cast<char>(c) +"]";
+      }
+      return result;
+   });
+
    BT_LOG(DEBUG) << "transceiverMode " << mDevice.transceiverMode() ;
    BT_LOG(DEBUG) << "write current state is " << typeid(*mCurrentState).name() ;
    mCurrentState->ToStandbyI();
@@ -144,47 +152,6 @@ void Rf24DeviceController::stopListening() {
    mCurrentState->ToStandbyI();
    mCallback = std::function<void(RfPipe iPipe, Packet& iPacket)>();
 }
-
-//-------------------------------------------------------------------------------------------------
-
-
-//-------------------------------------------------------------------------------------------------
-
-//bool Rf24DeviceController::read(Packet& oPacket, RfPipe& oPipe) {
-//   if (mDevice.isReceiveFifoEmpty())
-//   {
-//      return false;
-//   }
-//   size_t size = mDevice.readReceivePayload(oPipe, oPacket.buffer(), Packet::BUFFER_CAPACITY);
-//   oPacket.size(size);
-//
-//   std::stringstream message;
-//   for (size_t i = 0 ; i < 3 ; i++) {
-//      message << (int)oPacket.buffer()[i];
-//      message << ",";
-//   }
-//
-//   for (size_t i = 0 ; i < oPacket.size() ; i++) {
-//      if(isprint((char) oPacket.buffer()[i])) {
-//         message << (char) oPacket.buffer()[i];
-//      } else {
-//         message << (int)oPacket.buffer()[i];
-//      }
-//      message << ",";
-//   }
-//   message << " end";
-//
-//
-//   BT_LOG(DEBUG) << "read: " << message.str();
-//
-//
-//   if(mDevice.isReceiveFifoEmpty()) {
-//      mDevice.clearDataReady();
-//   }
-//   return true;
-//}
-
-//-------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------------
 
