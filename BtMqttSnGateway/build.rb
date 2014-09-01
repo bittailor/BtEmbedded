@@ -73,7 +73,7 @@ def deploy()
     cp_to_path("../3rdParty/source/lib/bcm2835/COPYING","#{tar_folder}/Acknowledgements/bcm2835/")
   
     
-    sh "tar -C #{deploy_folder} -zcvf #{tar_folder}.tar.gz #{taged_name}"
+    sh "tar -C #{deploy_folder} -zcvf #{deploy_folder}/BtMqttSnGateway.tar.gz #{taged_name}"
             
   end
   
