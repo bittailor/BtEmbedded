@@ -49,7 +49,7 @@ class RfNetworkSocket : public I_RfNetworkSocket
 
 
       RfNode mNodeId;
-      I_Rf24DeviceController* mController;
+      I_Rf24DeviceController& mController;
       RfNetworkRoutingAlgorithm mRouting;
       uint8_t mIdCounter;
       std::function<void(Packet& iPacket)> mCallback;

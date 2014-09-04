@@ -268,7 +268,9 @@ void GatewayConnection::send(const Bt::Net::MqttSn::I_Message& iMessage) {
    std::vector<uint8_t> buffer;
    Bt::Net::MqttSn::PacketWriter<std::vector> writer(buffer);
    iMessage.write(writer);
-   mSocket->send(buffer.data(),buffer.size(), mRfNodeId);
+   if(mSocket->send(buffer.data(),buffer.size(), mRfNodeId) == -1) {
+      BT_LOG_GWC(ERROR) << "send of " << Util::demangle(typeid(iMessage)) << " failed";
+   }
 }
 
 //-------------------------------------------------------------------------------------------------

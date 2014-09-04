@@ -22,14 +22,14 @@ namespace Rf24 {
 //-------------------------------------------------------------------------------------------------
 
 RfNetworkSocket::RfNetworkSocket(RfNode iNodeId, I_Rf24DeviceController& iController)
-: mNodeId(iNodeId), mController(&iController), mIdCounter(0) {
+: mNodeId(iNodeId), mController(iController), mIdCounter(0) {
 
    uint8_t autoRetransmitDelay = ((mNodeId.id() % 6) * 2) + 5;
    I_Rf24DeviceController::Configuration configuration(autoRetransmitDelay);
    for(RfPipe pipe : RfPipes::ALL_PIPES) {
       mRouting.configurePipe(mNodeId, pipe, configuration[pipe]);
    }
-   mController->configure(configuration);
+   mController.configure(configuration);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -48,13 +48,13 @@ bool RfNetworkSocket::send(Packet& iPacket) {
 
 void RfNetworkSocket::startListening(std::function<void(Packet& iPacket)> iCallback) {
    mCallback = iCallback;
-   mController->startListening(std::bind(&RfNetworkSocket::onPacketReceived,this,std::placeholders::_1,std::placeholders::_2));
+   mController.startListening(std::bind(&RfNetworkSocket::onPacketReceived,this,std::placeholders::_1,std::placeholders::_2));
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void RfNetworkSocket::stopListening() {
-   mController->stopListening();
+   mController.stopListening();
    mCallback = std::function<void(Packet& iPacket)>();
 }
 
@@ -64,13 +64,13 @@ bool RfNetworkSocket::sendInternal(Packet& iPacket) {
    RfPipe pipe = mRouting.calculateRoutingPipe(mNodeId, iPacket.destination());
 
    int counter = 0;
-   while(!mController->write(pipe, iPacket.mControllerPackage)) {
+   while(!mController.write(pipe, iPacket.mControllerPackage)) {
       counter++;
       if (counter >= 5) {
-         BT_LOG(WARNING) << "NetworkSocket send failed after " << counter <<  " retries";
+         BT_LOG(WARNING) << "NetworkSocket send " << static_cast<int>(mNodeId.id()) << " => " << static_cast<int>(iPacket.destination()) <<  " failed after " << counter <<  " retries";
          return false;
       }
-      BT_LOG(WARNING) << "send failed do retry " << counter <<  " after delay";
+      BT_LOG(WARNING) << "send " << static_cast<int>(mNodeId.id()) << " => " << static_cast<int>(iPacket.destination()) <<  " failed do retry " << counter <<  " after delay";
       Util::delayInMicroseconds(counter*100);
    }
 
