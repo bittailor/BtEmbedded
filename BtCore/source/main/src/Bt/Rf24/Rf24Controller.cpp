@@ -155,6 +155,15 @@ void Rf24DeviceController::stopListening() {
 
 //-------------------------------------------------------------------------------------------------
 
+void Rf24DeviceController::reboot() {
+   StateBase* originalState = mCurrentState;
+   mCurrentState->ToPowerDown();
+   Util::delayInMicroseconds(100);
+   originalState->ApplyTo(*mCurrentState);
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void Rf24DeviceController::configureDevice() {
 
    mDevice.dynamicPayloadFeatureEnabled(true);

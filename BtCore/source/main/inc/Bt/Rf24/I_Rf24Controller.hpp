@@ -39,6 +39,8 @@ class I_Rf24DeviceController {
       virtual void startListening(std::function<void(RfPipe iPipe, Packet& iPacket)> iCallback) = 0;
       virtual void stopListening() = 0;
 
+      virtual void reboot() = 0;
+
 };
 
 class I_Rf24DeviceController::Packet {

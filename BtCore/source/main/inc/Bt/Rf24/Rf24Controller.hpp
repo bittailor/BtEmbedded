@@ -40,6 +40,8 @@ class Rf24DeviceController : public I_Rf24DeviceController
       virtual void startListening(std::function<void(RfPipe iPipe, Packet& iPacket)> iCallback);
       virtual void stopListening();
 
+      virtual void reboot();
+
    private:
 
       enum class InterruptState {
