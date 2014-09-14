@@ -87,7 +87,7 @@ size_t Rf24DeviceController::transmitPacket(RfPipe iPipe, Packet& iPacket) {
    }
 
    if(!mInterruptPin.read()) {
-      BT_LOG(ERROR) << "**** IRQ already set before transmit - status " << mDevice.status();
+      BT_LOG(ERROR) << "IRQ already set before transmit - status " << mDevice.status();
    }
 
    mCurrentState->ToTxMode();
@@ -124,7 +124,7 @@ size_t Rf24DeviceController::transmitPacket(RfPipe iPipe, Packet& iPacket) {
    }
 
    if(!mInterruptPin.read()) {
-      BT_LOG(ERROR) << "**** IRQ still set after clean - status =  " << mDevice.status();
+      BT_LOG(ERROR) << "IRQ still set after transmit - status =  " << mDevice.status();
    }
 
    if (flushTransmitFifo) {
@@ -190,9 +190,10 @@ void Rf24DeviceController::configureDevice() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24DeviceController::onInterrupt() {
-   BT_LOG(DEBUG) << "--- onInterrupt ----";
+   BT_LOG(DEBUG) << "onInterrupt - state is " << static_cast<int>(mInterruptState.load()) ;
    switch(mInterruptState.load()) {
       case InterruptState::Ignore : {
+         BT_LOG(WARNING) << "IRQ in InterruptState::Ignore - status =  " << mDevice.status() ;
          return;
       }
       case InterruptState::Rx     : {
@@ -215,19 +216,22 @@ void Rf24DeviceController::readReceiveData() {
       size_t size = mDevice.readReceivePayload(pipe,packet.buffer(),Packet::CAPACITY);
       if (size <= 0) {
          BT_LOG(ERROR) << "invalid read size of " << size << " => drop packet" ;
-         continue;
+      } else {
+         packet.size(size);
+         BT_LOG(DEBUG) << "... payload received of size " << size << " with " << std::accumulate(packet.buffer(), packet.buffer() + size, std::string() , [](std::string s, uint8_t c) -> std::string {
+            std::string result = s +" "+ boost::lexical_cast<std::string>(static_cast<int>(c));
+            if (0x20 <= c && c <= 0x7E) {
+               result = result + "["+ static_cast<char>(c) +"]";
+            }
+            return result;
+         });
+         std::function<void()> handle = std::bind(&Rf24DeviceController::handleReceiveData,this,pipe,packet);
+         mExecutionContext.invoke(handle);
       }
-      packet.size(size);
-      BT_LOG(DEBUG) << "... payload received of size " << size << " with " << std::accumulate(packet.buffer(), packet.buffer() + size, std::string() , [](std::string s, uint8_t c) -> std::string {
-         std::string result = s +" "+ boost::lexical_cast<std::string>(static_cast<int>(c));
-         if (0x20 <= c && c <= 0x7E) {
-            result = result + "["+ static_cast<char>(c) +"]";
-         }
-         return result;
-      });
-      std::function<void()> handle = std::bind(&Rf24DeviceController::handleReceiveData,this,pipe,packet);
-      mExecutionContext.invoke(handle);
       mDevice.clearDataReady();
+   }
+   if(!mInterruptPin.read()) {
+      BT_LOG(ERROR) << "IRQ set after receive loop - status =  " << mDevice.status();
    }
 }
 
@@ -279,9 +283,17 @@ void Rf24DeviceController::StandbyI::ToPowerDown() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24DeviceController::StandbyI::ToRxMode() {
+   if(!mController->mInterruptPin.read()) {
+      BT_LOG(WARNING) << "IRQ already set before StandbyI::ToRxMode transition - status =  " << mController->mDevice.status();
+   }
+
    mController->mDevice.clearDataReady();
    mController->mDevice.clearDataSent();
    mController->mDevice.clearRetransmitsExceeded();
+
+   if(!mController->mInterruptPin.read()) {
+      BT_LOG(ERROR) << "IRQ still set even after a clear before StandbyI::ToRxMode transition - status =  " << mController->mDevice.status();
+   }
 
    mController->mInterruptState.store(InterruptState::Rx);
 
