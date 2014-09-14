@@ -230,9 +230,6 @@ void Rf24DeviceController::readReceiveData() {
       }
       mDevice.clearDataReady();
    }
-   if(!mInterruptPin.read()) {
-      BT_LOG(ERROR) << "IRQ set after receive loop - status =  " << mDevice.status();
-   }
 }
 
 //-------------------------------------------------------------------------------------------------
