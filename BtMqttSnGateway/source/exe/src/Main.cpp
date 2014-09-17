@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
    if(argc > 1) {
       settingsFile = argv[1];
    }
-   std::cout << "Start MQTT-SN Gateway reading settings from " << settingsFile << std::endl;
+   std::cout << "Start MQTT-SN Gateway 0.1.1 reading settings from " << settingsFile << std::endl;
 
    try {
 
