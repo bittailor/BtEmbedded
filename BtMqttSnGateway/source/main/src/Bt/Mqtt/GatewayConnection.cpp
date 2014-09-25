@@ -276,7 +276,8 @@ void GatewayConnection::send(const Bt::Net::MqttSn::I_Message& iMessage) {
 //-------------------------------------------------------------------------------------------------
 
 void GatewayConnection::disconnect(bool iSendDisconnectToClient) {
-   if(!mBrokerClient) {
+   if(mBrokerClient) {
+      BT_LOG_GWC(WARNING) << "send disconnect to broker" ;
       if(!mBrokerClient->disconnect(1000)) {
          BT_LOG_GWC(WARNING) << "disconnect from broker failed" ;
       }

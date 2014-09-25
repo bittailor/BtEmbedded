@@ -98,14 +98,15 @@ end
 
 class BuildArtefact < Artefact
   
-  attr_reader :sources, :includes, :libraries, :external_libraries
+  attr_reader :sources, :includes, :libraries, :external_libraries , :defines
    
   def initialize(name, project)
     super
     @sources = PathStorage.new()
     @includes = PathStorage.new()    
     @libraries = ReferenceStorage.new(project)
-    @external_libraries = []   
+    @external_libraries = [] 
+    @defines = []    
   end
   
   def imported_includes
@@ -148,7 +149,7 @@ class StaticLibrary < BuildArtefact
   
   def generate_ninja(builder, file)
     includes = @includes.storage + imported_includes  
-    builder.static_library(file, name, @sources.storage, includes)
+    builder.static_library(file, name, @sources.storage, includes, @defines)
   end 
   
   def link?
@@ -215,7 +216,7 @@ class Executable < BuildArtefact
     
     external_libraries = imported_external_libraries  
       
-    builder.executable(file, project, name, @sources.storage, includes, libraries, external_libraries)
+    builder.executable(file, project, name, @sources.storage, includes, libraries, external_libraries,  @defines)
   end 
   
   def create_tasks(builder)

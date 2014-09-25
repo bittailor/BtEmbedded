@@ -70,12 +70,13 @@ MqttClient::MqttClient(I_Listener& iListener, std::string iAddress, std::string 
       BT_LOG(WARNING) << message.str() ;
       throw std::domain_error(message.str());
    }
-
+   BT_LOG(INFO) << "MqttClient[" << mClient << "]::MqttClient()" ;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 MqttClient::~MqttClient() {
+   BT_LOG(INFO) << "MqttClient[" << mClient << "]::~MqttClient()" ;
    MQTTClient_destroy(&mClient);
 }
 
@@ -101,6 +102,7 @@ bool MqttClient::connect(const ConnectOptions& options) {
 //-------------------------------------------------------------------------------------------------
 
 bool MqttClient::disconnect(int timeout) {
+   BT_LOG(INFO) << "MqttClient[" << mClient << "]::disconnect()" ;
    return MQTTClient_disconnect(mClient, timeout) == MQTTCLIENT_SUCCESS;
 }
 

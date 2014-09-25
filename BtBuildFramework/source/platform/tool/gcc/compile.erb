@@ -2,8 +2,10 @@
 <% if source.pathmap("%x") == ".c" %>
 build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cc <%= source %>
    includes = <%= includes.collect{|i| "-I"+i}.join(" ")  %> $include
+   flags = <%= defines.collect{|i| "-D"+i}.join(" ")  %>
 <% else %>
 build <%= source.pathmap("%{^source,#{target_folder}}X.obj") %>: cxx <%= source %>
-   includes = <%= includes.collect{|i| "-I"+i}.join(" ")  %> $includes	
+   includes = <%= includes.collect{|i| "-I"+i}.join(" ")  %> $includes
+   flags = <%= defines.collect{|i| "-D"+i}.join(" ")  %>	
 <% end %>
 <% end %>

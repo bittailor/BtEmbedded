@@ -53,7 +53,7 @@ class Builder
     task project => [ compile_ninja ]
   end
   
-  def static_library(file, name, sources, includes)           
+  def static_library(file, name, sources, includes, defines)           
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name) 
        
     file.write(ERB.new(@tool.template("compile")).result(binding))
@@ -61,7 +61,7 @@ class Builder
     
   end
  
-  def executable(file, project, name, sources, includes, library_artefacts, external_libraries)
+  def executable(file, project, name, sources, includes, library_artefacts, external_libraries, defines)
     target_folder = File.join(OutputRootFolder,BuildFramework.instance.configuration.name)
        
     libraries = []

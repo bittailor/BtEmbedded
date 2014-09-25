@@ -4,12 +4,12 @@ global_includes = <%= @includes %>
 linkflags = <%= @linkflags %>
 
 rule cc
-  command = <%= @cc %> -MMD -MT $out -MF $out.d $ccflags $global_includes $includes -c $in -o $out
+  command = <%= @cc %> -MMD -MT $out -MF $out.d $ccflags $flags $global_includes $includes -c $in -o $out
   description = CC $out
   depfile = $out.d
 
 rule cxx
-  command = <%= @cxx %> -MMD -MT $out -MF $out.d $cxxflags $global_includes $includes -c $in -o $out
+  command = <%= @cxx %> -MMD -MT $out -MF $out.d $cxxflags $flags $global_includes $includes -c $in -o $out
   description = CXX $out
   depfile = $out.d
   
