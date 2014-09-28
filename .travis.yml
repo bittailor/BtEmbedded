@@ -8,8 +8,9 @@ before_install:
 - brew -v
 - wget --version
 install:
+- brew list --versions
 - brew install ninja
-- brew install boost
+# - brew install boost
 - brew list --versions
 - wget https://github.com/bittailor/PiCrossTool/releases/download/v0.1.0/CrosstoolImage_0_1_0.dmg
 - hdiutil attach CrosstoolImage_0_1_0.dmg
