@@ -8,8 +8,6 @@ def run_sh(cmd)
 	end
 end
 
-
-# ["host_debug","pi_cross_debug","arduino_uno"].each do |configuration|
 ["host_debug","pi_cross_debug"].each do |configuration|
 # ["host_debug"].each do |configuration|
 # ["pi_cross_debug"].each do |configuration|
