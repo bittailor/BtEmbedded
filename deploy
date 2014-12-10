@@ -10,6 +10,7 @@ artefacts =
 [
    "BtCore/target/pi_cross_debug/PingClient",
    "BtCore/target/pi_cross_debug/PingServer",
+   "BtCore/target/pi_cross_debug/PosixThreadStuff",
    "BtMqttSnGateway/target/pi_cross_debug/BtMqttSnGateway",
    "BtMqttSnGateway/bt_gw_settings.xml"
 ]

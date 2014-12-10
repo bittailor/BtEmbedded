@@ -35,6 +35,7 @@ SnGateway::SnGateway(const I_SnGatewaySettings& iSettings)
 : mSettings(iSettings), mSocket(RfPacketSocketFactory().createPacketSocket(mSettings.rf24().chipEnablePin,
                                                                            mSettings.rf24().chipSelect,
                                                                            mSettings.rf24().irqPin,
+                                                                           mSettings.rf24().channel,
                                                                            mSettings.socket().nodeId))
 , mMqttFactory(std::make_shared<MqttFactory>(mSettings.broker().url,
                                              mSettings.broker().user,

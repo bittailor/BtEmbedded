@@ -40,6 +40,8 @@ SnGatewaySettings::SnGatewaySettings(const std::string& iFilename) {
 
    mRf24.chipEnablePin = get("Settings.RfPacketSocket.ChipEnablePin",25);
    mRf24.irqPin = get("Settings.RfPacketSocket.IrqPin",24);
+   mRf24.channel = get("Settings.RfPacketSocket.Channel",10);
+
 
    mSocket.nodeId = get("Settings.RfPacketSocket.NodeId",0);
 

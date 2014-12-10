@@ -29,7 +29,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
 {
    public:
 
-      Rf24DeviceController(I_Rf24Device& iDevice, Mcu::I_InterruptPin& iInterruptPin,
+      Rf24DeviceController(I_Rf24Device& iDevice, Mcu::I_InterruptPin& iInterruptPin, uint8_t iChannel,
                            Concurrency::I_ExecutionContext& iExecutionContext);
       ~Rf24DeviceController();
 
@@ -115,6 +115,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
 
       I_Rf24Device& mDevice;
       Mcu::I_InterruptPin& mInterruptPin;
+      uint8_t mChannel;
       Concurrency::I_ExecutionContext& mExecutionContext;
       Configuration mConfiguration;
       std::function<void(RfPipe iPipe, Packet& iPacket)> mCallback;

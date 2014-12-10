@@ -19,9 +19,8 @@ extern "C" {
 }
 
 
-#define ADDRESS     "test.mosquitto.org"
 #define CLIENTID    "ExampleClientPub"
-#define TOPIC       "/ch/bittailor/test"
+#define TOPIC       "ch/bittailor/test"
 #define PAYLOAD     "Hello World!"
 #define QOS         1
 #define TIMEOUT     10000L
@@ -59,15 +58,27 @@ void connlost(void *context, char *cause)
 }
 int main(int argc, char* argv[])
 {
+   if(argc < 4) {
+        std::cout << "usage: " << argv[0] << " server_url user password" << std::endl;
+        return -1;
+   }
+
+   std::cout << argv[0] << " " << argv[1] << " " << argv[2] << " " << argv[3] << std::endl;
+
+
     MQTTClient client;
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
     MQTTClient_message pubmsg = MQTTClient_message_initializer;
     MQTTClient_deliveryToken token;
     int rc;
-    MQTTClient_create(&client, ADDRESS, CLIENTID,
-        MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    MQTTClient_create(&client, argv[1], CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
+    conn_opts.username = argv[2];
+    conn_opts.password = argv[3];
+    conn_opts.connectTimeout = 200;
+
+
     MQTTClient_setCallbacks(client, NULL, connlost, msgarrvd, delivered);
     if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
     {

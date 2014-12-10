@@ -51,9 +51,12 @@ int main(int argc, const char* argv[]) {
    Bt::Net::Mqtt::MqttClient client(listener, argv[1], "ExampleMqttClientPub");
 
    std::cout << "connect ..." << std::endl;
-   client.connect(Bt::Net::Mqtt::MqttClient::ConnectOptions{argv[2],argv[3]});
+   if(!client.connect(Bt::Net::Mqtt::MqttClient::ConnectOptions{argv[2],argv[3]})){
+      std::cout << "... connect failed" << std::endl;
+      return -1;
+   }
 
-   client.subscribe("ch/bittailor/test",1);
+   client.subscribe("ch/bittailor",1);
 
    for (int qos = 0; qos < 3; ++qos) {
       std::cout << "publish qos = " <<  qos  << "..." << std::endl;

@@ -85,8 +85,12 @@ LogStatement::~LogStatement() {
 
 //-------------------------------------------------------------------------------------------------
 
-
 } // namespace Log
 } // namespace Bt
 
+// Simply callable from the debugger
+Bt::Log::LoggingLevel bt_log_setLoggingLevel(Bt::Log::LoggingLevel iLoggingLevel) {
+   return Bt::Log::setLoggingLevel(iLoggingLevel);
+}
 
+//-------------------------------------------------------------------------------------------------

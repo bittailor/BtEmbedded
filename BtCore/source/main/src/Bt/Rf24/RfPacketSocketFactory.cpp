@@ -30,12 +30,12 @@ namespace {
 class RfPacketSocketWrapper : public I_RfPacketSocket {
    public:
 
-      RfPacketSocketWrapper(uint8_t iChipEnable, Mcu::I_Spi::ChipSelect iChipSelect, uint8_t iIrq,  uint8_t iNodeId)
+      RfPacketSocketWrapper(uint8_t iChipEnable, Mcu::I_Spi::ChipSelect iChipSelect, uint8_t iIrq, uint8_t iChannel,  uint8_t iNodeId)
       : mChipEnable(iChipEnable, Mcu::I_Pin::MODE_OUTPUT)
       , mSpi(Mcu::I_Spi::BIT_ORDER_MSBFIRST, Mcu::I_Spi::MODE_0, Mcu::I_Spi::SPEED_8_MHZ , iChipSelect)
       , mIrq(iIrq, Mcu::I_InterruptPin::Edge::FALLING)
       , mDevice(mSpi,mChipEnable)
-      , mController(mDevice,mIrq,mExecutionContext)
+      , mController(mDevice,mIrq,iChannel,mExecutionContext)
       , mNetworkSocket(iNodeId, mController)
       , mPacketSocket(mNetworkSocket,mExecutionContext) {
 
@@ -83,8 +83,8 @@ class RfPacketSocketWrapper : public I_RfPacketSocket {
 
 //-------------------------------------------------------------------------------------------------
 
-std::shared_ptr<I_RfPacketSocket> RfPacketSocketFactory::createPacketSocket(uint8_t iChipEnable, Mcu::I_Spi::ChipSelect iChipSelect, uint8_t iIrq, uint8_t iNodeId) {
-   std::shared_ptr<I_RfPacketSocket> socket = std::make_shared<RfPacketSocketWrapper>(iChipEnable,iChipSelect,iIrq,iNodeId);
+std::shared_ptr<I_RfPacketSocket> RfPacketSocketFactory::createPacketSocket(uint8_t iChipEnable, Mcu::I_Spi::ChipSelect iChipSelect, uint8_t iIrq, uint8_t iChannel, uint8_t iNodeId) {
+   std::shared_ptr<I_RfPacketSocket> socket = std::make_shared<RfPacketSocketWrapper>(iChipEnable,iChipSelect,iIrq,iChannel,iNodeId);
    return socket;
 }
 

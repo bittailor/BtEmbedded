@@ -23,7 +23,7 @@ class RfPacketSocketFactory
    public:
       RfPacketSocketFactory() = default;
 
-      virtual std::shared_ptr<I_RfPacketSocket> createPacketSocket(uint8_t iChipEnable, Mcu::I_Spi::ChipSelect iChipSelect, uint8_t iIrq, uint8_t iNodeId);
+      virtual std::shared_ptr<I_RfPacketSocket> createPacketSocket(uint8_t iChipEnable, Mcu::I_Spi::ChipSelect iChipSelect, uint8_t iIrq, uint8_t iChannel, uint8_t iNodeId);
    
    private:
    	  // Constructor to prohibit copy construction.

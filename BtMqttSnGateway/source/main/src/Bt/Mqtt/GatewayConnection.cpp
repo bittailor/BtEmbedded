@@ -36,7 +36,7 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
 , mKeepAliveTimeout(0)
 , mAsleepTimeout(0)
 , mDisconnectedState(*this), mActiveState(*this), mAsleepState(*this), mCurrentState(&mDisconnectedState){
-   BT_LOG_GWC(DEBUG) << "GatewayConnection()";
+   BT_LOG_GWC(INFO) << "GatewayConnection()";
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ GatewayConnection::~GatewayConnection() {
    });
    BT_LOG_GWC(DEBUG) << " join workcycle thread.";
    mThread.join();
-   BT_LOG_GWC(DEBUG) << "~GatewayConnection()" ;
+   BT_LOG_GWC(INFO) << "~GatewayConnection()" ;
 }
 
 //-------------------------------------------------------------------------------------------------

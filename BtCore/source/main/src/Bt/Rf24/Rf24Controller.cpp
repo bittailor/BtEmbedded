@@ -28,9 +28,9 @@ namespace Rf24 {
 
 //-------------------------------------------------------------------------------------------------
 
-Rf24DeviceController::Rf24DeviceController(I_Rf24Device& iDevice, Mcu::I_InterruptPin& iInterruptPin,
+Rf24DeviceController::Rf24DeviceController(I_Rf24Device& iDevice, Mcu::I_InterruptPin& iInterruptPin, uint8_t iChannel,
                                            Concurrency::I_ExecutionContext& iExecutionContext)
-: mDevice(iDevice), mInterruptPin(iInterruptPin), mExecutionContext(iExecutionContext) , mPowerDown(*this),
+: mDevice(iDevice), mInterruptPin(iInterruptPin), mChannel(iChannel), mExecutionContext(iExecutionContext) , mPowerDown(*this),
   mStandbyI(*this), mRxMode(*this), mTxMode(*this), mCurrentState(&mPowerDown),
   mInterruptState(InterruptState::Ignore){
 }
@@ -169,7 +169,7 @@ void Rf24DeviceController::configureDevice() {
    mDevice.dynamicPayloadFeatureEnabled(true);
    mDevice.autoRetransmitDelay(0x15);
    mDevice.autoRetransmitCount(0xf);
-   mDevice.channel(10);
+   mDevice.channel(mChannel);
    mDevice.dataRate(I_Rf24Device::DR_2_MBPS);
 
 

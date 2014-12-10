@@ -17,10 +17,26 @@
 
 #include <Bt/Log/Logging.hpp>
 
+// since MQTT:C is linked static the MQTTClient_init must be called since it is otherwise called by the dll init
+extern "C" void MQTTClient_init();
+
 namespace Bt {
 namespace Net {
 namespace Mqtt {
 
+namespace {
+
+   int initializeMqttC() {
+      MQTTClient_init();
+      return 0;
+   }
+
+   int initializeMqttClient() {
+      static int sInitializer = initializeMqttC();
+      return sInitializer;
+   }
+
+}
 
 void MqttClient::connectionLostCallback(void *iContext, char *iCause) {
    if(iContext != nullptr) {
@@ -51,6 +67,8 @@ void MqttClient::deliveryCompleteCallback(void *iContext, MQTTClient_deliveryTok
 
 MqttClient::MqttClient(I_Listener& iListener, std::string iAddress, std::string iClientId)
 : mListener(iListener), mAddress(std::move(iAddress)), mClientId(std::move(iClientId)) {
+
+   initializeMqttClient();
 
    int result = MQTTClient_create(&mClient, const_cast<char*>(mAddress.c_str()), const_cast<char*>(mClientId.c_str()), MQTTCLIENT_PERSISTENCE_NONE, nullptr);
    if (result != MQTTCLIENT_SUCCESS)

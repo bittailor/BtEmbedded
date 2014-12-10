@@ -34,6 +34,7 @@ class I_SnGatewaySettings {
          Mcu::I_Spi::ChipSelect chipSelect;
          int chipEnablePin;
          int irqPin;
+         int channel;
       };
 
       struct Socket {

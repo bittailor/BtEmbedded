@@ -30,6 +30,7 @@
 
 #define PIN_POWER 27
 #define PIN_CHIP_ENABLE 25
+#define RF_CHANNEL 10
 
 //-------------------------------------------------------------------------------------------------
 
@@ -96,7 +97,7 @@ int main(int argc, const char* argv[]) {
       Bt::Concurrency::ExecutionContext executionContext;
 
       Bt::Rf24::Rf24Device device(spi,chipEnable);
-      Bt::Rf24::Rf24DeviceController controller(device,irq,executionContext);
+      Bt::Rf24::Rf24DeviceController controller(device,irq,RF_CHANNEL,executionContext);
       Bt::Rf24::RfNetworkSocket socket(nodeId, controller);
 
       PingServer pingServer(socket);
