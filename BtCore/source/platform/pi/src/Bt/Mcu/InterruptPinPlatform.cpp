@@ -176,8 +176,8 @@ bool InterruptPinPlatform::waitForInterrupt(int iPinFileHandle, int iPipeFileHan
    pollData[1].fd = iPipeFileHandle;
    pollData[1].events = POLLIN;
 
-   int result = poll(pollData, Util::sizeOfArray(pollData), -1);
-   if(result > 0 && mEnabled.load()) {
+   int result = poll(pollData, Util::sizeOfArray(pollData), 30000); // TODO currently just a hard coded timeout of 30s to work around IRQ issue.
+   if(result >= 0 && mEnabled.load()) {
       char c;
       ::read (iPinFileHandle, &c, 1);
       return true;
