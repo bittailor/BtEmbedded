@@ -14,7 +14,8 @@
     <Rf24>
     	<!-- <ChipSelect>0</ChipSelect> -->
         <!-- <ChipEnablePin>25</ChipEnablePin> -->
-    	<!-- <IrqPin>24</IrqPin> -->		
+    	<!-- <IrqPin>24</IrqPin> -->
+    	<!-- <Channel>10</Channel> -->		
     </Rf24>
 </Settings>
 
