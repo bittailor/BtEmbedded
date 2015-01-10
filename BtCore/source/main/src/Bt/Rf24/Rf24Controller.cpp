@@ -166,6 +166,8 @@ void Rf24DeviceController::reboot() {
 
 void Rf24DeviceController::configureDevice() {
 
+   BT_LOG(INFO) << "Rf24DeviceController::configureDevice - channel is " << static_cast<int>(mChannel) ;
+
    mDevice.dynamicPayloadFeatureEnabled(true);
    mDevice.autoRetransmitDelay(0x15);
    mDevice.autoRetransmitCount(0xf);
@@ -190,10 +192,10 @@ void Rf24DeviceController::configureDevice() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24DeviceController::onInterrupt() {
-   BT_LOG(DEBUG) << "onInterrupt - state is " << static_cast<int>(mInterruptState.load()) ;
+   BT_LOG(DEBUG) << "onInterrupt - InterruptState = " << static_cast<int>(mInterruptState.load());
    switch(mInterruptState.load()) {
       case InterruptState::Ignore : {
-         BT_LOG(WARNING) << "IRQ in InterruptState::Ignore - status =  " << mDevice.status() ;
+         BT_LOG(WARNING) << "IRQ in InterruptState::Ignore";
          return;
       }
       case InterruptState::Rx     : {
