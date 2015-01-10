@@ -44,11 +44,12 @@ class SnGateway
 
 
       const I_SnGatewaySettings& mSettings;
+      Bt::Concurrency::ExecutionContext mWorker;
       std::shared_ptr<Rf24::I_RfPacketSocket> mSocket;
       std::shared_ptr<I_MqttFactory> mMqttFactory;
       Bt::Util::Repository<GatewayConnection> mConnections;
-      Bt::Concurrency::ExecutionContext mWorker;
       std::atomic<bool> mRunning;
+      std::atomic<bool> mStopping;
 
 };
 

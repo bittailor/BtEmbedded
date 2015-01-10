@@ -44,8 +44,9 @@ GatewayConnection::GatewayConnection(uint8_t iRfNodeId,
 GatewayConnection::~GatewayConnection() {
    BT_LOG_GWC(DEBUG) << " send stop workcycle.";
    mQueue.push([=]() {
+      BT_LOG_GWC(DEBUG) << " set mRunning to false.";
       this->mRunning = false;
-      BT_LOG_GWC(DEBUG) << " workcycle stopped.";
+      BT_LOG_GWC(DEBUG) << " mRunning = " << mRunning;
    });
    BT_LOG_GWC(DEBUG) << " join workcycle thread.";
    mThread.join();
@@ -321,7 +322,9 @@ void GatewayConnection::workcycle() {
       }
 
       if (validAction) {
+         BT_LOG_GWC(DEBUG) << "workcycle - mRunning before action " << mRunning ;
          action();
+         BT_LOG_GWC(DEBUG) << "workcycle - mRunning after action  " << mRunning ;
       } else {
          BT_LOG_GWC(WARNING) << "missing keep alive message => disconnect()" ;
          disconnect(false);

@@ -92,15 +92,27 @@ int SnGateway::run() {
    }
 
    BT_LOG(DEBUG) << "SnGateway end of 'run' loop" ;
+   mStopping.store(false);
    return 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void SnGateway::stop() {
-   BT_LOG(DEBUG) << "SnGateway::stop" ;
+   BT_LOG(DEBUG) << "SnGateway::stop";
+   if(!mRunning.load()){
+      return;
+   }
+   mStopping.store(true);
    mRunning.store(false);
+   BT_LOG(DEBUG) << "SnGateway closed RF socket ...";
    mSocket->close();
+   while(mStopping.load()) {}
+   BT_LOG(DEBUG) << "SnGateway RF Socket closed";
+   BT_LOG(DEBUG) << "SnGateway clear " << mConnections.size() << " connections ...";
+   mConnections.clear();
+   BT_LOG(DEBUG) << "SnGateway connections cleared";
+
 }
 
 //-------------------------------------------------------------------------------------------------
