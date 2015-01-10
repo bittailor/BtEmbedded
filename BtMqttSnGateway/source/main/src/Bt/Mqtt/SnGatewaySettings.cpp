@@ -33,17 +33,18 @@ SnGatewaySettings::SnGatewaySettings(const std::string& iFilename) {
    mBroker.url = get<std::string>("Settings.Broker.Url");
    mBroker.user = getOptional<std::string>("Settings.Broker.User");
    mBroker.password = getOptional<std::string>("Settings.Broker.Password");
-   mRf24.chipSelect = getEnum("Settings.Broker.ChipSelect", Mcu::I_Spi::ChipSelect::CHIP_SELECT_0, std::map<int,Mcu::I_Spi::ChipSelect>{
+
+   mRf24.chipSelect = getEnum("Settings.Rf24.ChipSelect", Mcu::I_Spi::ChipSelect::CHIP_SELECT_0, std::map<int,Mcu::I_Spi::ChipSelect>{
       {0, Mcu::I_Spi::ChipSelect::CHIP_SELECT_0},
       {1, Mcu::I_Spi::ChipSelect::CHIP_SELECT_1}
    });
 
-   mRf24.chipEnablePin = get("Settings.RfPacketSocket.ChipEnablePin",25);
-   mRf24.irqPin = get("Settings.RfPacketSocket.IrqPin",24);
-   mRf24.channel = get("Settings.RfPacketSocket.Channel",10);
+   mRf24.chipEnablePin = get("Settings.Rf24.ChipEnablePin",25);
+   mRf24.irqPin = get("Settings.Rf24.IrqPin",24);
+   mRf24.channel = get("Settings.Rf24.Channel",10);
 
 
-   mSocket.nodeId = get("Settings.RfPacketSocket.NodeId",0);
+   mSocket.nodeId = get("Settings.Socket.NodeId",0);
 
 }
 
