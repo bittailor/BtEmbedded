@@ -171,6 +171,7 @@ void GatewayConnection::connectToBroker(Bt::Net::MqttSn::Connect& iMessage) {
       BT_LOG_GWC(WARNING) << "CONNECT with CleanSession=false not supported!";
       changeState(mDisconnectedState);
       send(Bt::Net::MqttSn::Connack(Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED));
+      mDispose(id());
       return;
    }
 
@@ -183,6 +184,7 @@ void GatewayConnection::connectToBroker(Bt::Net::MqttSn::Connect& iMessage) {
          changeState(mDisconnectedState);
          Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED);
          send(connack);
+         mDispose(id());
          return;
       }
    } catch (std::exception& exception) {
@@ -190,6 +192,7 @@ void GatewayConnection::connectToBroker(Bt::Net::MqttSn::Connect& iMessage) {
       changeState(mDisconnectedState);
       Bt::Net::MqttSn::Connack connack(Bt::Net::MqttSn::ReturnCode::REJECTED_NOT_SUPPORTED);
       send(connack);
+      mDispose(id());
       return;
    }
 
