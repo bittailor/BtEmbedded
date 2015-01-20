@@ -32,7 +32,7 @@ Rf24DeviceController::Rf24DeviceController(I_Rf24Device& iDevice, Mcu::I_Interru
                                            Concurrency::I_ExecutionContext& iExecutionContext)
 : mDevice(iDevice), mInterruptPin(iInterruptPin), mChannel(iChannel), mExecutionContext(iExecutionContext) , mPowerDown(*this),
   mStandbyI(*this), mRxMode(*this), mTxMode(*this), mCurrentState(&mPowerDown),
-  mInterruptState(InterruptState::Ignore){
+  mInterruptState(InterruptState::Ignore), mEmptyReceiveCounter(0){
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -211,6 +211,7 @@ void Rf24DeviceController::onInterrupt() {
 //-------------------------------------------------------------------------------------------------
 
 void Rf24DeviceController::readReceiveData() {
+   std::size_t receivedCounter = 0;
    while(!mDevice.isReceiveFifoEmpty()) {
       BT_LOG(DEBUG) << "receive payload ...";
       RfPipe pipe;
@@ -220,6 +221,7 @@ void Rf24DeviceController::readReceiveData() {
          BT_LOG(ERROR) << "invalid read size of " << size << " => drop packet" ;
       } else {
          packet.size(size);
+         receivedCounter++;
          BT_LOG(DEBUG) << "... payload received of size " << size << " with " << std::accumulate(packet.buffer(), packet.buffer() + size, std::string() , [](std::string s, uint8_t c) -> std::string {
             std::string result = s +" "+ boost::lexical_cast<std::string>(static_cast<int>(c));
             if (0x20 <= c && c <= 0x7E) {
@@ -231,6 +233,17 @@ void Rf24DeviceController::readReceiveData() {
          mExecutionContext.invoke(handle);
       }
       mDevice.clearDataReady();
+   }
+   if(receivedCounter < 1) {
+      mEmptyReceiveCounter++;
+   } else {
+      mEmptyReceiveCounter = 0;
+   }
+
+   if(mEmptyReceiveCounter > 10) { // TODO currently just a hard coded fallback after 5 minutes to work around nRf24 device driver issues.
+      mEmptyReceiveCounter = 0;
+      BT_LOG(WARNING) << "more that 10 empty receive cycles => reset the nrf24 device";
+      reboot();
    }
 }
 

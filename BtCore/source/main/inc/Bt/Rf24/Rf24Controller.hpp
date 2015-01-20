@@ -125,6 +125,7 @@ class Rf24DeviceController : public I_Rf24DeviceController
       TxMode mTxMode;
       StateBase* mCurrentState;
       std::atomic<InterruptState> mInterruptState;
+      std::size_t mEmptyReceiveCounter;
 
 
 #include <random>
