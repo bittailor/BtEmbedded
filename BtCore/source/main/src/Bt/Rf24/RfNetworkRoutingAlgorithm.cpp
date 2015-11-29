@@ -20,7 +20,7 @@ RfPipe RfNetworkRoutingAlgorithm::calculateRoutingPipe(RfNode iSelf, RfNode iDes
       return RfPipe::PIPE_0;
    }
 
-   uint8_t idAtLevel[4] = {0};
+   uint8_t idAtLevel[5] = {0};
    idAtLevel[iDestination.level()] = iDestination.id();
    for(uint8_t i = iDestination.level() ; i > iSelf.level() ; i-- ) {
       idAtLevel[i - 1] = (idAtLevel[i] - 1) / 5;
